@@ -145,7 +145,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	 * Utility method for writing a tag closing fragment for drawing operations.
 	 */
 	protected void writeClosingDraw() {
-		write("style=\"fill:none;stroke:", getSvg(getColor())); 
+		write("style=\"fill:none;stroke:", getSvg(getColor()));
 		if (getStroke() instanceof BasicStroke) {
 			BasicStroke s = (BasicStroke) getStroke();
 			if (s.getLineWidth() != 1f) {

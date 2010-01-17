@@ -58,7 +58,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		STROKE_LINEJOIN.put(BasicStroke.JOIN_MITER, 0);
 		STROKE_LINEJOIN.put(BasicStroke.JOIN_ROUND, 1);
 	}
-	
+
 	/**
 	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
 	 */
@@ -70,10 +70,10 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		// TODO: Encode string
 		//byte[] bytes = str.getBytes("ISO-8859-1");
 		// Escape string
-		str = str.replaceAll("\\", "\\\\")
+		str = str.replaceAll("\\\\", "\\\\")
 			.replaceAll("\n", "\\n").replaceAll("\r", "\\r")
 			.replaceAll("\t", "\\t").replaceAll("\b", "\\b").replaceAll("\f", "\\f")
-			.replaceAll("(", "\\(").replaceAll(")", "\\)");
+			.replaceAll("\\(", "\\(").replaceAll("\\)", "\\)");
 		// Output
 		writeln(x, " ", y, " M (", str, ") show");
 	}
@@ -95,7 +95,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				writeln(bs.getLineWidth(), " setlinewidth");
 			}
 			if (bs.getLineJoin() != bsPrev.getLineJoin()) {
-				writeln(STROKE_LINEJOIN.get(bs.getLineWidth()), " setlinejoin");
+				writeln(STROKE_LINEJOIN.get(bs.getLineJoin()), " setlinejoin");
 			}
 			if (bs.getEndCap() != bsPrev.getEndCap()) {
 				writeln(STROKE_ENDCAPS.get(bs.getEndCap()), " setlinecap");
@@ -325,7 +325,11 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			if ((i > 0) && (i%bufferedImg.getWidth() == 0)) {
 				str.append("\n");
 			}
-			str.append(Integer.toHexString(i).substring(2));
+			String hex = String.format("%02x", i);
+			if (hex.length() > 2) {
+				hex = hex.substring(hex.length() - 2);
+			}
+			str.append(hex);
 		}
 		return str.toString();
 	}

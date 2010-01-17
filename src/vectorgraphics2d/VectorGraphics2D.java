@@ -1,3 +1,23 @@
+/* VectorGraphics2D : Vector export for Java(R) Graphics2D
+ *
+ * (C) Copyright 2010, by Erich Seifert.
+ *
+ * This file is part of VectorGraphics2D.
+ *
+ * VectorGraphics2D is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * VectorGraphics2D is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package vectorgraphics2d;
 
 import java.awt.AlphaComposite;
@@ -24,7 +44,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -306,8 +325,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public void drawArc(int x, int y, int width, int height, int startAngle,
 			int arcAngle) {
-		writeShape(new Arc2D.Double(x, y, width, height, startAngle, arcAngle, Arc2D.OPEN));
-		writeClosingDraw();
+		draw(new Arc2D.Double(x, y, width, height, startAngle, arcAngle, Arc2D.OPEN));
 	}
 
 	@Override
@@ -353,14 +371,12 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawLine(int x1, int y1, int x2, int y2) {
-		writeShape(new Line2D.Double(x1, y1, x2, y2));
-		writeClosingDraw();
+		draw(new Line2D.Double(x1, y1, x2, y2));
 	}
 
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
-		write(new Ellipse2D.Double(x, y, width, height));
-		writeClosingDraw();
+		draw(new Ellipse2D.Double(x, y, width, height));
 	}
 
 	@Override
@@ -374,9 +390,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 			}
 		}
 		p.closePath();
-
-		write(p);
-		writeClosingDraw();
+		draw(p);
 	}
 
 	@Override
@@ -389,29 +403,24 @@ public abstract class VectorGraphics2D extends Graphics2D {
 				p.moveTo(xPoints[i], yPoints[i]);
 			}
 		}
-
-		write(p);
-		writeClosingDraw();
+		draw(p);
 	}
 
 	@Override
 	public void drawRoundRect(int x, int y, int width, int height,
 			int arcWidth, int arcHeight) {
-		write(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight));
-		writeClosingFill();
+		draw(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight));
 	}
 
 	@Override
 	public void fillArc(int x, int y, int width, int height, int startAngle,
 			int arcAngle) {
-		writeShape(new Arc2D.Double(x, y, width, height, startAngle, arcAngle, Arc2D.PIE));
-		writeClosingFill();
+		fill(new Arc2D.Double(x, y, width, height, startAngle, arcAngle, Arc2D.PIE));
 	}
 
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
-		write(new Ellipse2D.Double(x, y, width, height));
-		writeClosingFill();
+		fill(new Ellipse2D.Double(x, y, width, height));
 	}
 
 	@Override
@@ -426,21 +435,18 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		}
 		p.closePath();
 
-		write(p);
-		writeClosingFill();
+		fill(p);
 	}
 
 	@Override
 	public void fillRect(int x, int y, int width, int height) {
-		write(new Rectangle2D.Double(x, y, width, height));
-		writeClosingFill();
+		fill(new Rectangle2D.Double(x, y, width, height));
 	}
 
 	@Override
 	public void fillRoundRect(int x, int y, int width, int height,
 			int arcWidth, int arcHeight) {
-		write(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight));
-		writeClosingFill();
+		fill(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight));
 	}
 
 	@Override
@@ -534,8 +540,12 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	private BufferedImage getTransformedImage(Image image, AffineTransform xform) {
 		Integer interpolationType = (Integer)hints.get(RenderingHints.KEY_INTERPOLATION);
-		if (interpolationType == null) {
-			interpolationType = (Integer)RenderingHints.VALUE_INTERPOLATION_BICUBIC;
+		if (RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR.equals(interpolationType)) {
+			interpolationType = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
+		} else if (RenderingHints.VALUE_INTERPOLATION_BILINEAR.equals(interpolationType)) {
+			interpolationType = AffineTransformOp.TYPE_BILINEAR;
+		} else {
+			interpolationType = AffineTransformOp.TYPE_BICUBIC;
 		}
 		AffineTransformOp op = new AffineTransformOp(xform, interpolationType);
 		BufferedImage bufferedImage = GraphicsUtils.toBufferedImage(image);
