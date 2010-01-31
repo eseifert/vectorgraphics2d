@@ -58,7 +58,7 @@ import java.util.Map;
 public abstract class VectorGraphics2D extends Graphics2D {
 	private final RenderingHints hints;
 	private final StringBuffer document;
-	private Rectangle2D bounds;
+	private final Rectangle2D bounds;
 
 	private Color background;
 	private Color color;
@@ -68,10 +68,10 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	private GraphicsConfiguration deviceConfig;
 	private Font font;
 	private FontMetrics fontMetrics;
-	private FontRenderContext fontRenderContext;
+	private final FontRenderContext fontRenderContext;
 	private Paint paint;
 	private Stroke stroke;
-	private AffineTransform transform;
+	private final AffineTransform transform;
 	private Color xorMode;
 
 	public VectorGraphics2D(double x, double y, double width, double height) {
@@ -88,10 +88,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		stroke = new BasicStroke(1f);
 		transform = new AffineTransform();
 		xorMode = Color.BLACK;
-		
-		writeHeader();
 	}
-	
+
 	@Override
 	public void addRenderingHints(Map<?,?> hints) {
 		this.hints.putAll(hints);
@@ -122,7 +120,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
-		if (op != null) {			
+		if (op != null) {
 			img = op.filter(img, null);
 		}
 		drawImage(img, x, y, img.getWidth(), img.getHeight(), null);
@@ -407,6 +405,11 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
+	public void drawRect(int x, int y, int width, int height) {
+		draw(new Rectangle2D.Double(x, y, width, height));
+	}
+
+	@Override
 	public void drawRoundRect(int x, int y, int width, int height,
 			int arcWidth, int arcHeight) {
 		draw(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight));
@@ -567,6 +570,10 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		Rectangle2D b = new Rectangle2D.Double();
 		b.setFrame(bounds);
 		return b;
+	}
+
+	protected int size() {
+		return document.length();
 	}
 
 }

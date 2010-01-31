@@ -20,15 +20,16 @@
 
 package vectorgraphics2d.tests;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import org.junit.Before;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	GraphicsUtilsTest.class,
-	EPSGraphics2DTest.class,
-	PDFGraphics2DTest.class,
-	SVGGraphics2DTest.class
-})
-public class AllTests {
+import vectorgraphics2d.PDFGraphics2D;
+
+public class PDFGraphics2DTest extends VectorGraphics2DTest {
+
+	@Override
+	@Before
+	public void setUp() {
+		g = new PDFGraphics2D(DOC_X, DOC_Y, DOC_W, DOC_H);
+	}
+
 }

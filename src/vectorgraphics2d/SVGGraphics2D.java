@@ -54,9 +54,9 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		STROKE_ENDCAPS.put(BasicStroke.CAP_SQUARE, "square");
 
 		STROKE_LINEJOIN = new HashMap<Integer, String>();
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_BEVEL, "bevel");
 		STROKE_LINEJOIN.put(BasicStroke.JOIN_MITER, "miter");
 		STROKE_LINEJOIN.put(BasicStroke.JOIN_ROUND, "round");
+		STROKE_LINEJOIN.put(BasicStroke.JOIN_BEVEL, "bevel");
 	}
 
 	/**
@@ -64,6 +64,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	 */
 	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
+		writeHeader();
 	}
 
 	@Override
@@ -123,6 +124,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		writeClosingFill();
 	}
 
+	@Override
 	protected void writeHeader() {
 		Rectangle2D bounds = getBounds();
 		double x = bounds.getX();
@@ -144,6 +146,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	/**
 	 * Utility method for writing a tag closing fragment for drawing operations.
 	 */
+	@Override
 	protected void writeClosingDraw() {
 		write("style=\"fill:none;stroke:", getSvg(getColor()));
 		if (getStroke() instanceof BasicStroke) {
@@ -169,6 +172,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	/**
 	 * Utility method for writing a tag closing fragment for filling operations.
 	 */
+	@Override
 	protected void writeClosingFill() {
 		writeln("style=\"fill:", getSvg(getColor()), ";stroke:none\" />");
 	}
@@ -177,6 +181,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	 * Utility method for writing an arbitrary shape to.
 	 * It tries to translate Java2D shapes to the corresponding SVG shape tags.
 	 */
+	@Override
 	protected void writeShape(Shape s) {
 		AffineTransform transform = getTransform();
 		if (!isDistorted()) {

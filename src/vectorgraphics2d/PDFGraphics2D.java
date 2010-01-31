@@ -27,21 +27,19 @@ import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
  */
-public class EPSGraphics2D extends VectorGraphics2D {
+public class PDFGraphics2D extends VectorGraphics2D {
 	protected static final double MM_IN_UNITS = 72.0 / 25.4;
 
 	private static final Map<Integer, Integer> STROKE_ENDCAPS;
@@ -59,11 +57,19 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		STROKE_LINEJOIN.put(BasicStroke.JOIN_BEVEL, 2);
 	}
 
+	private int curObjId;
+	private final Map<Integer, Integer> objPositions;
+	private final Map<Double, String> transparencies;
+	private int contentStart;
+
 	/**
 	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
 	 */
-	public EPSGraphics2D(double x, double y, double width, double height) {
+	public PDFGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
+		curObjId = 1;
+		objPositions = new TreeMap<Integer, Integer>();
+		transparencies = new TreeMap<Double, String>();
 		writeHeader();
 	}
 
@@ -73,11 +79,20 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		//byte[] bytes = str.getBytes("ISO-8859-1");
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\")
-			.replaceAll("\n", "\\n").replaceAll("\r", "\\r")
 			.replaceAll("\t", "\\t").replaceAll("\b", "\\b").replaceAll("\f", "\\f")
 			.replaceAll("\\(", "\\(").replaceAll("\\)", "\\)");
-		// Output
-		writeln(x, " ", y, " M (", str, ") show");
+		// Extract lines
+		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
+		// Output lines
+		write("BT ");
+		write(x, " ", y, " Td ");
+		for (String line : lines) {
+			if (line != lines[0]) {
+				write("T* ");
+			}
+			write("(", line, ") Tj ");
+		}
+		writeln("ET");
 	}
 
 	@Override
@@ -94,13 +109,13 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		if (s instanceof BasicStroke) {
 			BasicStroke bs = (BasicStroke) s;
 			if (bs.getLineWidth() != bsPrev.getLineWidth()) {
-				writeln(bs.getLineWidth(), " setlinewidth");
+				writeln(bs.getLineWidth(), " w");
 			}
 			if (bs.getLineJoin() != bsPrev.getLineJoin()) {
-				writeln(STROKE_LINEJOIN.get(bs.getLineJoin()), " setlinejoin");
+				writeln(STROKE_LINEJOIN.get(bs.getLineJoin()), " j");
 			}
 			if (bs.getEndCap() != bsPrev.getEndCap()) {
-				writeln(STROKE_ENDCAPS.get(bs.getEndCap()), " setlinecap");
+				writeln(STROKE_ENDCAPS.get(bs.getEndCap()), " J");
 			}
 			if ((!Arrays.equals(bs.getDashArray(), bsPrev.getDashArray())) ||
 				(bs.getDashPhase() != bsPrev.getDashPhase())) {
@@ -112,20 +127,21 @@ public class EPSGraphics2D extends VectorGraphics2D {
 					}
 					write(pattern[i]);
 				}
-				writeln("] ", bs.getDashPhase(), " setdash");
+				writeln("] ", bs.getDashPhase(), " d");
 			}
 		}
 	}
 
 	@Override
 	protected void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height) {
-		String imgData = getEps(img);
-		writeln("gsave");
+		// TODO: Create PDF image object (see PDF Spec. 1.7, p. 209)
+		/*String imgData = getPdf(img);
+		writeln("q");
 		writeln(x, " ", y, " ", width, " ", height, " ",
 				imgWidth, " ", imgHeight, " img"
 		);
 		writeln(imgData, ">");
-		writeln("grestore");
+		writeln("Q");*/
 	}
 
 	@Override
@@ -133,16 +149,18 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		Color color = getColor();
 		if (c != null) {
 			super.setColor(c);
-			// TODO: Add transparency hints for PDF conversion
-			/*if (color.getAlpha() != c.getAlpha()) {
+			if (color.getAlpha() != c.getAlpha()) {
+				// Add a new graphics state to resources
 				double a = c.getAlpha()/255.0;
-				writeln("[ /ca ", a, " /SetTransparency pdfmark");
-			}*/
+				String stateName = getTransparencyState(a);
+				writeln("/", stateName, " gs");
+			}
 			if (color.getRed() != c.getRed() || color.getGreen() != c.getGreen() || color.getBlue() != c.getBlue()) {
 				double r = c.getRed()/255.0;
 				double g = c.getGreen()/255.0;
 				double b = c.getBlue()/255.0;
-				writeln(r, " ", g, " ", b, " rgb");
+				write(r, " ", g, " ", b, " rg ");
+				writeln(r, " ", g, " ", b, " RG");
 			}
 		}
 	}
@@ -151,7 +169,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	public void setFont(Font font) {
 		if (!getFont().equals(font)) {
 			super.setFont(font);
-			writeln("/", font.getPSName(), " ", font.getSize2D(), " selectfont");
+			writeln("/", font.getPSName(), " ", font.getSize2D(), " Tf");
 		}
 	}
 
@@ -163,51 +181,74 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		int w = (int)Math.ceil(bounds.getWidth() * MM_IN_UNITS);
 		int h = (int)Math.ceil(bounds.getHeight() * MM_IN_UNITS);
 
-		writeln("%!PS-Adobe-3.0 EPSF-3.0");
-		writeln("%%BoundingBox: ", x, " ", y, " ", w, " ", h);
-		writeln("%%LanguageLevel: 2");
-		writeln("%%Pages: 1");
-		writeln("%%Page: 1 1");
-
-		// Utility functions
-		writeln("/M /moveto load def");
-		writeln("/L /lineto load def");
-		writeln("/C /curveto load def");
-		writeln("/Z /closepath load def");
-		writeln("/RL /rlineto load def");
-		writeln("/rgb /setrgbcolor load def");
-		writeln("/rect { ",
-				"/height exch def /width exch def /y exch def /x exch def ",
-				"x y M width 0 RL 0 height RL width neg 0 RL ",
-				"} bind def");
-		// TODO: Round rectangle
-		writeln("/rrect { ",
-				"/archeight exch def /arcwidth exch def /height exch def /width exch def /y exch def /x exch def ",
-				"x y M width 0 RL 0 height RL width neg 0 RL ",
-				"} bind def");
-		writeln("/ellipse { ",
-			"/endangle exch def /startangle exch def /ry exch def /rx exch def /y exch def /x exch def ",
-			"/savematrix matrix currentmatrix def ",
-			"x y translate rx ry scale 0 0 1 startangle endangle arc ",
-			"savematrix setmatrix ",
-			"} bind def");
-		writeln("/img { ",
-				"/imgheight exch def /imgwidth exch def /height exch def /width exch def /y exch def /x exch def ",
-				"x y translate width height scale << ",
-				"/ImageType 1 /Width imgwidth /Height imgheight ",
-				"/BitsPercomponent 8 /Decode [0 1 0 1 0 1] ",
-				"/ImageMatrix [imgwidth 0 0 imgheight 0 imgheight] ",
-				"/DataSource currentfile /ASCIIHexDecode filter ",
-				">> image",
-				"} bind def");
-		//writeln("<< /AllowTransparency true >> setdistillerparams"); // TODO
-		// Save state
-		writeln("gsave");
-		// Settings
-		writeln("/DeviceRGB setcolorspace");
+		writeln("%PDF-1.4");
+		// Object 1
+		writeObj(
+			"Type", "/Catalog",
+			"Outlines", "2 0 R",
+			"Pages", "3 0 R"
+		);
+		// Object 2
+		writeObj(
+			"Type", "/Outlines",
+			"Count", "0"
+		);
+		// Object 3
+		writeObj(
+			"Type", "/Pages",
+			"Kids", "[4 0 R]",
+			"Count", "1"
+		);
+		// Object 4
+		writeObj(
+			"Type", "/Page",
+			"Parent", "[4 0 R]",
+			"MediaBox", String.format("[%d %d %d %d]", x, y, w, h),
+			"Contents", "5 0 R",
+			"Resources", "7 0 R"
+		);
+		// Object 5
+		writeln(nextObjId(size()), " 0 obj");
+		writeDict("Length", "6 0 R");
+		contentStart = size();
+		writeln("stream");
+		writeln("q");
 		// Adjust page size and page origin
-		writeln("0 ", h, " translate 1 -1 scale");
-		writeln(MM_IN_UNITS, " ", MM_IN_UNITS, " scale");
+		writeln(MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", h, " cm");
+	}
+
+	protected void writeDict(Object... strs) {
+		writeln("<<");
+		for (int i = 0; i < strs.length; i += 2) {
+			writeln("/", strs[i], " ", strs[i+1]);
+		}
+		writeln(">>");
+	}
+
+	protected int writeObj(Object... strs) {
+		int objId = nextObjId(size());
+		writeln(objId, " 0 obj");
+		writeDict(strs);
+		writeln("endobj");
+		return objId;
+	}
+
+	protected int peekObjId() {
+		return curObjId + 1;
+	}
+
+	private int nextObjId(int position) {
+		objPositions.put(curObjId, position);
+		return curObjId++;
+	}
+
+	protected String getTransparencyState(double a) {
+		String name = transparencies.get(a);
+		if (name == null) {
+			name = "GS" + transparencies.size();
+			transparencies.put(a, name);
+		}
+		return name;
 	}
 
 	/**
@@ -215,7 +256,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 */
 	@Override
 	protected void writeClosingDraw() {
-		writeln(" stroke");
+		writeln(" S");
 	}
 
 	/**
@@ -223,7 +264,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 */
 	@Override
 	protected void writeClosingFill() {
-		writeln(" fill");
+		writeln(" f");
 	}
 
 	/**
@@ -233,7 +274,6 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	@Override
 	protected void writeShape(Shape s) {
 		AffineTransform transform = getTransform();
-		write("newpath ");
 		if (!isDistorted()) {
 			double sx = transform.getScaleX();
 			double sy = transform.getScaleX();
@@ -245,7 +285,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				double y1 = sy*l.getY1() + ty;
 				double x2 = sx*l.getX2() + tx;
 				double y2 = sy*l.getY2() + ty;
-				write(x1, " ", y1, " M ", x2, " ", y2, " L");
+				write(x1, " ", y1, " m ", x2, " ", y2, " l");
 				return;
 			} else if (s instanceof Rectangle2D) {
 				Rectangle2D r = (Rectangle2D) s;
@@ -253,35 +293,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				double y = sy*r.getY() + ty;
 				double width = sx*r.getWidth();
 				double height = sy*r.getHeight();
-				write(x, " ", y, " ", width, " ", height, " rect Z");
-				return;
-			} else if (s instanceof RoundRectangle2D) {
-				RoundRectangle2D r = (RoundRectangle2D) s;
-				double x = sx*r.getX() + tx;
-				double y = sy*r.getY() + ty;
-				double width = sx*r.getWidth();
-				double height = sy*r.getHeight();
-				double arcWidth = sx*r.getArcWidth();
-				double arcHeight = sy*r.getArcWidth();
-				write(x, " ", y, " ", width, " ", height, " ", arcWidth, " ", arcHeight, " rrect Z");
-				return;
-			} else if (s instanceof Ellipse2D) {
-				Ellipse2D e = (Ellipse2D) s;
-				double x = sx*e.getX() + tx;
-				double y = sy*e.getY() + ty;
-				double rx = sx*e.getWidth() / 2.0;
-				double ry = sy*e.getHeight() / 2.0;
-				write(x, " ", y, " ", rx, " ", ry, " ", 0.0, " ", 360.0, " ellipse Z");
-				return;
-			} else if (s instanceof Arc2D) {
-				Arc2D e = (Arc2D) s;
-				double x = sx*e.getX() + tx;
-				double y = sy*e.getY() + ty;
-				double rx = sx*e.getWidth() / 2.0;
-				double ry = sy*e.getHeight() / 2.0;
-				double startAngle = e.getAngleStart();
-				double endAngle = e.getAngleExtent();
-				write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle, " ellipse Z");
+				write(x, " ", y, " ", width, " ", height, " re");
 				return;
 			}
 		}
@@ -297,17 +309,17 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			int segmentType = segments.currentSegment(coordsCur);
 			switch (segmentType) {
 			case PathIterator.SEG_MOVETO:
-				write(coordsCur[0], " ", coordsCur[1], " M");
+				write(coordsCur[0], " ", coordsCur[1], " m");
 				pointPrev[0] = coordsCur[0];
 				pointPrev[1] = coordsCur[1];
 				break;
 			case PathIterator.SEG_LINETO:
-				write(coordsCur[0], " ", coordsCur[1], " L");
+				write(coordsCur[0], " ", coordsCur[1], " l");
 				pointPrev[0] = coordsCur[0];
 				pointPrev[1] = coordsCur[1];
 				break;
 			case PathIterator.SEG_CUBICTO:
-				write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " C");
+				write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " c");
 				pointPrev[0] = coordsCur[4];
 				pointPrev[1] = coordsCur[5];
 				break;
@@ -318,18 +330,19 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
 				double x3 = coordsCur[2];
 				double y3 = coordsCur[3];
-				write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " C");
+				write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " c");
 				pointPrev[0] = x3;
 				pointPrev[1] = y3;
 				break;
 			case PathIterator.SEG_CLOSE:
-				write("Z");
+				write("h");
 				break;
 			}
 		}
 	}
 
-	public static String getEps(Image img) {
+	public static String getPdf(Image img) {
+		// TODO: Create PDF compatible image data (see PDF Spec. 1.7, p. 209)
 		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
 		int[] data = bufferedImg.getRaster().getPixels(
 				bufferedImg.getMinX(), bufferedImg.getMinY(),
@@ -351,7 +364,51 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected String getFooter() {
-		return "grestore  % Restore state\n%%EOF\n";
+		StringBuffer footer = new StringBuffer("Q\nendstream\n");
+		int contentEnd = size() + footer.length();
+
+		int lenObjId = nextObjId(size() + footer.length());
+		footer.append(lenObjId).append(" 0 obj\n");
+		footer.append(contentEnd - contentStart).append("\n");
+		footer.append("endobj\n");
+
+		int resourcesObjId = nextObjId(size() + footer.length());
+		footer.append(resourcesObjId).append(" 0 obj\n");
+		footer.append("<<\n");
+		footer.append(" /ProcSet [/PDF /Text]\n");
+		footer.append(" /ExtGState <<\n");
+		for (Map.Entry<Double, String> entry : transparencies.entrySet()) {
+			Double alpha = entry.getKey();
+			String name = entry.getValue();
+			footer.append("  /").append(name).append(" << /Type /ExtGState")
+				.append(" /ca ").append(alpha).append(" /CA ").append(alpha)
+				.append(" >>\n");
+		}
+		footer.append(" >>\n");
+		footer.append(">>\n");
+		footer.append("endobj\n");
+
+		int objs = objPositions.size() + 1;
+
+		int xrefPos = size() + footer.length();
+		footer.append("xref\n");
+		footer.append("0 ").append(objs).append("\n");
+		footer.append(String.format("%010d %05d f", 0, 65535)).append("\n");
+		for (int pos : objPositions.values()) {
+			footer.append(String.format("%010d %05d n", pos, 0)).append("\n");
+		}
+
+		footer.append("trailer\n");
+		footer.append("<<\n");
+		footer.append("/Size ").append(objs).append("\n");
+		footer.append("/Root 1 0 R\n");
+		footer.append(">>\n");
+		footer.append("startxref\n");
+		footer.append(xrefPos).append("\n");
+
+		footer.append("%%EOF\n");
+
+		return footer.toString();
 	}
 
 }

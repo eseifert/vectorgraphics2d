@@ -26,6 +26,7 @@ import vectorgraphics2d.EPSGraphics2D;
 
 public class EPSGraphics2DTest extends VectorGraphics2DTest {
 
+	@Override
 	@Before
 	public void setUp() {
 		g = new EPSGraphics2D(DOC_X, DOC_Y, DOC_W, DOC_H);

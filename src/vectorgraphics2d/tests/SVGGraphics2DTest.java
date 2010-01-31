@@ -26,6 +26,7 @@ import vectorgraphics2d.SVGGraphics2D;
 
 public class SVGGraphics2DTest extends VectorGraphics2DTest {
 
+	@Override
 	@Before
 	public void setUp() {
 		g = new SVGGraphics2D(DOC_X, DOC_Y, DOC_W, DOC_H);
