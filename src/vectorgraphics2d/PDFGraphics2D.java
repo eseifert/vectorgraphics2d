@@ -59,7 +59,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	private int curObjId;
 	private final Map<Integer, Integer> objPositions;
-	private final Map<Double, String> transparencies;
+	private final Map<Double, String> transpResources;
+	private final Map<BufferedImage, String> imageResources;
 	private int contentStart;
 
 	/**
@@ -69,7 +70,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		super(x, y, width, height);
 		curObjId = 1;
 		objPositions = new TreeMap<Integer, Integer>();
-		transparencies = new TreeMap<Double, String>();
+		transpResources = new TreeMap<Double, String>();
+		imageResources = new TreeMap<BufferedImage, String>();
 		writeHeader();
 	}
 
@@ -137,10 +139,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		// TODO: Create PDF image object (see PDF Spec. 1.7, p. 209)
 		/*String imgData = getPdf(img);
 		writeln("q");
-		writeln(x, " ", y, " ", width, " ", height, " ",
-				imgWidth, " ", imgHeight, " img"
-		);
-		writeln(imgData, ">");
+		writeln(imgWidth/width, " 0 0 ", imgHeight/height, " ", x, " ", y, " cm");
+		writeln(imgObj, ">");
 		writeln("Q");*/
 	}
 
@@ -152,8 +152,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			if (color.getAlpha() != c.getAlpha()) {
 				// Add a new graphics state to resources
 				double a = c.getAlpha()/255.0;
-				String stateName = getTransparencyState(a);
-				writeln("/", stateName, " gs");
+				String transpResourceId = getTransparencyResource(a);
+				writeln("/", transpResourceId, " gs");
 			}
 			if (color.getRed() != c.getRed() || color.getGreen() != c.getGreen() || color.getBlue() != c.getBlue()) {
 				double r = c.getRed()/255.0;
@@ -242,11 +242,21 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		return curObjId++;
 	}
 
-	protected String getTransparencyState(double a) {
-		String name = transparencies.get(a);
+	protected String getTransparencyResource(double a) {
+		String name = transpResources.get(a);
 		if (name == null) {
-			name = "GS" + transparencies.size();
-			transparencies.put(a, name);
+			name = String.format("Trn%04d", transpResources.size());
+			transpResources.put(a, name);
+		}
+		return name;
+	}
+
+	protected String getImageResource(Image image) {
+		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(image);
+		String name = imageResources.get(bufferedImg);
+		if (name == null) {
+			name = String.format("Img%04d", imageResources.size());
+			imageResources.put(bufferedImg, name);
 		}
 		return name;
 	}
@@ -341,27 +351,6 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		}
 	}
 
-	public static String getPdf(Image img) {
-		// TODO: Create PDF compatible image data (see PDF Spec. 1.7, p. 209)
-		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
-		int[] data = bufferedImg.getRaster().getPixels(
-				bufferedImg.getMinX(), bufferedImg.getMinY(),
-				bufferedImg.getWidth(), bufferedImg.getHeight(),
-				(int[])null);
-		StringBuffer str = new StringBuffer(data.length*6);
-		for (int i : data) {
-			if ((i > 0) && (i%bufferedImg.getWidth() == 0)) {
-				str.append("\n");
-			}
-			String hex = String.format("%02x", i);
-			if (hex.length() > 2) {
-				hex = hex.substring(hex.length() - 2);
-			}
-			str.append(hex);
-		}
-		return str.toString();
-	}
-
 	@Override
 	protected String getFooter() {
 		StringBuffer footer = new StringBuffer("Q\nendstream\n");
@@ -375,9 +364,9 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		int resourcesObjId = nextObjId(size() + footer.length());
 		footer.append(resourcesObjId).append(" 0 obj\n");
 		footer.append("<<\n");
-		footer.append(" /ProcSet [/PDF /Text]\n");
+		footer.append(" /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]\n");
 		footer.append(" /ExtGState <<\n");
-		for (Map.Entry<Double, String> entry : transparencies.entrySet()) {
+		for (Map.Entry<Double, String> entry : transpResources.entrySet()) {
 			Double alpha = entry.getKey();
 			String name = entry.getValue();
 			footer.append("  /").append(name).append(" << /Type /ExtGState")

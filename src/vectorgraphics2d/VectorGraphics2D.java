@@ -30,6 +30,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
+import java.awt.MultipleGradientPaint;
 import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -128,7 +129,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
-		// TODO
+		drawRenderedImage(img.createDefaultRendering(), xform);
 	}
 
 	@Override
@@ -193,6 +194,13 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Object getRenderingHint(RenderingHints.Key hintKey) {
+		if (RenderingHints.KEY_ANTIALIASING.equals(hintKey)) {
+			return RenderingHints.VALUE_ANTIALIAS_OFF;
+		} else if (RenderingHints.KEY_TEXT_ANTIALIASING.equals(hintKey)) {
+			return RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
+		} else if (RenderingHints.KEY_FRACTIONALMETRICS.equals(hintKey)) {
+			return RenderingHints.VALUE_FRACTIONALMETRICS_ON;
+		}
 		return hints.get(hintKey);
 	}
 
@@ -252,8 +260,33 @@ public abstract class VectorGraphics2D extends Graphics2D {
 			this.paint = paint;
 			if (paint instanceof Color) {
 				setColor((Color) paint);
+			} else if (paint instanceof MultipleGradientPaint) {
+				// Set brightest or least opaque color for gradients
+				Color[] colors = ((MultipleGradientPaint)paint).getColors();
+				if (colors.length == 1) {
+					setColor(colors[0]);
+				} else if (colors.length > 1) {
+					Color colLight = colors[0];
+					float brightness = getBrightness(colLight);
+					int alpha = colLight.getAlpha();
+
+					for (int i = 1; i < colors.length; i++) {
+						Color c = colors[i];
+						float b = getBrightness(c);
+						int a = c.getAlpha();
+						if (b < brightness || a < alpha) {
+							colLight = c;
+							brightness = b;
+						}
+					}
+					setColor(colLight);
+				}
 			}
 		}
+	}
+
+	private static float getBrightness(Color c) {
+		return Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null)[2];
 	}
 
 	@Override
