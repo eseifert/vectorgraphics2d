@@ -5,6 +5,22 @@
   <name>Vector export for Java(R) Graphics2D</name>
   <version>0.6</version>
   <description>A Java library for rendering graphs.</description>
+  <inceptionYear>2010</inceptionYear>
+
+  <licenses>
+    <license>
+        <name>GNU Library or Lesser General Public License (LGPL)</name>
+        <url>http://www.gnu.org/licenses/lgpl.txt</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+        <name>Erich Seifert</name>
+        <email>info[at]erichseifert.de</email>
+    </developer>
+  </developers>
+
   <build>
   	<plugins>
   		<plugin>
@@ -15,8 +31,37 @@
                 <target>1.6</target>
   			</configuration>
   		</plugin>
+  		<plugin>
+  			<groupId>com.mycila.maven-license-plugin</groupId>
+  			<artifactId>maven-license-plugin</artifactId>
+  			<version>1.5.0</version>
+  			<configuration>
+                <header>src/etc/header.txt</header>
+                <properties>
+                    <owner>Erich Seifert</owner>
+                    <year>${project.inceptionYear}</year>
+                    <email>info[at]erichseifert.de</email>
+                </properties>
+                <excludes>
+                    <exclude>COPYING</exclude>
+                    <exclude>COPYING.LESSER</exclude>
+                    <exclude>bin/**</exclude>
+                    <exclude>src/main/resources/**</exclude>
+                    <exclude>src/test/resources/**</exclude>
+                </excludes>
+  			</configuration>
+  			<executions>
+                <execution>
+                    <phase>test</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+  		</plugin>
   	</plugins>
   </build>
+
   <dependencies>
   	<dependency>
   		<groupId>junit</groupId>
