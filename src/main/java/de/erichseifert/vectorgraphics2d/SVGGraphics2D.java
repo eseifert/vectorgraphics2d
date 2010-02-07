@@ -38,8 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-
-import sun.misc.BASE64Encoder;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
@@ -274,7 +273,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		} catch (IOException e) {
 			return "";
 		}
-		String dataBase64 = new BASE64Encoder().encode(data.toByteArray());
+		String dataBase64 = DatatypeConverter.printBase64Binary(data.toByteArray());
 		return "data:image/png;base64," + dataBase64;
 	}
 
