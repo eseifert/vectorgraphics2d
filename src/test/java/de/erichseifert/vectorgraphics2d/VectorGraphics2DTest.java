@@ -18,7 +18,7 @@
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package vectorgraphics2d.tests;
+package de.erichseifert.vectorgraphics2d;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -45,7 +45,8 @@ import java.awt.image.BufferedImage;
 import org.junit.Before;
 import org.junit.Test;
 
-import vectorgraphics2d.VectorGraphics2D;
+import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
+
 
 public abstract class VectorGraphics2DTest {
 	protected static final double DOC_X =   0.0;

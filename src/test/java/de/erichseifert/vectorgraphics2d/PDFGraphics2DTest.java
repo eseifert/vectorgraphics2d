@@ -18,18 +18,19 @@
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package vectorgraphics2d.tests;
+package de.erichseifert.vectorgraphics2d;
 
 import org.junit.Before;
 
-import vectorgraphics2d.SVGGraphics2D;
+import de.erichseifert.vectorgraphics2d.PDFGraphics2D;
 
-public class SVGGraphics2DTest extends VectorGraphics2DTest {
+
+public class PDFGraphics2DTest extends VectorGraphics2DTest {
 
 	@Override
 	@Before
 	public void setUp() {
-		g = new SVGGraphics2D(DOC_X, DOC_Y, DOC_W, DOC_H);
+		g = new PDFGraphics2D(DOC_X, DOC_Y, DOC_W, DOC_H);
 	}
 
 }

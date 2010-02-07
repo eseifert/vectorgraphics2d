@@ -18,7 +18,7 @@
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d;
 
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
