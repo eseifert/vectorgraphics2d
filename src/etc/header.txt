@@ -1,4 +1,4 @@
-VectorGraphics2D : Vector export for Java(R) Graphics2D
+VectorGraphics2D: Vector export for Java(R) Graphics2D
 
 (C) Copyright ${year} ${owner} <${email}>
 
