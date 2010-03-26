@@ -106,8 +106,8 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:svn://smt.sytes.net/vectorgraphics2d/trunk</connection>
-    <developerConnection>scm:svn:svn://smt.sytes.net/vectorgraphics2d/trunk</developerConnection>
+    <connection>scm:svn:svn://erichseifert.de/vectorgraphics2d/trunk</connection>
+    <developerConnection>scm:svn:svn://erichseifert.de/vectorgraphics2d/trunk</developerConnection>
     <tag>HEAD</tag>
   </scm>
 </project>
