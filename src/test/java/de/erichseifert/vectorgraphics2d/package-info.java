@@ -19,17 +19,7 @@
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Unit tests for main classes.
+ */
 package de.erichseifert.vectorgraphics2d;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	GraphicsUtilsTest.class,
-	EPSGraphics2DTest.class,
-	PDFGraphics2DTest.class,
-	SVGGraphics2DTest.class
-})
-public class AllTests {
-}
