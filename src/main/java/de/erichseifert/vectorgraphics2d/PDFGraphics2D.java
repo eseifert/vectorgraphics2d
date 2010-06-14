@@ -89,11 +89,11 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		// Output lines
 		write("BT ");
 		write(x, " ", y, " Td ");
-		for (String line : lines) {
-			if (line != lines[0]) {
+		for (int i = 0; i < lines.length; i++) {
+			if (i > 0) {
 				write("T* ");
 			}
-			write("(", line, ") Tj ");
+			write("(", lines[i], ") Tj ");
 		}
 		writeln("ET");
 	}

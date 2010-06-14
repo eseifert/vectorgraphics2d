@@ -155,11 +155,11 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawString(AttributedCharacterIterator iterator, float x, float y) {
-		String str = "";
+		StringBuffer buf = new StringBuffer();
 		for (char c = iterator.first(); c != AttributedCharacterIterator.DONE; c = iterator.next()) {
-			str += c;
+			buf.append(c);
 		}
-		drawString(str, x, y);
+		drawString(buf.toString(), x, y);
 	}
 
 	@Override
