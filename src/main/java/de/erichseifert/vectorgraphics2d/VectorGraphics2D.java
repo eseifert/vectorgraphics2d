@@ -39,11 +39,12 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.AffineTransformOp;
@@ -58,6 +59,11 @@ import java.util.Locale;
 import java.util.Map;
 
 public abstract class VectorGraphics2D extends Graphics2D {
+	public static enum FontRendering {
+		TEXT,
+		VECTORS
+	}
+
 	private final RenderingHints hints;
 	private final StringBuffer document;
 	private final Rectangle2D bounds;
@@ -75,6 +81,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	private Stroke stroke;
 	private final AffineTransform transform;
 	private Color xorMode;
+
+	private FontRendering fontRendering;
 
 	public VectorGraphics2D(double x, double y, double width, double height) {
 		hints = new RenderingHints(new HashMap<RenderingHints.Key, Object>());
@@ -145,7 +153,15 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawString(String str, float x, float y) {
-		writeString(str, x, y);
+		switch (getFontRendering()) {
+		case VECTORS:
+			TextLayout layout = new TextLayout(str, getFont(), getFontRenderContext());
+			layout.draw(this, x, y);
+			break;
+		case TEXT:
+			writeString(str, x, y);
+			break;
+		}
 	}
 
 	@Override
@@ -155,6 +171,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawString(AttributedCharacterIterator iterator, float x, float y) {
+		// TODO: Take text formatting into account
 		StringBuffer buf = new StringBuffer();
 		for (char c = iterator.first(); c != AttributedCharacterIterator.DONE; c = iterator.next()) {
 			buf.append(c);
@@ -413,7 +430,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-		GeneralPath p = new GeneralPath();
+		Path2D p = new Path2D.Float();
 		for (int i = 0; i < nPoints; i++) {
 			if (i > 0) {
 				p.lineTo(xPoints[i], yPoints[i]);
@@ -427,7 +444,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-		GeneralPath p = new GeneralPath();
+		Path2D p = new Path2D.Float();
 		for (int i = 0; i < nPoints; i++) {
 			if (i > 0) {
 				p.lineTo(xPoints[i], yPoints[i]);
@@ -462,7 +479,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-		GeneralPath p = new GeneralPath();
+		Path2D p = new Path2D.Float();
 		for (int i = 0; i < nPoints; i++) {
 			if (i > 0) {
 				p.lineTo(xPoints[i], yPoints[i]);
@@ -608,6 +625,23 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	protected int size() {
 		return document.length();
+	}
+
+	/**
+	 * Returns how fonts should be rendered.
+	 * @return Font rendering mode.
+	 */
+	public FontRendering getFontRendering() {
+		return fontRendering;
+	}
+
+	/**
+	 * Sets how fonts should be rendered. For example, they can be converted
+	 * to vector shapes.
+	 * @param mode New font rendering mode.
+	 */
+	public void setFontRendering(FontRendering mode) {
+		fontRendering = mode;
 	}
 
 }
