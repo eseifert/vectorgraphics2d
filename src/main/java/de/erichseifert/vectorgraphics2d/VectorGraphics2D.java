@@ -88,6 +88,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		hints = new RenderingHints(new HashMap<RenderingHints.Key, Object>());
 		document = new StringBuffer();
 		bounds = new Rectangle2D.Double(x, y, width, height);
+		fontRendering = FontRendering.TEXT;
 
 		background = Color.WHITE;
 		color = Color.BLACK;
