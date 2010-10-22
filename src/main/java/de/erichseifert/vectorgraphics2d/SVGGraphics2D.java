@@ -130,9 +130,9 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	@Override
 	public void setClip(Shape clip) {
 		super.setClip(clip);
-		if (clip != null) {
+		if (getClip() != null) {
 			writeln("<clipPath id=\"", CLIP_PATH_ID, ++clipCounter, "\">");
-			writeShape(clip);
+			writeShape(getClip());
 			writeln("/>");
 			writeln("</clipPath>");
 		}

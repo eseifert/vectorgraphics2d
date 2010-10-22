@@ -123,7 +123,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		String imgData = getEps(img);
 		writeln("gsave");
 		writeln(x, " ", y, " ", width, " ", height, " ",
-				imgWidth, " ", imgHeight, " img"
+			imgWidth, " ", imgHeight, " img"
 		);
 		writeln(imgData, ">");
 		writeln("grestore");
@@ -153,6 +153,18 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		if (!getFont().equals(font)) {
 			super.setFont(font);
 			writeln("/", font.getPSName(), " ", font.getSize2D(), " selectfont");
+		}
+	}
+
+	@Override
+	public void setClip(Shape clip) {
+		if (getClip() != null) {
+			writeln("cliprestore");
+		}
+		super.setClip(clip);
+		if (getClip() != null) {
+			writeShape(getClip());
+			writeln(" clip");
 		}
 	}
 
@@ -204,6 +216,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		//writeln("<< /AllowTransparency true >> setdistillerparams"); // TODO
 		// Save state
 		writeln("gsave");
+		// Save state
+		writeln("clipsave");
 		// Settings
 		writeln("/DeviceRGB setcolorspace");
 		// Adjust page size and page origin

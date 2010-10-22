@@ -175,6 +175,19 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
+	public void setClip(Shape clip) {
+		if (getClip() != null) {
+			writeln("Q");
+		}
+		super.setClip(clip);
+		if (getClip() != null) {
+			writeln("q");
+			writeShape(getClip());
+			writeln(" W n");
+		}
+	}
+
+	@Override
 	protected void writeHeader() {
 		Rectangle2D bounds = getBounds();
 		int x = (int)Math.floor(bounds.getX() * MM_IN_UNITS);
