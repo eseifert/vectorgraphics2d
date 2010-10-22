@@ -3,7 +3,7 @@
   <groupId>de.erichseifert.vectorgraphics2d</groupId>
   <artifactId>VectorGraphics2D</artifactId>
   <name>VectorGraphics2D Library</name>
-  <version>0.6</version>
+  <version>0.7-SNAPSHOT</version>
   <description>A library for adding vector export to Java(R) Graphics2D.</description>
   <inceptionYear>2010</inceptionYear>
 
@@ -16,7 +16,7 @@
 
   <developers>
     <developer>
-    	<id>erich</id>
+    	<id>eseifert</id>
         <name>Erich Seifert</name>
         <email>info[at]erichseifert.de</email>
         <timezone>+1</timezone>
@@ -31,7 +31,6 @@
   	<plugins>
   		<plugin>
   			<artifactId>maven-compiler-plugin</artifactId>
-  			<version>2.3.1</version>
   			<configuration>
                 <source>1.6</source>
                 <target>1.6</target>
@@ -40,7 +39,6 @@
   		<plugin>
   			<groupId>com.mycila.maven-license-plugin</groupId>
   			<artifactId>maven-license-plugin</artifactId>
-  			<version>1.6.0</version>
   			<configuration>
                 <header>src/etc/header.txt</header>
                 <mapping>
@@ -71,7 +69,6 @@
         <plugin>
         	<groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-javadoc-plugin</artifactId>
-        	<version>2.7</version>
         	<configuration>
           		<show>private</show>
           		<nohelp>true</nohelp>
@@ -103,7 +100,6 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jxr-plugin</artifactId>
-            <version>2.2</version>
             <configuration>
                 <inputEncoding>UTF-8</inputEncoding>
                 <outputEncoding>UTF-8</outputEncoding>
@@ -116,12 +112,10 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-surefire-report-plugin</artifactId>
-        	<version>2.5</version>
       	</plugin>
         <plugin>
         	<groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-javadoc-plugin</artifactId>
-        	<version>2.7</version>
         	<configuration>
           		<show>public</show>
         	</configuration>

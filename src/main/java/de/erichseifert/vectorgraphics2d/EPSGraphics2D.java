@@ -70,7 +70,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeString(String str, double x, double y) {
-		// TODO: Encode string
+		// TODO Encode string
 		//byte[] bytes = str.getBytes("ISO-8859-1");
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\")
@@ -134,7 +134,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		Color color = getColor();
 		if (c != null) {
 			super.setColor(c);
-			// TODO: Add transparency hints for PDF conversion
+			// TODO Add transparency hints for PDF conversion
 			/*if (color.getAlpha() != c.getAlpha()) {
 				double a = c.getAlpha()/255.0;
 				writeln("[ /ca ", a, " /SetTransparency pdfmark");
@@ -181,7 +181,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				"/height exch def /width exch def /y exch def /x exch def ",
 				"x y M width 0 RL 0 height RL width neg 0 RL ",
 				"} bind def");
-		// TODO: Round rectangle
+		// TODO Round rectangle
 		writeln("/rrect { ",
 				"/archeight exch def /arcwidth exch def /height exch def /width exch def /y exch def /x exch def ",
 				"x y M width 0 RL 0 height RL width neg 0 RL ",

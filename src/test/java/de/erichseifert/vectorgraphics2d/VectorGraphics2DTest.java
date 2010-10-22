@@ -83,7 +83,7 @@ public abstract class VectorGraphics2DTest {
 		g.drawPolyline(new int[] {0, 210}, new int[] {0, 297}, 2);
 		g.drawRect(0, 0, 210, 297);
 		g.drawRoundRect(0, 0, 210, 297, 5, 5);
-		// TODO: Assert something
+		// TODO Assert something
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public abstract class VectorGraphics2DTest {
 		g.fillPolygon(new int[] {0, 210, 0}, new int[] {0, 297, 297}, 3);
 		g.fillRect(0, 0, 210, 297);
 		g.fillRoundRect(0, 0, 210, 297, 5, 5);
-		// TODO: Assert something
+		// TODO Assert something
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public abstract class VectorGraphics2DTest {
 			g.fill(shape);
 			g.draw(shape);
 		}
-		// TODO: Assert something
+		// TODO Assert something
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public abstract class VectorGraphics2DTest {
 	public void testDrawString() {
 		g.drawString("foo", 0, 0);
 		g.drawString("bar", 0f, 0.5f);
-		// TODO: Assert something
+		// TODO Assert something
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public abstract class VectorGraphics2DTest {
 		g.drawImage(image, AffineTransform.getScaleInstance(0.5, 0.5), null);
 		g.drawImage(image, new AffineTransformOp(AffineTransform.getTranslateInstance(0.5, 0.5), AffineTransformOp.TYPE_NEAREST_NEIGHBOR), 0, 0);
 		g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), Color.WHITE, null);
-		// TODO: Assert something
+		// TODO Assert something
 	}
 
 	@Test

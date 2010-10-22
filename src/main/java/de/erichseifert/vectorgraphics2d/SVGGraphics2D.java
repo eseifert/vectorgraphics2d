@@ -59,6 +59,9 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		STROKE_LINEJOIN.put(BasicStroke.JOIN_BEVEL, "bevel");
 	}
 
+	private static String CLIP_PATH_ID = "clip";
+	private long clipCounter;
+
 	/**
 	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
 	 */
@@ -125,6 +128,17 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
+	public void setClip(Shape clip) {
+		super.setClip(clip);
+		if (clip != null) {
+			writeln("<clipPath id=\"", CLIP_PATH_ID, ++clipCounter, "\">");
+			writeShape(clip);
+			writeln("/>");
+			writeln("</clipPath>");
+		}
+	}
+
+	@Override
 	protected void writeHeader() {
 		Rectangle2D bounds = getBounds();
 		double x = bounds.getX();
@@ -166,6 +180,9 @@ public class SVGGraphics2D extends VectorGraphics2D {
 				write(";stroke-dashoffset:", s.getDashPhase());
 			}
 		}
+		if (getClip() != null) {
+			write("\" clip-path=\"url(#", CLIP_PATH_ID, clipCounter, ")");
+		}
 		writeln("\" />");
 	}
 
@@ -174,7 +191,11 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	 */
 	@Override
 	protected void writeClosingFill() {
-		writeln("style=\"fill:", getSvg(getColor()), ";stroke:none\" />");
+		write("style=\"fill:", getSvg(getColor()), ";stroke:none");
+		if (getClip() != null) {
+			write("\" clip-path=\"url(#", CLIP_PATH_ID, clipCounter, ")");
+		}
+		writeln("\" />");
 	}
 
 	/**

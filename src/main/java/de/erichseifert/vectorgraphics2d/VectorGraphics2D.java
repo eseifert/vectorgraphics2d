@@ -172,7 +172,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawString(AttributedCharacterIterator iterator, float x, float y) {
-		// TODO: Take text formatting into account
+		// TODO Take text formatting into account
 		StringBuffer buf = new StringBuffer();
 		for (char c = iterator.first(); c != AttributedCharacterIterator.DONE; c = iterator.next()) {
 			buf.append(c);
@@ -395,7 +395,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		int imgWidth = img.getWidth(observer);
 		int imgHeight = img.getHeight(observer);
 		writeImage(img, imgWidth, imgHeight, x, y, width, height);
-		return true;  // TODO: Return only true if image data was complete
+		return true;  // TODO Return only true if image data was complete
 	}
 
 	@Override

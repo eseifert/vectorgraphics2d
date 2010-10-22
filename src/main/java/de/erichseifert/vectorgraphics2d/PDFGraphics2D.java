@@ -78,7 +78,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeString(String str, double x, double y) {
-		// TODO: Encode string
+		// TODO Encode string
 		//byte[] bytes = str.getBytes("ISO-8859-1");
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\")
@@ -137,7 +137,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height) {
-		// TODO: Create PDF image object (see PDF Spec. 1.7, p. 209)
+		// TODO Create PDF image object (see PDF Spec. 1.7, p. 209)
 		/*String imgData = getPdf(img);
 		writeln("q");
 		writeln(imgWidth/width, " 0 0 ", imgHeight/height, " ", x, " ", y, " cm");
