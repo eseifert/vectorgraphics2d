@@ -155,6 +155,9 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			"viewBox=\"", x, " ", y, " ", w, " ", h, "\"",
 			">"
 		);
+		writeln("<style type=\"text/css\"><![CDATA[");
+		writeln("text { font-family:", getFont().getFamily(), ";font-size:", getFont().getSize2D(), "px; }");
+		writeln("]]></style>");
 	}
 
 	/**

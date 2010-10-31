@@ -59,8 +59,11 @@ import java.util.Locale;
 import java.util.Map;
 
 public abstract class VectorGraphics2D extends Graphics2D {
+	/** Constants to define how fonts are rendered. */
 	public static enum FontRendering {
+		/** Constant indicating that fonts should be rendered as text objects. */
 		TEXT,
+		/** Constant indicating that fonts should be converted to vectors. */
 		VECTORS
 	}
 
@@ -84,6 +87,14 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	private FontRendering fontRendering;
 
+	/**
+	 * Constructor to initialize a new {@code VectorGraphics2D} document.
+	 * The dimensions of the document must be passed.
+	 * @param x Horizontal position of document origin.
+	 * @param y Vertical position of document origin.
+	 * @param width Width of document.
+	 * @param height Height of document.
+	 */
 	public VectorGraphics2D(double x, double y, double width, double height) {
 		hints = new RenderingHints(new HashMap<RenderingHints.Key, Object>());
 		document = new StringBuffer();
@@ -157,7 +168,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		switch (getFontRendering()) {
 		case VECTORS:
 			TextLayout layout = new TextLayout(str, getFont(), getFontRenderContext());
-			layout.draw(this, x, y);
+			Shape s = layout.getOutline(AffineTransform.getTranslateInstance(x, y));
+			fill(s);
 			break;
 		case TEXT:
 			writeString(str, x, y);
@@ -304,6 +316,11 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		}
 	}
 
+	/**
+	 * Utility method to get the brightness of a specified color.
+	 * @param c Color.
+	 * @return Brightness value between 0f (black) and 1f (white).
+	 */
 	private static float getBrightness(Color c) {
 		return Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null)[2];
 	}
@@ -585,12 +602,52 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		write("\n");
 	}
 
+	/**
+	 * Write the specified shape to the document. This does not necessarily
+	 * contain the actual command to paint the shape.
+	 * @param s Shape to be written.
+	 */
 	protected abstract void writeShape(Shape s);
+
+	/**
+	 * Write the specified image to the document. A number of dimensions will
+	 * specify how the image will be placed in the document.
+	 * @param img Image to be rendered.
+	 * @param imgWidth Number of pixels in horizontal direction.
+	 * @param imgHeight Number of pixels in vertical direction
+	 * @param x Horizontal position in document units where the upper left corner of the image should be placed.
+	 * @param y Vertical position in document units where the upper left corner of the image should be placed.
+	 * @param width Width of the image in document units.
+	 * @param height Height of the image in document units.
+	 */
 	protected abstract void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height);
+
+	/**
+	 * Write a text string to the document at a specified position.
+	 * @param str Text to be rendered.
+	 * @param x Horizontal position in document units.
+	 * @param y Vertical position in document units.
+	 */
 	protected abstract void writeString(String str, double x, double y);
+
+	/**
+	 * Write a command to draw the outline of a previously inserted shape.
+	 */
 	protected abstract void writeClosingDraw();
+
+	/**
+	 * Write a command to fill the outline of a previously inserted shape.
+	 */
 	protected abstract void writeClosingFill();
+
+	/**
+	 * Write the header to start a new document.
+	 */
 	protected abstract void writeHeader();
+
+	/**
+	 * Returns a string of the footer to end a document.
+	 */
 	protected abstract String getFooter();
 
 	private BufferedImage getTransformedImage(Image image, AffineTransform xform) {
@@ -607,6 +664,11 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		return op.filter(bufferedImage, null);
 	}
 
+	/**
+	 * Returns whether a distorting transformation has been applied to the
+	 * document.
+	 * @return <code>true</code> if the document is distorted, otherwise <code>false</code>.
+	 */
 	protected boolean isDistorted() {
 		int type = transform.getType();
 		int otherButTranslatedOrScaled = ~(AffineTransform.TYPE_TRANSLATION | AffineTransform.TYPE_MASK_SCALE);
@@ -618,12 +680,20 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		return document.toString() + getFooter();
 	}
 
+	/**
+	 * Returns the dimensions of the document.
+	 * @return
+	 */
 	public Rectangle2D getBounds() {
 		Rectangle2D b = new Rectangle2D.Double();
 		b.setFrame(bounds);
 		return b;
 	}
 
+	/**
+	 * Returns the number of bytes of the document.
+	 * @return
+	 */
 	protected int size() {
 		return document.length();
 	}

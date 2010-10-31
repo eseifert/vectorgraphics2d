@@ -78,7 +78,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			.replaceAll("\t", "\\t").replaceAll("\b", "\\b").replaceAll("\f", "\\f")
 			.replaceAll("\\(", "\\(").replaceAll("\\)", "\\)");
 		// Output
-		writeln(x, " ", y, " M (", str, ") show");
+		writeln("gsave ", x, " ", y, " M 1 -1 scale (", str, ") show ", " grestore");
 	}
 
 	@Override
@@ -213,6 +213,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				"/DataSource currentfile /ASCIIHexDecode filter ",
 				">> image",
 				"} bind def");
+		// Set default font
+		writeln("/", getFont().getPSName(), " ", getFont().getSize2D(), " selectfont");
 		//writeln("<< /AllowTransparency true >> setdistillerparams"); // TODO
 		// Save state
 		writeln("gsave");
