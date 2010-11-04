@@ -692,7 +692,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	/**
 	 * Returns the number of bytes of the document.
-	 * @return
+	 * @return size of the document in bytes.
 	 */
 	protected int size() {
 		return document.length();

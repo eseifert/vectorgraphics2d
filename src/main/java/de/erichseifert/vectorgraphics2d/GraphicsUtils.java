@@ -44,7 +44,8 @@ public abstract class GraphicsUtils {
 	 * has transparent pixels.
 	 * Taken from http://www.exampledepot.com/egs/java.awt.image/HasAlpha.html
 	 * @param image
-	 * @return
+	 * @return <code>true</code> if the specified image has transparent pixels,
+	 *         <code>false</code> otherwise
 	 */
 	public static boolean hasAlpha(Image image) {
 		// If buffered image, the color model is readily available
@@ -67,8 +68,8 @@ public abstract class GraphicsUtils {
 	/**
 	 * This method returns a buffered image with the contents of an image.
 	 * Taken from http://www.exampledepot.com/egs/java.awt.image/Image2Buf.html
-	 * @param image
-	 * @return
+	 * @param image Image ot be converted
+	 * @return a buffered image with the contents of the specified image
 	 */
 	public static BufferedImage toBufferedImage(Image image) {
 		if (image instanceof BufferedImage) {
@@ -99,7 +100,7 @@ public abstract class GraphicsUtils {
 			// Create a buffered image using the default color model
 			int type = BufferedImage.TYPE_INT_RGB;
 			if (hasAlpha) {
-				type = BufferedImage.TYPE_INT_ARGB;	
+				type = BufferedImage.TYPE_INT_ARGB;
 			}
 			bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
 		}

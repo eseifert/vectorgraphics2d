@@ -31,6 +31,7 @@
   	<plugins>
   		<plugin>
   			<artifactId>maven-compiler-plugin</artifactId>
+  			<version>2.3.2</version>
   			<configuration>
                 <source>1.6</source>
                 <target>1.6</target>
@@ -39,6 +40,7 @@
   		<plugin>
   			<groupId>com.mycila.maven-license-plugin</groupId>
   			<artifactId>maven-license-plugin</artifactId>
+            <version>1.8.0</version>
   			<configuration>
                 <header>src/etc/header.txt</header>
                 <mapping>
@@ -69,6 +71,7 @@
         <plugin>
         	<groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.7</version>
         	<configuration>
           		<show>private</show>
           		<nohelp>true</nohelp>
@@ -76,6 +79,7 @@
         </plugin>
         <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.2</version>
             <configuration>
                 <descriptorRefs>
                     <descriptorRef>bin</descriptorRef>
@@ -100,6 +104,7 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jxr-plugin</artifactId>
+            <version>2.2</version>
             <configuration>
                 <inputEncoding>UTF-8</inputEncoding>
                 <outputEncoding>UTF-8</outputEncoding>
@@ -108,14 +113,17 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-changelog-plugin</artifactId>
+            <version>2.2</version>
         </plugin>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-surefire-report-plugin</artifactId>
+            <version>2.6</version>
       	</plugin>
         <plugin>
         	<groupId>org.apache.maven.plugins</groupId>
         	<artifactId>maven-javadoc-plugin</artifactId>
+            <version>2.7</version>
         	<configuration>
           		<show>public</show>
         	</configuration>
@@ -127,7 +135,7 @@
   	<dependency>
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
-  		<version>4.8.1</version>
+  		<version>4.8.2</version>
   		<scope>test</scope>
   		<optional>true</optional>
   	</dependency>
