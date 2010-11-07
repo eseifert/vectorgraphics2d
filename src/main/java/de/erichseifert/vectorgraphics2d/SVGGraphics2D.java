@@ -178,7 +178,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			}
 			//write(";stroke-miterlimit:", s.getMiterLimit());
 			if (s.getDashArray() != null && s.getDashArray().length>0) {
-				write(";stroke-dasharray:"); write(s.getDashArray());
+				write(";stroke-dasharray:", DataUtils.join(",", s.getDashArray()));
 				write(";stroke-dashoffset:", s.getDashPhase());
 			}
 		}

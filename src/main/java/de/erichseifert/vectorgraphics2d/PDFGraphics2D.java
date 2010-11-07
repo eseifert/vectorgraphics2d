@@ -130,15 +130,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			}
 			if ((!Arrays.equals(bs.getDashArray(), bsPrev.getDashArray())) ||
 				(bs.getDashPhase() != bsPrev.getDashPhase())) {
-				write("[");
-				float[] pattern = bs.getDashArray();
-				for (int i = 0; i < pattern.length; i++) {
-					if (i > 0) {
-						write(" ");
-					}
-					write(pattern[i]);
-				}
-				writeln("] ", bs.getDashPhase(), " d");
+				writeln("[", DataUtils.join(" ", bs.getDashArray()), "] ",
+						bs.getDashPhase(), " d");
 			}
 		}
 	}

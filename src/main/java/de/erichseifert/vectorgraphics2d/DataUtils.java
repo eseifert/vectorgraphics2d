@@ -51,4 +51,25 @@ public abstract class DataUtils {
 		}
 		return map;
 	}
+
+	/**
+	 * Returns a string with all values divided by a specified separator.
+	 * @param separator Separator string.
+	 * @param elements Elements.
+	 * @return Joined string.
+	 */
+	public static String join(String separator, float[] elements) {
+		if (elements == null || elements.length == 0) {
+			return "";
+		}
+		StringBuffer sb = new StringBuffer(elements.length*3);
+		for (int i = 0; i < elements.length; i++) {
+			float value = elements[i];
+			if (i > 0) {
+				sb.append(separator);
+			}
+			sb.append(value);
+		}
+		return sb.toString();
+	}
 }
