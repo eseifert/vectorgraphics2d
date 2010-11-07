@@ -71,10 +71,10 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		// TODO Encode string
 		//byte[] bytes = str.getBytes("ISO-8859-1");
 		// Escape string
-		str = str.replaceAll("\\\\", "\\\\")
-			.replaceAll("\n", "\\n").replaceAll("\r", "\\r")
-			.replaceAll("\t", "\\t").replaceAll("\b", "\\b").replaceAll("\f", "\\f")
-			.replaceAll("\\(", "\\(").replaceAll("\\)", "\\)");
+		str = str.replaceAll("\\\\", "\\\\\\\\")
+			.replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r")
+			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
+			.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
 		// Output
 		writeln("gsave ", x, " ", y, " M 1 -1 scale (", str, ") show ", " grestore");
 	}
@@ -181,29 +181,29 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		writeln("/RL /rlineto load def");
 		writeln("/rgb /setrgbcolor load def");
 		writeln("/rect { ",
-				"/height exch def /width exch def /y exch def /x exch def ",
-				"x y M width 0 RL 0 height RL width neg 0 RL ",
-				"} bind def");
+			"/height exch def /width exch def /y exch def /x exch def ",
+			"x y M width 0 RL 0 height RL width neg 0 RL ",
+			"} bind def");
 		// TODO Round rectangle
 		writeln("/rrect { ",
-				"/archeight exch def /arcwidth exch def /height exch def /width exch def /y exch def /x exch def ",
-				"x y M width 0 RL 0 height RL width neg 0 RL ",
-				"} bind def");
+			"/archeight exch def /arcwidth exch def /height exch def /width exch def /y exch def /x exch def ",
+			"x y M width 0 RL 0 height RL width neg 0 RL ",
+			"} bind def");
 		writeln("/ellipse { ",
 			"/endangle exch def /startangle exch def /ry exch def /rx exch def /y exch def /x exch def ",
 			"/savematrix matrix currentmatrix def ",
-			"x y translate rx ry scale 0 0 1 startangle endangle arc ",
+			"x y translate rx ry scale 0 0 1 startangle endangle arcn ",
 			"savematrix setmatrix ",
 			"} bind def");
 		writeln("/img { ",
-				"/imgheight exch def /imgwidth exch def /height exch def /width exch def /y exch def /x exch def ",
-				"x y translate width height scale << ",
-				"/ImageType 1 /Width imgwidth /Height imgheight ",
-				"/BitsPercomponent 8 /Decode [0 1 0 1 0 1] ",
-				"/ImageMatrix [imgwidth 0 0 imgheight 0 imgheight] ",
-				"/DataSource currentfile /ASCIIHexDecode filter ",
-				">> image",
-				"} bind def");
+			"/imgheight exch def /imgwidth exch def /height exch def /width exch def /y exch def /x exch def ",
+			"x y translate width height scale << ",
+			"/ImageType 1 /Width imgwidth /Height imgheight ",
+			"/BitsPercomponent 8 /Decode [0 1 0 1 0 1] ",
+			"/ImageMatrix [imgwidth 0 0 imgheight 0 imgheight] ",
+			"/DataSource currentfile /ASCIIHexDecode filter ",
+			">> image",
+			"} bind def");
 		// Set default font
 		writeln("/", getFont().getPSName(), " ", getFont().getSize2D(), " selectfont");
 		//writeln("<< /AllowTransparency true >> setdistillerparams"); // TODO
@@ -283,13 +283,18 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				return;
 			} else if (s instanceof Arc2D) {
 				Arc2D e = (Arc2D) s;
-				double x = sx*e.getX() + tx;
-				double y = sy*e.getY() + ty;
+				double x = sx*e.getX() + e.getWidth()/2.0 + tx;
+				double y = sy*e.getY() + e.getHeight()/2.0 + ty;
 				double rx = sx*e.getWidth()/2.0;
 				double ry = sy*e.getHeight()/2.0;
-				double startAngle = e.getAngleStart();
-				double endAngle = e.getAngleExtent();
-				write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle, " ellipse Z");
+				double startAngle = -e.getAngleStart();
+				double endAngle = -(e.getAngleStart() + e.getAngleExtent());
+				write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle, " ellipse");
+				if (e.getArcType() == Arc2D.CHORD) {
+					write(" Z");
+				} else if (e.getArcType() == Arc2D.PIE) {
+					write(" ", x, " ", y, " L Z");
+				}
 				return;
 			}
 		}

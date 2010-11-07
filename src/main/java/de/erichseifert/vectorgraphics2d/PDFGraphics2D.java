@@ -89,9 +89,9 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		// TODO Encode string
 		//byte[] bytes = str.getBytes("ISO-8859-1");
 		// Escape string
-		str = str.replaceAll("\\\\", "\\\\")
-			.replaceAll("\t", "\\t").replaceAll("\b", "\\b").replaceAll("\f", "\\f")
-			.replaceAll("\\(", "\\(").replaceAll("\\)", "\\)");
+		str = str.replaceAll("\\\\", "\\\\\\\\")
+			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
+			.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
 		// Extract lines
 		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
 		// Output lines
