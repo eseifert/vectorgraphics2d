@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <info[at]erichseifert.de>
+ * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -33,7 +33,6 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -41,31 +40,40 @@ import java.util.TreeMap;
  * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
  */
 public class PDFGraphics2D extends VectorGraphics2D {
+	/** Prefix string for PDF image resource ids. */
+	protected static final String IMAGE_RESOURCE_PREFIX = "Img";
+	/** Prefix string for PDF transparency resource ids. */
+	protected static final String TRANSPARENCY_RESOURCE_PREFIX = "Trn";
+
+	/** Constant to convert values from millimeters to PostScript®/PDF units (1/72th inch). */
 	protected static final double MM_IN_UNITS = 72.0 / 25.4;
 
-	private static final Map<Integer, Integer> STROKE_ENDCAPS;
-	private static final Map<Integer, Integer> STROKE_LINEJOIN;
+	/** Mapping of stroke endcap values from Java to PDF. */
+	private static final Map<Integer, Integer> STROKE_ENDCAPS = DataUtils.map(
+		new Integer[] { BasicStroke.CAP_BUTT, BasicStroke.CAP_ROUND, BasicStroke.CAP_SQUARE },
+		new Integer[] { 0, 1, 2 }
+	);
 
-	static {
-		STROKE_ENDCAPS = new HashMap<Integer, Integer>();
-		STROKE_ENDCAPS.put(BasicStroke.CAP_BUTT, 0);
-		STROKE_ENDCAPS.put(BasicStroke.CAP_ROUND, 1);
-		STROKE_ENDCAPS.put(BasicStroke.CAP_SQUARE, 2);
+	/** Mapping of line join values for path drawing from Java to PDF. */
+	private static final Map<Integer, Integer> STROKE_LINEJOIN = DataUtils.map(
+		new Integer[] { BasicStroke.JOIN_MITER, BasicStroke.JOIN_ROUND, BasicStroke.JOIN_BEVEL },
+		new Integer[] { 0, 1, 2 }
+	);
 
-		STROKE_LINEJOIN = new HashMap<Integer, Integer>();
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_MITER, 0);
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_ROUND, 1);
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_BEVEL, 2);
-	}
-
+	/** Id of the current PDF object. */
 	private int curObjId;
+	/** Mapping from objects to file positions. */
 	private final Map<Integer, Integer> objPositions;
+	/** Mapping from transparency levels to transparency resource ids. */
 	private final Map<Double, String> transpResources;
+	/** Mapping from image data to image resource ids. */
 	private final Map<BufferedImage, String> imageResources;
+	/** File position of the actual content. */
 	private int contentStart;
 
 	/**
 	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
+	 * The document dimension must be specified as parameters.
 	 */
 	public PDFGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
@@ -231,14 +239,27 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		writeln(MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", h, " cm");
 	}
 
+	/**
+	 * Write a PDF dictionary from the specified collection of objects.
+	 * The passed objects are converted to strings. Every object with odd
+	 * position is used as key, every object with even position is used
+	 * as value.
+	 * @param strs Objects to be written to dictionary
+	 */
 	protected void writeDict(Object... strs) {
 		writeln("<<");
 		for (int i = 0; i < strs.length; i += 2) {
-			writeln("/", strs[i], " ", strs[i+1]);
+			writeln("/", strs[i], " ", strs[i + 1]);
 		}
 		writeln(">>");
 	}
 
+	/**
+	 * Write a collection of elements to the document stream as PDF object.
+	 * The passed objects are converted to strings.
+	 * @param strs Objects to be written to the document stream.
+	 * @return Id of the PDF object that was written.
+	 */
 	protected int writeObj(Object... strs) {
 		int objId = nextObjId(size());
 		writeln(objId, " 0 obj");
@@ -247,19 +268,33 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		return objId;
 	}
 
+	/**
+	 * Returns the next PDF object id without incrementing.
+	 * @return Next PDF object id.
+	 */
 	protected int peekObjId() {
 		return curObjId + 1;
 	}
 
+	/**
+	 * Returns a new PDF object id with every call.
+	 * @param position File position of the object.
+	 * @return A new PDF object id.
+	 */
 	private int nextObjId(int position) {
 		objPositions.put(curObjId, position);
 		return curObjId++;
 	}
 
+	/**
+	 * Returns the resource for the specified transparency level.
+	 * @param a
+	 * @return
+	 */
 	protected String getTransparencyResource(double a) {
 		String name = transpResources.get(a);
 		if (name == null) {
-			name = String.format("Trn%04d", transpResources.size());
+			name = String.format("%s%04d", TRANSPARENCY_RESOURCE_PREFIX, transpResources.size());
 			transpResources.put(a, name);
 		}
 		return name;
@@ -269,7 +304,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(image);
 		String name = imageResources.get(bufferedImg);
 		if (name == null) {
-			name = String.format("Img%04d", imageResources.size());
+			name = String.format("%s%04d", IMAGE_RESOURCE_PREFIX, imageResources.size());
 			imageResources.put(bufferedImg, name);
 		}
 		return name;

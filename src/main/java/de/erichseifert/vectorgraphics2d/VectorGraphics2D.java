@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <info[at]erichseifert.de>
+ * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *

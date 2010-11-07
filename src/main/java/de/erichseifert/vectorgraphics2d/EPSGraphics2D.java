@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <info[at]erichseifert.de>
+ * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -36,32 +36,30 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
  */
 public class EPSGraphics2D extends VectorGraphics2D {
+	/** Constant to convert values from millimeters to PostScript® units (1/72th inch). */
 	protected static final double MM_IN_UNITS = 72.0 / 25.4;
 
-	private static final Map<Integer, Integer> STROKE_ENDCAPS;
-	private static final Map<Integer, Integer> STROKE_LINEJOIN;
+	/** Mapping of stroke endcap values from Java to PostScript®. */
+	private static final Map<Integer, Integer> STROKE_ENDCAPS = DataUtils.map(
+		new Integer[] { BasicStroke.CAP_BUTT, BasicStroke.CAP_ROUND, BasicStroke.CAP_SQUARE },
+		new Integer[] { 0, 1, 2 }
+	);
 
-	static {
-		STROKE_ENDCAPS = new HashMap<Integer, Integer>();
-		STROKE_ENDCAPS.put(BasicStroke.CAP_BUTT, 0);
-		STROKE_ENDCAPS.put(BasicStroke.CAP_ROUND, 1);
-		STROKE_ENDCAPS.put(BasicStroke.CAP_SQUARE, 2);
-
-		STROKE_LINEJOIN = new HashMap<Integer, Integer>();
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_MITER, 0);
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_ROUND, 1);
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_BEVEL, 2);
-	}
+	/** Mapping of line join values for path drawing from Java to PostScript®. */
+	private static final Map<Integer, Integer> STROKE_LINEJOIN = DataUtils.map(
+		new Integer[] { BasicStroke.JOIN_MITER, BasicStroke.JOIN_ROUND, BasicStroke.JOIN_BEVEL },
+		new Integer[] { 0, 1, 2 }
+	);
 
 	/**
 	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
+	 * The document dimension must be specified as parameters.
 	 */
 	public EPSGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);

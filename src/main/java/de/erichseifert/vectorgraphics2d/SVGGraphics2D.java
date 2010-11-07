@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <info[at]erichseifert.de>
+ * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -34,7 +34,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
@@ -44,26 +43,26 @@ import javax.xml.bind.DatatypeConverter;
  * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
  */
 public class SVGGraphics2D extends VectorGraphics2D {
-	private static final Map<Integer, String> STROKE_ENDCAPS;
-	private static final Map<Integer, String> STROKE_LINEJOIN;
+	/** Mapping of stroke endcap values from Java to SVG. */
+	private static final Map<Integer, String> STROKE_ENDCAPS = DataUtils.map(
+		new Integer[] { BasicStroke.CAP_BUTT, BasicStroke.CAP_ROUND, BasicStroke.CAP_SQUARE },
+		new String[] { "butt", "round", "square" }
+	);
 
-	static {
-		STROKE_ENDCAPS = new HashMap<Integer, String>();
-		STROKE_ENDCAPS.put(BasicStroke.CAP_BUTT, "butt");
-		STROKE_ENDCAPS.put(BasicStroke.CAP_ROUND, "round");
-		STROKE_ENDCAPS.put(BasicStroke.CAP_SQUARE, "square");
+	/** Mapping of line join values for path drawing from Java to SVG. */
+	private static final Map<Integer, String> STROKE_LINEJOIN = DataUtils.map(
+		new Integer[] { BasicStroke.JOIN_MITER, BasicStroke.JOIN_ROUND, BasicStroke.JOIN_BEVEL },
+		new String[] { "miter", "round", "bevel" }
+	);
 
-		STROKE_LINEJOIN = new HashMap<Integer, String>();
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_MITER, "miter");
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_ROUND, "round");
-		STROKE_LINEJOIN.put(BasicStroke.JOIN_BEVEL, "bevel");
-	}
-
-	private static String CLIP_PATH_ID = "clip";
+	/** Prefix string for ids of clipping paths. */
+	private static final String CLIP_PATH_ID = "clip";
+	/** Number of the current clipping path. */
 	private long clipCounter;
 
 	/**
 	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
+	 * The document dimension must be specified as parameters.
 	 */
 	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
