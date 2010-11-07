@@ -49,7 +49,7 @@
                 <properties>
                     <owner>Erich Seifert</owner>
                     <year>${project.inceptionYear}</year>
-                    <email>info[at]erichseifert.de</email>
+                    <email>dev[at]erichseifert.de</email>
                 </properties>
                 <excludes>
                     <exclude>LICENSE.GPL</exclude>
