@@ -275,18 +275,18 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				return;
 			} else if (s instanceof Ellipse2D) {
 				Ellipse2D e = (Ellipse2D) s;
-				double x = sx*e.getX() + tx;
-				double y = sy*e.getY() + ty;
-				double rx = sx*e.getWidth() / 2.0;
-				double ry = sy*e.getHeight() / 2.0;
+				double x = sx*e.getX() + e.getWidth()/2.0 + tx;
+				double y = sy*e.getY() + e.getHeight()/2.0 + ty;
+				double rx = sx*e.getWidth()/2.0;
+				double ry = sy*e.getHeight()/2.0;
 				write(x, " ", y, " ", rx, " ", ry, " ", 0.0, " ", 360.0, " ellipse Z");
 				return;
 			} else if (s instanceof Arc2D) {
 				Arc2D e = (Arc2D) s;
 				double x = sx*e.getX() + tx;
 				double y = sy*e.getY() + ty;
-				double rx = sx*e.getWidth() / 2.0;
-				double ry = sy*e.getHeight() / 2.0;
+				double rx = sx*e.getWidth()/2.0;
+				double ry = sy*e.getHeight()/2.0;
 				double startAngle = e.getAngleStart();
 				double endAngle = e.getAngleExtent();
 				write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle, " ellipse Z");

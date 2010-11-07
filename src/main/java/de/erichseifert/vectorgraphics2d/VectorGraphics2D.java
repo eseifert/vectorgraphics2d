@@ -682,7 +682,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	/**
 	 * Returns the dimensions of the document.
-	 * @return
+	 * @return dimensions of the document.
 	 */
 	public Rectangle2D getBounds() {
 		Rectangle2D b = new Rectangle2D.Double();
