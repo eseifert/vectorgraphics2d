@@ -33,7 +33,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Map;
@@ -184,11 +183,6 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			"/height exch def /width exch def /y exch def /x exch def ",
 			"x y M width 0 RL 0 height RL width neg 0 RL ",
 			"} bind def");
-		// TODO Round rectangle
-		writeln("/rrect { ",
-			"/archeight exch def /arcwidth exch def /height exch def /width exch def /y exch def /x exch def ",
-			"x y M width 0 RL 0 height RL width neg 0 RL ",
-			"} bind def");
 		writeln("/ellipse { ",
 			"/endangle exch def /startangle exch def /ry exch def /rx exch def /y exch def /x exch def ",
 			"/savematrix matrix currentmatrix def ",
@@ -263,28 +257,18 @@ public class EPSGraphics2D extends VectorGraphics2D {
 				double height = sy*r.getHeight();
 				write(x, " ", y, " ", width, " ", height, " rect Z");
 				return;
-			} else if (s instanceof RoundRectangle2D) {
-				RoundRectangle2D r = (RoundRectangle2D) s;
-				double x = sx*r.getX() + tx;
-				double y = sy*r.getY() + ty;
-				double width = sx*r.getWidth();
-				double height = sy*r.getHeight();
-				double arcWidth = sx*r.getArcWidth();
-				double arcHeight = sy*r.getArcWidth();
-				write(x, " ", y, " ", width, " ", height, " ", arcWidth, " ", arcHeight, " rrect Z");
-				return;
 			} else if (s instanceof Ellipse2D) {
 				Ellipse2D e = (Ellipse2D) s;
-				double x = sx*e.getX() + e.getWidth()/2.0 + tx;
-				double y = sy*e.getY() + e.getHeight()/2.0 + ty;
+				double x = sx*(e.getX() + e.getWidth()/2.0) + tx;
+				double y = sy*(e.getY() + e.getHeight()/2.0) + ty;
 				double rx = sx*e.getWidth()/2.0;
 				double ry = sy*e.getHeight()/2.0;
-				write(x, " ", y, " ", rx, " ", ry, " ", 0.0, " ", 360.0, " ellipse Z");
+				write(x, " ", y, " ", rx, " ", ry, " ", 360.0, " ", 0.0, " ellipse Z");
 				return;
 			} else if (s instanceof Arc2D) {
 				Arc2D e = (Arc2D) s;
-				double x = sx*e.getX() + e.getWidth()/2.0 + tx;
-				double y = sy*e.getY() + e.getHeight()/2.0 + ty;
+				double x = sx*(e.getX() + e.getWidth()/2.0) + tx;
+				double y = sy*(e.getY() + e.getHeight()/2.0) + ty;
 				double rx = sx*e.getWidth()/2.0;
 				double ry = sy*e.getHeight()/2.0;
 				double startAngle = -e.getAngleStart();
