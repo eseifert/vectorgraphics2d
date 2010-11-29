@@ -83,6 +83,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	private Paint paint;
 	private Stroke stroke;
 	private final AffineTransform transform;
+	private boolean transformed;
 	private Color xorMode;
 
 	private FontRendering fontRendering;
@@ -109,6 +110,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		paint = color;
 		stroke = new BasicStroke(1f);
 		transform = new AffineTransform();
+		transformed = false;
 		xorMode = Color.BLACK;
 	}
 
@@ -246,11 +248,6 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public AffineTransform getTransform() {
-		return new AffineTransform(transform);
-	}
-
-	@Override
 	public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
 		if (onStroke) {
 			Shape sStroke = getStroke().createStrokedShape(s);
@@ -258,21 +255,6 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		} else  {
 			return s.intersects(rect);
 		}
-	}
-
-	@Override
-	public void rotate(double theta) {
-		transform.rotate(theta);
-	}
-
-	@Override
-	public void rotate(double theta, double x, double y) {
-		transform.rotate(theta, x, y);
-	}
-
-	@Override
-	public void scale(double sx, double sy) {
-		transform.scale(sx, sy);
 	}
 
 	@Override
@@ -341,18 +323,34 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
+	public AffineTransform getTransform() {
+		return new AffineTransform(transform);
+	}
+
+	@Override
 	public void setTransform(AffineTransform tx) {
-		transform.setTransform(tx);
+		setAffineTransform(tx);
+	}
+
+	protected void setAffineTransform(AffineTransform tx) {
+		if (!transform.equals(tx)) {
+			transform.setTransform(tx);
+			transformed = true;
+		}
 	}
 
 	@Override
 	public void shear(double shx, double shy) {
+		AffineTransform transform = getTransform();
 		transform.shear(shx, shy);
+		setAffineTransform(transform);
 	}
 
 	@Override
 	public void transform(AffineTransform tx) {
+		AffineTransform transform = getTransform();
 		transform.concatenate(tx);
+		setAffineTransform(transform);
 	}
 
 	@Override
@@ -362,7 +360,30 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void translate(double tx, double ty) {
+		AffineTransform transform = getTransform();
 		transform.translate(tx, ty);
+		setAffineTransform(transform);
+	}
+
+	@Override
+	public void rotate(double theta) {
+		AffineTransform transform = getTransform();
+		transform.rotate(theta);
+		setAffineTransform(transform);
+	}
+
+	@Override
+	public void rotate(double theta, double x, double y) {
+		AffineTransform transform = getTransform();
+		transform.rotate(theta, x, y);
+		setAffineTransform(transform);
+	}
+
+	@Override
+	public void scale(double sx, double sy) {
+		AffineTransform transform = getTransform();
+		transform.scale(sx, sy);
+		setAffineTransform(transform);
 	}
 
 	@Override
@@ -670,6 +691,9 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	 * @return <code>true</code> if the document is distorted, otherwise <code>false</code>.
 	 */
 	protected boolean isDistorted() {
+		if (!isTransformed()) {
+			return false;
+		}
 		int type = transform.getType();
 		int otherButTranslatedOrScaled = ~(AffineTransform.TYPE_TRANSLATION | AffineTransform.TYPE_MASK_SCALE);
 		return (type & otherButTranslatedOrScaled) != 0;
@@ -713,6 +737,16 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	 */
 	public void setFontRendering(FontRendering mode) {
 		fontRendering = mode;
+	}
+
+	/**
+	 * Returns whether an affine transformation like translation, scaling,
+	 * rotation or shearing has been applied to this graphics instance.
+	 * @return <code>true</code> if the instance has been transformed,
+	 *         <code>false</code> otherwise
+	 */
+	protected boolean isTransformed() {
+		return transformed;
 	}
 
 }

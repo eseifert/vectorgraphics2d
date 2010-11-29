@@ -53,9 +53,9 @@ public abstract class DataUtils {
 	}
 
 	/**
-	 * Returns a string with all values divided by a specified separator.
+	 * Returns a string with all float values divided by a specified separator.
 	 * @param separator Separator string.
-	 * @param elements Elements.
+	 * @param elements Float array.
 	 * @return Joined string.
 	 */
 	public static String join(String separator, float[] elements) {
@@ -64,11 +64,30 @@ public abstract class DataUtils {
 		}
 		StringBuffer sb = new StringBuffer(elements.length*3);
 		for (int i = 0; i < elements.length; i++) {
-			float value = elements[i];
 			if (i > 0) {
 				sb.append(separator);
 			}
-			sb.append(value);
+			sb.append(elements[i]);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Returns a string with all float values divided by a specified separator.
+	 * @param separator Separator string.
+	 * @param elements Double array.
+	 * @return Joined string.
+	 */
+	public static String join(String separator, double[] elements) {
+		if (elements == null || elements.length == 0) {
+			return "";
+		}
+		StringBuffer sb = new StringBuffer(elements.length*3);
+		for (int i = 0; i < elements.length; i++) {
+			if (i > 0) {
+				sb.append(separator);
+			}
+			sb.append(elements[i]);
 		}
 		return sb.toString();
 	}

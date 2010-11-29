@@ -80,7 +80,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	@Override
 	protected void writeImage(Image img, int imgWidth, int imgHeight, double x,
 			double y, double width, double height) {
-		String imgData = getSvg(img);
+		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
+		String imgData = getSvg(bufferedImg);
 		write("<image x=\"" , x, "\" y=\"" , y, "\" ",
 				"width=\"" , width, "\" height=\"" , height, "\" ",
 				"xlink:href=\"", imgData, "\" ",
@@ -138,6 +139,22 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
+	protected void setAffineTransform(AffineTransform tx) {
+		// Close previous transformation group
+		if (isTransformed()) {
+			writeln("</g>");
+		}
+		// Set transformation matrix
+		super.setAffineTransform(tx);
+		// Begin new transformation group
+		if (isTransformed()) {
+			double[] matrix = new double[6];
+			getTransform().getMatrix(matrix);
+			write("<g transform=\"matrix(", DataUtils.join(" ", matrix), ") \">");
+		}
+	}
+
+	@Override
 	protected void writeHeader() {
 		Rectangle2D bounds = getBounds();
 		double x = bounds.getX();
@@ -146,14 +163,13 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		double h = bounds.getHeight();
 		writeln("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		writeln("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" ",
-				"\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">");
+			"\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">");
 		writeln("<svg version=\"1.2\" xmlns=\"http://www.w3.org/2000/svg\" ",
 			"xmlns:xlink=\"http://www.w3.org/1999/xlink\" ",
 			"x=\"", x, "mm\" y=\"", y, "mm\" ",
 			"width=\"", w, "mm\" height=\"", h, "mm\" " +
 			"viewBox=\"", x, " ", y, " ", w, " ", h, "\"",
-			">"
-		);
+			">");
 		writeln("<style type=\"text/css\"><![CDATA[");
 		writeln("text { font-family:", getFont().getFamily(), ";font-size:", getFont().getSize2D(), "px; }");
 		writeln("]]></style>");
@@ -206,77 +222,65 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	 */
 	@Override
 	protected void writeShape(Shape s) {
-		AffineTransform transform = getTransform();
-		if (!isDistorted()) {
-			double sx = transform.getScaleX();
-			double sy = transform.getScaleX();
-			double tx = transform.getTranslateX();
-			double ty = transform.getTranslateY();
-			if (s instanceof Line2D) {
-				Line2D l = (Line2D) s;
-				double x1 = sx*l.getX1() + tx;
-				double y1 = sy*l.getY1() + ty;
-				double x2 = sx*l.getX2() + tx;
-				double y2 = sy*l.getY2() + ty;
-				write("<line x1=\"", x1, "\" y1=\"", y1, "\" x2=\"", x2, "\" y2=\"", y2, "\" ");
-				return;
-			} else if (s instanceof Rectangle2D) {
-				Rectangle2D r = (Rectangle2D) s;
-				double x = sx*r.getX() + tx;
-				double y = sy*r.getY() + ty;
-				double width = sx*r.getWidth();
-				double height = sy*r.getHeight();
-				write("<rect x=\"", x, "\" y=\"", y, "\" width=\"", width, "\" height=\"", height, "\" ");
-				return;
-			} else if (s instanceof RoundRectangle2D) {
-				RoundRectangle2D r = (RoundRectangle2D) s;
-				double x = sx*r.getX() + tx;
-				double y = sy*r.getY() + ty;
-				double width = sx*r.getWidth();
-				double height = sy*r.getHeight();
-				double arcWidth = sx*r.getArcWidth();
-				double arcHeight = sy*r.getArcHeight();
-				write("<rect x=\"", x, "\" y=\"", y, "\" width=\"", width, "\" height=\"", height, "\" rx=\"", arcWidth, "\" ry=\"", arcHeight, "\" ");
-				return;
-			} else if (s instanceof Ellipse2D) {
-				Ellipse2D e = (Ellipse2D) s;
-				double x = sx*e.getX() + tx;
-				double y = sy*e.getY() + ty;
-				double rx = sx*e.getWidth()/2.0;
-				double ry = sy*e.getHeight()/2.0;
-				write("<ellipse cx=\"", x+rx, "\" cy=\"", y+ry, "\" rx=\"", rx, "\" ry=\"", ry, "\" ");
-				return;
+		if (s instanceof Line2D) {
+			Line2D l = (Line2D) s;
+			double x1 = l.getX1();
+			double y1 = l.getY1();
+			double x2 = l.getX2();
+			double y2 = l.getY2();
+			write("<line x1=\"", x1, "\" y1=\"", y1, "\" x2=\"", x2, "\" y2=\"", y2, "\" ");
+		} else if (s instanceof Rectangle2D) {
+			Rectangle2D r = (Rectangle2D) s;
+			double x = r.getX();
+			double y = r.getY();
+			double width = r.getWidth();
+			double height = r.getHeight();
+			write("<rect x=\"", x, "\" y=\"", y, "\" width=\"", width, "\" height=\"", height, "\" ");
+		} else if (s instanceof RoundRectangle2D) {
+			RoundRectangle2D r = (RoundRectangle2D) s;
+			double x = r.getX();
+			double y = r.getY();
+			double width = r.getWidth();
+			double height = r.getHeight();
+			double arcWidth = r.getArcWidth();
+			double arcHeight = r.getArcHeight();
+			write("<rect x=\"", x, "\" y=\"", y, "\" width=\"", width, "\" height=\"", height, "\" rx=\"", arcWidth, "\" ry=\"", arcHeight, "\" ");
+		} else if (s instanceof Ellipse2D) {
+			Ellipse2D e = (Ellipse2D) s;
+			double x = e.getX();
+			double y = e.getY();
+			double rx = e.getWidth()/2.0;
+			double ry = e.getHeight()/2.0;
+			write("<ellipse cx=\"", x+rx, "\" cy=\"", y+ry, "\" rx=\"", rx, "\" ry=\"", ry, "\" ");
+		} else {
+			write("<path d=\"");
+			PathIterator segments = s.getPathIterator(null);
+			double[] coords = new double[6];
+			for (int i = 0; !segments.isDone(); i++, segments.next()) {
+				if (i > 0) {
+					write(" ");
+				}
+				int segmentType = segments.currentSegment(coords);
+				switch (segmentType) {
+				case PathIterator.SEG_MOVETO:
+					write("M", coords[0], ",", coords[1]);
+					break;
+				case PathIterator.SEG_LINETO:
+					write("L", coords[0], ",", coords[1]);
+					break;
+				case PathIterator.SEG_CUBICTO:
+					write("C", coords[0], ",", coords[1], " ", coords[2], ",", coords[3], " ", coords[4], ",", coords[5]);
+					break;
+				case PathIterator.SEG_QUADTO:
+					write("Q", coords[0], ",", coords[1], " ", coords[2], ",", coords[3]);
+					break;
+				case PathIterator.SEG_CLOSE:
+					write("Z");
+					break;
+				}
 			}
+			write("\" ");
 		}
-
-		s = transform.createTransformedShape(s);
-		write("<path d=\"");
-		PathIterator segments = s.getPathIterator(null);
-		double[] coords = new double[6];
-		for (int i = 0; !segments.isDone(); i++, segments.next()) {
-			if (i > 0) {
-				write(" ");
-			}
-			int segmentType = segments.currentSegment(coords);
-			switch (segmentType) {
-			case PathIterator.SEG_MOVETO:
-				write("M", coords[0], ",", coords[1]);
-				break;
-			case PathIterator.SEG_LINETO:
-				write("L", coords[0], ",", coords[1]);
-				break;
-			case PathIterator.SEG_CUBICTO:
-				write("C", coords[0], ",", coords[1], " ", coords[2], ",", coords[3], " ", coords[4], ",", coords[5]);
-				break;
-			case PathIterator.SEG_QUADTO:
-				write("Q", coords[0], ",", coords[1], " ", coords[2], ",", coords[3]);
-				break;
-			case PathIterator.SEG_CLOSE:
-				write("Z");
-				break;
-			}
-		}
-		write("\" ");
 	}
 
 	private static String getSvg(Color c) {
@@ -288,9 +292,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		return color;
 	}
 
-	private static String getSvg(Image img) {
+	private static String getSvg(BufferedImage bufferedImg) {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
 		try {
 			ImageIO.write(bufferedImg, "png", data);
 		} catch (IOException e) {
@@ -302,7 +305,19 @@ public class SVGGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected String getFooter() {
-		return "</svg>\n";
+		String footer = "";
+		// Close any previous transformation groups
+		if (isTransformed()) {
+			footer += "</g>\n";
+		}
+		footer += "</svg>\n";
+		return footer;
 	}
 
+	@Override
+	public String toString() {
+		String doc = super.toString();
+		doc = doc.replaceAll("<g transform=\"[^\"]*\"></g>\n", "");
+		return doc;
+	}
 }

@@ -34,6 +34,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -110,10 +111,16 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height) {
-		String imgData = getEps(img);
+		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
+		String imgData = getEps(bufferedImg);
+		int bands = bufferedImg.getSampleModel().getNumBands();
+		int bitsPerSample = bufferedImg.getColorModel().getPixelSize() / bands;
+		if (bands > 3) {
+			bands = 3;
+		}
 		writeln("gsave");
 		writeln(x, " ", y, " ", width, " ", height, " ",
-			imgWidth, " ", imgHeight, " img"
+			imgWidth, " ", imgHeight, " ", bitsPerSample, " img false ", bands, " colorimage"
 		);
 		writeln(imgData, ">");
 		writeln("grestore");
@@ -159,6 +166,44 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
+	public void setTransform(AffineTransform tx) {
+		super.setTransform(tx);
+		double[] matrix = new double[6];
+		getTransform().getMatrix(matrix);
+		writeln("basematrix setmatrix [", DataUtils.join(" ", matrix), "] concat");
+	}
+
+	@Override
+	public void translate(double tx, double ty) {
+		super.translate(tx, ty);
+		writeln(tx, " ", ty, " translate");
+	}
+
+	@Override
+	public void scale(double tx, double ty) {
+		super.scale(tx, ty);
+		writeln(tx, " ", ty, " scale");
+	}
+
+	@Override
+	public void rotate(double theta) {
+		super.rotate(theta);
+		writeln(theta/Math.PI*180.0, " rotate");
+	}
+
+	@Override
+	public void rotate(double theta, double x, double y) {
+		super.rotate(theta, x, y);
+		writeln(x, " ", y, " translate ", theta/Math.PI*180.0, " rotate ", -x, " ", -y, " translate");
+	}
+
+	@Override
+	public void shear(double sx, double sy) {
+		super.shear(sx, sy);
+		setTransform(getTransform());
+	}
+
+	@Override
 	protected void writeHeader() {
 		Rectangle2D bounds = getBounds();
 		double x = bounds.getX() * MM_IN_UNITS;
@@ -190,13 +235,9 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			"savematrix setmatrix ",
 			"} bind def");
 		writeln("/img { ",
-			"/imgheight exch def /imgwidth exch def /height exch def /width exch def /y exch def /x exch def ",
-			"x y translate width height scale << ",
-			"/ImageType 1 /Width imgwidth /Height imgheight ",
-			"/BitsPercomponent 8 /Decode [0 1 0 1 0 1] ",
-			"/ImageMatrix [imgwidth 0 0 imgheight 0 imgheight] ",
-			"/DataSource currentfile /ASCIIHexDecode filter ",
-			">> image",
+			"/bits exch def /imgheight exch def /imgwidth exch def /height exch def /width exch def /y exch def /x exch def ",
+			"x y translate width height scale ",
+			"imgwidth imgheight bits [imgwidth 0 0 imgheight 0 0] currentfile /ASCIIHexDecode filter ",
 			"} bind def");
 		// Set default font
 		writeln("/", getFont().getPSName(), " ", getFont().getSize2D(), " selectfont");
@@ -210,6 +251,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		// Adjust page size and page origin
 		writeln("0 ", h, " translate");
 		writeln(MM_IN_UNITS, " -", MM_IN_UNITS, " scale");
+		writeln("/basematrix matrix currentmatrix def");
 	}
 
 	/**
@@ -234,114 +276,107 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 */
 	@Override
 	protected void writeShape(Shape s) {
-		AffineTransform transform = getTransform();
 		write("newpath ");
-		if (!isDistorted()) {
-			double sx = transform.getScaleX();
-			double sy = transform.getScaleX();
-			double tx = transform.getTranslateX();
-			double ty = transform.getTranslateY();
-			if (s instanceof Line2D) {
-				Line2D l = (Line2D) s;
-				double x1 = sx*l.getX1() + tx;
-				double y1 = sy*l.getY1() + ty;
-				double x2 = sx*l.getX2() + tx;
-				double y2 = sy*l.getY2() + ty;
-				write(x1, " ", y1, " M ", x2, " ", y2, " L");
-				return;
-			} else if (s instanceof Rectangle2D) {
-				Rectangle2D r = (Rectangle2D) s;
-				double x = sx*r.getX() + tx;
-				double y = sy*r.getY() + ty;
-				double width = sx*r.getWidth();
-				double height = sy*r.getHeight();
-				write(x, " ", y, " ", width, " ", height, " rect Z");
-				return;
-			} else if (s instanceof Ellipse2D) {
-				Ellipse2D e = (Ellipse2D) s;
-				double x = sx*(e.getX() + e.getWidth()/2.0) + tx;
-				double y = sy*(e.getY() + e.getHeight()/2.0) + ty;
-				double rx = sx*e.getWidth()/2.0;
-				double ry = sy*e.getHeight()/2.0;
-				write(x, " ", y, " ", rx, " ", ry, " ", 360.0, " ", 0.0, " ellipse Z");
-				return;
-			} else if (s instanceof Arc2D) {
-				Arc2D e = (Arc2D) s;
-				double x = sx*(e.getX() + e.getWidth()/2.0) + tx;
-				double y = sy*(e.getY() + e.getHeight()/2.0) + ty;
-				double rx = sx*e.getWidth()/2.0;
-				double ry = sy*e.getHeight()/2.0;
-				double startAngle = -e.getAngleStart();
-				double endAngle = -(e.getAngleStart() + e.getAngleExtent());
-				write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle, " ellipse");
-				if (e.getArcType() == Arc2D.CHORD) {
-					write(" Z");
-				} else if (e.getArcType() == Arc2D.PIE) {
-					write(" ", x, " ", y, " L Z");
+		if (s instanceof Line2D) {
+			Line2D l = (Line2D) s;
+			double x1 = l.getX1();
+			double y1 = l.getY1();
+			double x2 = l.getX2();
+			double y2 = l.getY2();
+			write(x1, " ", y1, " M ", x2, " ", y2, " L");
+			return;
+		} else if (s instanceof Rectangle2D) {
+			Rectangle2D r = (Rectangle2D) s;
+			double x = r.getX();
+			double y = r.getY();
+			double width = r.getWidth();
+			double height = r.getHeight();
+			write(x, " ", y, " ", width, " ", height, " rect Z");
+			return;
+		} else if (s instanceof Ellipse2D) {
+			Ellipse2D e = (Ellipse2D) s;
+			double x = e.getX() + e.getWidth()/2.0;
+			double y = e.getY() + e.getHeight()/2.0;
+			double rx = e.getWidth()/2.0;
+			double ry = e.getHeight()/2.0;
+			write(x, " ", y, " ", rx, " ", ry, " ", 360.0, " ", 0.0, " ellipse Z");
+			return;
+		} else if (s instanceof Arc2D) {
+			Arc2D e = (Arc2D) s;
+			double x = (e.getX() + e.getWidth()/2.0);
+			double y = (e.getY() + e.getHeight()/2.0);
+			double rx = e.getWidth()/2.0;
+			double ry = e.getHeight()/2.0;
+			double startAngle = -e.getAngleStart();
+			double endAngle = -(e.getAngleStart() + e.getAngleExtent());
+			write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle, " ellipse");
+			if (e.getArcType() == Arc2D.CHORD) {
+				write(" Z");
+			} else if (e.getArcType() == Arc2D.PIE) {
+				write(" ", x, " ", y, " L Z");
+			}
+			return;
+		} else {
+			PathIterator segments = s.getPathIterator(null);
+			double[] coordsCur = new double[6];
+			double[] pointPrev = new double[2];
+			for (int i = 0; !segments.isDone(); i++, segments.next()) {
+				if (i > 0) {
+					write(" ");
 				}
-				return;
-			}
-		}
-
-		s = transform.createTransformedShape(s);
-		PathIterator segments = s.getPathIterator(null);
-		double[] coordsCur = new double[6];
-		double[] pointPrev = new double[2];
-		for (int i = 0; !segments.isDone(); i++, segments.next()) {
-			if (i > 0) {
-				write(" ");
-			}
-			int segmentType = segments.currentSegment(coordsCur);
-			switch (segmentType) {
-			case PathIterator.SEG_MOVETO:
-				write(coordsCur[0], " ", coordsCur[1], " M");
-				pointPrev[0] = coordsCur[0];
-				pointPrev[1] = coordsCur[1];
-				break;
-			case PathIterator.SEG_LINETO:
-				write(coordsCur[0], " ", coordsCur[1], " L");
-				pointPrev[0] = coordsCur[0];
-				pointPrev[1] = coordsCur[1];
-				break;
-			case PathIterator.SEG_CUBICTO:
-				write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " C");
-				pointPrev[0] = coordsCur[4];
-				pointPrev[1] = coordsCur[5];
-				break;
-			case PathIterator.SEG_QUADTO:
-				double x1 = pointPrev[0] + 2.0/3.0*(coordsCur[0] - pointPrev[0]);
-				double y1 = pointPrev[1] + 2.0/3.0*(coordsCur[1] - pointPrev[1]);
-				double x2 = coordsCur[0] + 1.0/3.0*(coordsCur[2] - coordsCur[0]);
-				double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
-				double x3 = coordsCur[2];
-				double y3 = coordsCur[3];
-				write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " C");
-				pointPrev[0] = x3;
-				pointPrev[1] = y3;
-				break;
-			case PathIterator.SEG_CLOSE:
-				write("Z");
-				break;
+				int segmentType = segments.currentSegment(coordsCur);
+				switch (segmentType) {
+				case PathIterator.SEG_MOVETO:
+					write(coordsCur[0], " ", coordsCur[1], " M");
+					pointPrev[0] = coordsCur[0];
+					pointPrev[1] = coordsCur[1];
+					break;
+				case PathIterator.SEG_LINETO:
+					write(coordsCur[0], " ", coordsCur[1], " L");
+					pointPrev[0] = coordsCur[0];
+					pointPrev[1] = coordsCur[1];
+					break;
+				case PathIterator.SEG_CUBICTO:
+					write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " C");
+					pointPrev[0] = coordsCur[4];
+					pointPrev[1] = coordsCur[5];
+					break;
+				case PathIterator.SEG_QUADTO:
+					double x1 = pointPrev[0] + 2.0/3.0*(coordsCur[0] - pointPrev[0]);
+					double y1 = pointPrev[1] + 2.0/3.0*(coordsCur[1] - pointPrev[1]);
+					double x2 = coordsCur[0] + 1.0/3.0*(coordsCur[2] - coordsCur[0]);
+					double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
+					double x3 = coordsCur[2];
+					double y3 = coordsCur[3];
+					write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " C");
+					pointPrev[0] = x3;
+					pointPrev[1] = y3;
+					break;
+				case PathIterator.SEG_CLOSE:
+					write("Z");
+					break;
+				}
 			}
 		}
 	}
 
-	public static String getEps(Image img) {
-		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
-		int[] data = bufferedImg.getRaster().getPixels(
-				bufferedImg.getMinX(), bufferedImg.getMinY(),
-				bufferedImg.getWidth(), bufferedImg.getHeight(),
-				(int[])null);
-		StringBuffer str = new StringBuffer(data.length*6);
-		for (int i : data) {
-			if ((i > 0) && (i%bufferedImg.getWidth() == 0)) {
-				str.append("\n");
+	public static String getEps(BufferedImage bufferedImg) {
+		int width = bufferedImg.getWidth();
+		int height = bufferedImg.getHeight();
+		int bands = bufferedImg.getSampleModel().getNumBands();
+		StringBuffer str = new StringBuffer(width*height*bands*2);
+		ColorModel cm = bufferedImg.getColorModel();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = bufferedImg.getRGB(x, y) & 0xffffff;
+				if (bands >= 3) {
+					String hex = String.format("%06x", pixel);
+					str.append(hex);
+				} else if (bands == 1) {
+					str.append(String.format("%02x", pixel));
+				}
 			}
-			String hex = String.format("%02x", i);
-			if (hex.length() > 2) {
-				hex = hex.substring(hex.length() - 2);
-			}
-			str.append(hex);
+			str.append("\n");
 		}
 		return str.toString();
 	}

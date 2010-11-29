@@ -27,8 +27,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -139,7 +137,9 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	@Override
 	protected void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height) {
 		// TODO Create PDF image object (see PDF Spec. 1.7, p. 209)
-		/*String imgData = getPdf(img);
+		/*
+		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(image);
+		String imgData = getPdf(bufferedImg);
 		writeln("q");
 		writeln(imgWidth/width, " 0 0 ", imgHeight/height, " ", x, " ", y, " cm");
 		writeln(imgObj, ">");
@@ -187,6 +187,26 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			writeln(" W n");
 		}
 	}
+
+	// TODO: Correct transformations
+	/*
+	@Override
+	protected void setAffineTransform(AffineTransform tx) {
+		// Undo previous transforms
+		if (isTransformed()) {
+			writeln("Q");
+		}
+		// Set new transform
+		super.setAffineTransform(tx);
+		// Write transform to document
+		if (isTransformed()) {
+			writeln("q");
+			double[] matrix = new double[6];
+			getTransform().getMatrix(matrix);
+			writeln(DataUtils.join(" ", matrix), " cm");
+		}
+	}
+	//*/
 
 	@Override
 	protected void writeHeader() {
@@ -293,8 +313,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		return name;
 	}
 
-	protected String getImageResource(Image image) {
-		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(image);
+	protected String getImageResource(BufferedImage bufferedImg) {
 		String name = imageResources.get(bufferedImg);
 		if (name == null) {
 			name = String.format("%s%04d", IMAGE_RESOURCE_PREFIX, imageResources.size());
@@ -325,70 +344,64 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	 */
 	@Override
 	protected void writeShape(Shape s) {
-		AffineTransform transform = getTransform();
-		if (!isDistorted()) {
-			double sx = transform.getScaleX();
-			double sy = transform.getScaleX();
-			double tx = transform.getTranslateX();
-			double ty = transform.getTranslateY();
-			if (s instanceof Line2D) {
-				Line2D l = (Line2D) s;
-				double x1 = sx*l.getX1() + tx;
-				double y1 = sy*l.getY1() + ty;
-				double x2 = sx*l.getX2() + tx;
-				double y2 = sy*l.getY2() + ty;
-				write(x1, " ", y1, " m ", x2, " ", y2, " l");
-				return;
-			} else if (s instanceof Rectangle2D) {
-				Rectangle2D r = (Rectangle2D) s;
-				double x = sx*r.getX() + tx;
-				double y = sy*r.getY() + ty;
-				double width = sx*r.getWidth();
-				double height = sy*r.getHeight();
-				write(x, " ", y, " ", width, " ", height, " re");
-				return;
-			}
-		}
-
-		s = transform.createTransformedShape(s);
-		PathIterator segments = s.getPathIterator(null);
-		double[] coordsCur = new double[6];
-		double[] pointPrev = new double[2];
-		for (int i = 0; !segments.isDone(); i++, segments.next()) {
-			if (i > 0) {
-				write(" ");
-			}
-			int segmentType = segments.currentSegment(coordsCur);
-			switch (segmentType) {
-			case PathIterator.SEG_MOVETO:
-				write(coordsCur[0], " ", coordsCur[1], " m");
-				pointPrev[0] = coordsCur[0];
-				pointPrev[1] = coordsCur[1];
-				break;
-			case PathIterator.SEG_LINETO:
-				write(coordsCur[0], " ", coordsCur[1], " l");
-				pointPrev[0] = coordsCur[0];
-				pointPrev[1] = coordsCur[1];
-				break;
-			case PathIterator.SEG_CUBICTO:
-				write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " c");
-				pointPrev[0] = coordsCur[4];
-				pointPrev[1] = coordsCur[5];
-				break;
-			case PathIterator.SEG_QUADTO:
-				double x1 = pointPrev[0] + 2.0/3.0*(coordsCur[0] - pointPrev[0]);
-				double y1 = pointPrev[1] + 2.0/3.0*(coordsCur[1] - pointPrev[1]);
-				double x2 = coordsCur[0] + 1.0/3.0*(coordsCur[2] - coordsCur[0]);
-				double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
-				double x3 = coordsCur[2];
-				double y3 = coordsCur[3];
-				write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " c");
-				pointPrev[0] = x3;
-				pointPrev[1] = y3;
-				break;
-			case PathIterator.SEG_CLOSE:
-				write("h");
-				break;
+		// TODO: Correct transformations
+		/*
+		if (s instanceof Line2D) {
+			Line2D l = (Line2D) s;
+			double x1 = l.getX1();
+			double y1 = l.getY1();
+			double x2 = l.getX2();
+			double y2 = l.getY2();
+			write(x1, " ", y1, " m ", x2, " ", y2, " l");
+		} else if (s instanceof Rectangle2D) {
+			Rectangle2D r = (Rectangle2D) s;
+			double x = r.getX();
+			double y = r.getY();
+			double width = r.getWidth();
+			double height = r.getHeight();
+			write(x, " ", y, " ", width, " ", height, " re");
+		} else //*/
+		{
+			s = getTransform().createTransformedShape(s);
+			PathIterator segments = s.getPathIterator(null);
+			double[] coordsCur = new double[6];
+			double[] pointPrev = new double[2];
+			for (int i = 0; !segments.isDone(); i++, segments.next()) {
+				if (i > 0) {
+					write(" ");
+				}
+				int segmentType = segments.currentSegment(coordsCur);
+				switch (segmentType) {
+				case PathIterator.SEG_MOVETO:
+					write(coordsCur[0], " ", coordsCur[1], " m");
+					pointPrev[0] = coordsCur[0];
+					pointPrev[1] = coordsCur[1];
+					break;
+				case PathIterator.SEG_LINETO:
+					write(coordsCur[0], " ", coordsCur[1], " l");
+					pointPrev[0] = coordsCur[0];
+					pointPrev[1] = coordsCur[1];
+					break;
+				case PathIterator.SEG_CUBICTO:
+					write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " c");
+					pointPrev[0] = coordsCur[4];
+					pointPrev[1] = coordsCur[5];
+					break;
+				case PathIterator.SEG_QUADTO:
+					double x1 = pointPrev[0] + 2.0/3.0*(coordsCur[0] - pointPrev[0]);
+					double y1 = pointPrev[1] + 2.0/3.0*(coordsCur[1] - pointPrev[1]);
+					double x2 = coordsCur[0] + 1.0/3.0*(coordsCur[2] - coordsCur[0]);
+					double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
+					double x3 = coordsCur[2];
+					double y3 = coordsCur[3];
+					write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " c");
+					pointPrev[0] = x3;
+					pointPrev[1] = y3;
+					break;
+				case PathIterator.SEG_CLOSE:
+					write("h");
+					break;
+				}
 			}
 		}
 	}
@@ -396,6 +409,12 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	@Override
 	protected String getFooter() {
 		StringBuffer footer = new StringBuffer();
+		if (isTransformed()) {
+			footer.append("Q\n");
+		}
+		if (getClip() != null) {
+			footer.append("Q\n");
+		}
 		footer.append("Q");
 		int contentEnd = size() + footer.length();
 		footer.append('\n');
@@ -446,4 +465,10 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		return footer.toString();
 	}
 
+	@Override
+	public String toString() {
+		String doc = super.toString();
+		//doc = doc.replaceAll("q\n[0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* cm\nQ\n", "");
+		return doc;
+	}
 }
