@@ -217,7 +217,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		// Object 4
 		writeObj(
 			"Type", "/Page",
-			"Parent", "[4 0 R]",
+			"Parent", "3 0 R",
 			"MediaBox", String.format("[%d %d %d %d]", x, y, w, h),
 			"Contents", "5 0 R",
 			"Resources", "7 0 R"
@@ -225,8 +225,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		// Object 5
 		writeln(nextObjId(size()), " 0 obj");
 		writeDict("Length", "6 0 R");
-		contentStart = size();
 		writeln("stream");
+		contentStart = size();
 		writeln("q");
 		// Adjust page size and page origin
 		writeln(MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", h, " cm");
@@ -395,12 +395,16 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected String getFooter() {
-		StringBuffer footer = new StringBuffer("Q\nendstream\n");
+		StringBuffer footer = new StringBuffer();
+		footer.append("Q");
 		int contentEnd = size() + footer.length();
+		footer.append('\n');
+		footer.append("endstream\n");
+		footer.append("endobj\n");
 
 		int lenObjId = nextObjId(size() + footer.length());
 		footer.append(lenObjId).append(" 0 obj\n");
-		footer.append(contentEnd - contentStart).append("\n");
+		footer.append(contentEnd - contentStart).append('\n');
 		footer.append("endobj\n");
 
 		int resourcesObjId = nextObjId(size() + footer.length());
@@ -423,19 +427,19 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 		int xrefPos = size() + footer.length();
 		footer.append("xref\n");
-		footer.append("0 ").append(objs).append("\n");
-		footer.append(String.format("%010d %05d f", 0, 65535)).append("\n");
+		footer.append("0 ").append(objs).append('\n');
+		footer.append(String.format("%010d %05d f", 0, 65535)).append('\n');
 		for (int pos : objPositions.values()) {
-			footer.append(String.format("%010d %05d n", pos, 0)).append("\n");
+			footer.append(String.format("%010d %05d n", pos, 0)).append('\n');
 		}
 
 		footer.append("trailer\n");
 		footer.append("<<\n");
-		footer.append("/Size ").append(objs).append("\n");
+		footer.append("/Size ").append(objs).append('\n');
 		footer.append("/Root 1 0 R\n");
 		footer.append(">>\n");
 		footer.append("startxref\n");
-		footer.append(xrefPos).append("\n");
+		footer.append(xrefPos).append('\n');
 
 		footer.append("%%EOF\n");
 
