@@ -161,14 +161,14 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	@Override
 	protected void writeHeader() {
 		Rectangle2D bounds = getBounds();
-		int x = (int)Math.floor(bounds.getX() * MM_IN_UNITS);
-		int y = (int)Math.floor(bounds.getY() * MM_IN_UNITS);
-		int w = (int)Math.ceil(bounds.getWidth() * MM_IN_UNITS);
-		int h = (int)Math.ceil(bounds.getHeight() * MM_IN_UNITS);
+		double x = bounds.getX() * MM_IN_UNITS;
+		double y = bounds.getY() * MM_IN_UNITS;
+		double w = bounds.getWidth() * MM_IN_UNITS;
+		double h = bounds.getHeight() * MM_IN_UNITS;
 
 		writeln("%!PS-Adobe-3.0 EPSF-3.0");
-		writeln("%%BoundingBox: ", x, " ", y, " ", w, " ", h);
-		writeln("%%LanguageLevel: 2");
+		writeln("%%BoundingBox: ", x, " ", y, " ", x + w, " ", y + h);
+		writeln("%%LanguageLevel: 3");
 		writeln("%%Pages: 1");
 		writeln("%%Page: 1 1");
 
@@ -208,8 +208,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		// Settings
 		writeln("/DeviceRGB setcolorspace");
 		// Adjust page size and page origin
-		writeln("0 ", h, " translate 1 -1 scale");
-		writeln(MM_IN_UNITS, " ", MM_IN_UNITS, " scale");
+		writeln("0 ", h, " translate");
+		writeln(MM_IN_UNITS, " -", MM_IN_UNITS, " scale");
 	}
 
 	/**
