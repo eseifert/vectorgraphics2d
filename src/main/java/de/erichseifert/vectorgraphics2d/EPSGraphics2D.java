@@ -212,7 +212,10 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		double h = bounds.getHeight() * MM_IN_UNITS;
 
 		writeln("%!PS-Adobe-3.0 EPSF-3.0");
-		writeln("%%BoundingBox: ", x, " ", y, " ", x + w, " ", y + h);
+		writeln("%%BoundingBox: ",
+				(int)Math.floor(x), " ", (int)Math.floor(y), " ",
+				(int)Math.ceil(x + w), " ", (int)Math.ceil(y + h));
+		writeln("%%HiResBoundingBox: ", x, " ", y, " ", x + w, " ", y + h);
 		writeln("%%LanguageLevel: 3");
 		writeln("%%Pages: 1");
 		writeln("%%Page: 1 1");
