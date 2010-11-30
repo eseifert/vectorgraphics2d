@@ -220,31 +220,25 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		// Object 1
 		writeObj(
 			"Type", "/Catalog",
-			"Outlines", "2 0 R",
-			"Pages", "3 0 R"
+			"Pages", "2 0 R"
 		);
 		// Object 2
 		writeObj(
-			"Type", "/Outlines",
-			"Count", "0"
+			"Type", "/Pages",
+			"Kids", "[3 0 R]",
+			"Count", "1"
 		);
 		// Object 3
 		writeObj(
-			"Type", "/Pages",
-			"Kids", "[4 0 R]",
-			"Count", "1"
-		);
-		// Object 4
-		writeObj(
 			"Type", "/Page",
-			"Parent", "3 0 R",
+			"Parent", "2 0 R",
 			"MediaBox", String.format("[%d %d %d %d]", x, y, w, h),
-			"Contents", "5 0 R",
-			"Resources", "7 0 R"
+			"Contents", "4 0 R",
+			"Resources", "6 0 R"
 		);
 		// Object 5
 		writeln(nextObjId(size()), " 0 obj");
-		writeDict("Length", "6 0 R");
+		writeDict("Length", "5 0 R");
 		writeln("stream");
 		contentStart = size();
 		writeln("q");
@@ -409,9 +403,10 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	@Override
 	protected String getFooter() {
 		StringBuffer footer = new StringBuffer();
-		if (isTransformed()) {
+		// TODO Correct transformations
+		/*if (isTransformed()) {
 			footer.append("Q\n");
-		}
+		}*/
 		if (getClip() != null) {
 			footer.append("Q\n");
 		}
