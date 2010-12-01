@@ -40,7 +40,8 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
+ * <code>Graphics2D</code> implementation that saves all operations to a string
+ * in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
 public class SVGGraphics2D extends VectorGraphics2D {
 	/** Mapping of stroke endcap values from Java to SVG. */
@@ -73,8 +74,20 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	protected void writeString(String str, double x, double y) {
 		// Escape string
 		str = str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-		// Output
-		writeln("<text x=\"", x, "\" y=\"", y, "\">", str, "</text>");
+
+		// Extract lines
+		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
+
+		float fontSize = getFont().getSize2D();
+		float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
+
+		// Output lines
+		writeln("<text style=\"font:", fontSize, "px ", getFont().getFamily(), "\">");
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			writeln(" <tspan x=\"", x, "\" y=\"", y + i*fontSize + ((i>0) ? leading : 0f), "\">", line, "</tspan>");
+		}
+		writeln("</text>");
 	}
 
 	@Override
@@ -171,7 +184,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			"viewBox=\"", x, " ", y, " ", w, " ", h, "\"",
 			">");
 		writeln("<style type=\"text/css\"><![CDATA[");
-		writeln("text { font-family:", getFont().getFamily(), ";font-size:", getFont().getSize2D(), "px; }");
+		writeln("text { font:", getFont().getSize2D(), "px ", getFont().getFamily(), "; }");
 		writeln("]]></style>");
 	}
 

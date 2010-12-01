@@ -31,13 +31,17 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
+ * <code>Graphics2D</code> implementation that saves all operations to a string
+ * in the <i>Portable Document Format</i> (PDF).
  */
 public class PDFGraphics2D extends VectorGraphics2D {
+	/** Prefix string for PDF font resource ids. */
+	protected static final String FONT_RESOURCE_PREFIX = "Fnt";
 	/** Prefix string for PDF image resource ids. */
 	protected static final String IMAGE_RESOURCE_PREFIX = "Img";
 	/** Prefix string for PDF transparency resource ids. */
@@ -66,11 +70,13 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	private final Map<Double, String> transpResources;
 	/** Mapping from image data to image resource ids. */
 	private final Map<BufferedImage, String> imageResources;
+	/** Mapping from font objects to font resource ids. */
+	private final Map<Font, String> fontResources;
 	/** File position of the actual content. */
 	private int contentStart;
 
 	/**
-	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
+	 * Constructor that initializes a new <code>PDFGraphics2D</code> instance.
 	 * The document dimension must be specified as parameters.
 	 */
 	public PDFGraphics2D(double x, double y, double width, double height) {
@@ -78,30 +84,49 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		curObjId = 1;
 		objPositions = new TreeMap<Integer, Integer>();
 		transpResources = new TreeMap<Double, String>();
-		imageResources = new TreeMap<BufferedImage, String>();
+		imageResources = new LinkedHashMap<BufferedImage, String>();
+		fontResources = new LinkedHashMap<Font, String>();
 		writeHeader();
 	}
 
 	@Override
 	protected void writeString(String str, double x, double y) {
+		if (str == null || str.isEmpty()) {
+			return;
+		}
+
 		// TODO Encode string
 		//byte[] bytes = str.getBytes("ISO-8859-1");
+
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\\\\\")
 			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
 			.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
+
 		// Extract lines
 		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
-		// Output lines
-		write("BT ");
-		write(x, " ", y, " Td ");
+
+		float fontSize = getFont().getSize2D();
+		float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
+
+		// Start text and save current graphics state
+		writeln("q BT");
+
+		String fontResourceId = getFontResource(getFont());
+		writeln("/", fontResourceId, " ", fontSize, " Tf");
+		// Set leading
+		writeln(fontSize + leading, " TL");
+
+		// Undo swapping of y axis for text
+		writeln("1 0 0 -1 ", x, " ", y, " cm");
+
+		// Paint lines
 		for (int i = 0; i < lines.length; i++) {
-			if (i > 0) {
-				write("T* ");
-			}
-			write("(", lines[i], ") Tj ");
+			writeln("(", lines[i], ") ", (i == 0) ? "Tj" : "'");
 		}
-		writeln("ET");
+
+		// End text and restore previous graphics state
+		writeln("ET Q");
 	}
 
 	@Override
@@ -168,14 +193,6 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	public void setFont(Font font) {
-		if (!getFont().equals(font)) {
-			super.setFont(font);
-			writeln("/", font.getPSName(), " ", font.getSize2D(), " Tf");
-		}
-	}
-
-	@Override
 	public void setClip(Shape clip) {
 		if (getClip() != null) {
 			writeln("Q");
@@ -188,7 +205,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		}
 	}
 
-	// TODO: Correct transformations
+	// TODO Correct transformations
 	/*
 	@Override
 	protected void setAffineTransform(AffineTransform tx) {
@@ -295,8 +312,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	/**
 	 * Returns the resource for the specified transparency level.
-	 * @param a
-	 * @return
+	 * @param a Transparency level.
+	 * @return A new PDF object id.
 	 */
 	protected String getTransparencyResource(double a) {
 		String name = transpResources.get(a);
@@ -307,11 +324,30 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		return name;
 	}
 
+	/**
+	 * Returns the resource for the specified image data.
+	 * @param bufferedImg Image object with data.
+	 * @return A new PDF object id.
+	 */
 	protected String getImageResource(BufferedImage bufferedImg) {
 		String name = imageResources.get(bufferedImg);
 		if (name == null) {
 			name = String.format("%s%04d", IMAGE_RESOURCE_PREFIX, imageResources.size());
 			imageResources.put(bufferedImg, name);
+		}
+		return name;
+	}
+
+	/**
+	 * Returns the resource describing the specified font.
+	 * @param font Font to be described.
+	 * @return A new PDF object id.
+	 */
+	protected String getFontResource(Font font) {
+		String name = fontResources.get(font);
+		if (name == null) {
+			name = String.format("%s%04d", FONT_RESOURCE_PREFIX, fontResources.size());
+			fontResources.put(font, name);
 		}
 		return name;
 	}
@@ -334,11 +370,12 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	/**
 	 * Utility method for writing an arbitrary shape to.
-	 * It tries to translate Java2D shapes to the corresponding SVG shape tags.
+	 * It tries to translate Java2D shapes to the corresponding PDF shape
+	 * commands.
 	 */
 	@Override
 	protected void writeShape(Shape s) {
-		// TODO: Correct transformations
+		// TODO Correct transformations
 		/*
 		if (s instanceof Line2D) {
 			Line2D l = (Line2D) s;
@@ -425,15 +462,33 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		footer.append(resourcesObjId).append(" 0 obj\n");
 		footer.append("<<\n");
 		footer.append(" /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]\n");
-		footer.append(" /ExtGState <<\n");
-		for (Map.Entry<Double, String> entry : transpResources.entrySet()) {
-			Double alpha = entry.getKey();
-			String name = entry.getValue();
-			footer.append("  /").append(name).append(" << /Type /ExtGState")
-				.append(" /ca ").append(alpha).append(" /CA ").append(alpha)
-				.append(" >>\n");
+
+		// Add resources for fonts
+		if (!fontResources.isEmpty()) {
+			footer.append(" /Font <<\n");
+			for (Map.Entry<Font, String> entry : fontResources.entrySet()) {
+				Font font = entry.getKey();
+				String resourceId = entry.getValue();
+				footer.append("  /").append(resourceId).append(" << /Type /Font")
+					.append(" /Subtype /").append("TrueType").append(" /BaseFont /").append(font.getPSName())
+					.append(" >>\n");
+			}
+			footer.append(" >>\n");
 		}
-		footer.append(" >>\n");
+
+		// Add resources for transparency levels
+		if (!transpResources.isEmpty()) {
+			footer.append(" /ExtGState <<\n");
+			for (Map.Entry<Double, String> entry : transpResources.entrySet()) {
+				Double alpha = entry.getKey();
+				String resourceId = entry.getValue();
+				footer.append("  /").append(resourceId).append(" << /Type /ExtGState")
+					.append(" /ca ").append(alpha).append(" /CA ").append(alpha)
+					.append(" >>\n");
+			}
+			footer.append(" >>\n");
+		}
+
 		footer.append(">>\n");
 		footer.append("endobj\n");
 

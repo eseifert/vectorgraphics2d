@@ -39,7 +39,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * <code>Graphics2D</code> implementation that saves all operations to a SVG string.
+ * <code>Graphics2D</code> implementation that saves all operations to a string
+ * in the <i>Encapsulated PostScript®</i> (EPS) format.
  */
 public class EPSGraphics2D extends VectorGraphics2D {
 	/** Constant to convert values from millimeters to PostScript® units (1/72th inch). */
@@ -58,7 +59,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	);
 
 	/**
-	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
+	 * Constructor that initializes a new <code>EPSGraphics2D</code> instance.
 	 * The document dimension must be specified as parameters.
 	 */
 	public EPSGraphics2D(double x, double y, double width, double height) {
@@ -70,13 +71,25 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	protected void writeString(String str, double x, double y) {
 		// TODO Encode string
 		//byte[] bytes = str.getBytes("ISO-8859-1");
+
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\\\\\")
-			.replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r")
 			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
 			.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
+
+		// Extract lines
+		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
+
+		float fontSize = getFont().getSize2D();
+		float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
+
 		// Output
-		writeln("gsave ", x, " ", y, " M 1 -1 scale (", str, ") show ", " grestore");
+		write("gsave 1 -1 scale ");
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			write(x, " -", y + i*fontSize + ((i>0) ? leading : 0f), " M (", line, ") show ");
+		}
+		writeln("grestore");
 	}
 
 	@Override
@@ -150,6 +163,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		if (!getFont().equals(font)) {
 			super.setFont(font);
 			writeln("/", font.getPSName(), " ", font.getSize2D(), " selectfont");
+
 		}
 	}
 
@@ -275,7 +289,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	/**
 	 * Utility method for writing an arbitrary shape to.
-	 * It tries to translate Java2D shapes to the corresponding SVG shape tags.
+	 * It tries to translate Java2D shapes to the corresponding EPS shape
+	 * commands.
 	 */
 	@Override
 	protected void writeShape(Shape s) {
