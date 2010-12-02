@@ -53,6 +53,7 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
+import java.io.UnsupportedEncodingException;
 import java.text.AttributedCharacterIterator;
 import java.util.HashMap;
 import java.util.Locale;
@@ -702,6 +703,18 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public String toString() {
 		return document.toString() + getFooter();
+	}
+
+	/**
+	 * Encodes the painted data into a sequence of bytes.
+	 * @return A byte array containing the data in the current file format.
+	 */
+	public byte[] getBytes() {
+		try {
+			return toString().getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return toString().getBytes();
+		}
 	}
 
 	/**

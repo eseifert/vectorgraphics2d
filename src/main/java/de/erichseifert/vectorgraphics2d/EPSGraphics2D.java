@@ -35,6 +35,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -77,18 +78,24 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
 			.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
 
+		//float fontSize = getFont().getSize2D();
+		//float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
+
+		write("gsave 1 -1 scale ");
+
+		/*
 		// Extract lines
 		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
-
-		float fontSize = getFont().getSize2D();
-		float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
-
-		// Output
-		write("gsave 1 -1 scale ");
+		// Output lines
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
 			write(x, " -", y + i*fontSize + ((i>0) ? leading : 0f), " M (", line, ") show ");
 		}
+		*/
+
+		str = str.replaceAll("[\r\n]", "");
+		write(x, " -", y, " M (", str, ") show ");
+
 		writeln("grestore");
 	}
 
@@ -404,4 +411,12 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		return "grestore  % Restore state\n%%EOF\n";
 	}
 
+	@Override
+	public byte[] getBytes() {
+		try {
+			return toString().getBytes("ISO-8859-1");
+		} catch (UnsupportedEncodingException e) {
+			return super.getBytes();
+		}
+	}
 }

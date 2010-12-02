@@ -75,11 +75,12 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		// Escape string
 		str = str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
+		float fontSize = getFont().getSize2D();
+		//float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
+
+		/*
 		// Extract lines
 		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
-
-		float fontSize = getFont().getSize2D();
-		float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
 
 		// Output lines
 		writeln("<text style=\"font:", fontSize, "px ", getFont().getFamily(), "\">");
@@ -88,6 +89,11 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			writeln(" <tspan x=\"", x, "\" y=\"", y + i*fontSize + ((i>0) ? leading : 0f), "\">", line, "</tspan>");
 		}
 		writeln("</text>");
+		*/
+
+		str = str.replaceAll("[\r\n]", "");
+		writeln("<text x=\"", x, "\" y=\"", y, "\" style=\"font:",
+				fontSize, "px ", getFont().getFamily(), "\">", str, "</text>");
 	}
 
 	@Override

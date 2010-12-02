@@ -30,6 +30,7 @@ import java.awt.Stroke;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -103,11 +104,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
 			.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
 
-		// Extract lines
-		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
-
 		float fontSize = getFont().getSize2D();
-		float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
+		//float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
 
 		// Start text and save current graphics state
 		writeln("q BT");
@@ -115,15 +113,21 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		String fontResourceId = getFontResource(getFont());
 		writeln("/", fontResourceId, " ", fontSize, " Tf");
 		// Set leading
-		writeln(fontSize + leading, " TL");
+		//writeln(fontSize + leading, " TL");
 
 		// Undo swapping of y axis for text
 		writeln("1 0 0 -1 ", x, " ", y, " cm");
 
+		/*
+		// Extract lines
+		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
 		// Paint lines
 		for (int i = 0; i < lines.length; i++) {
 			writeln("(", lines[i], ") ", (i == 0) ? "Tj" : "'");
-		}
+		}*/
+
+		str = str.replaceAll("[\r\n]", "");
+		writeln("(", str, ") Tj");
 
 		// End text and restore previous graphics state
 		writeln("ET Q");
@@ -520,5 +524,14 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		String doc = super.toString();
 		//doc = doc.replaceAll("q\n[0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* [0-9]+\\.?[0-9]* cm\nQ\n", "");
 		return doc;
+	}
+
+	@Override
+	public byte[] getBytes() {
+		try {
+			return toString().getBytes("ISO-8859-1");
+		} catch (UnsupportedEncodingException e) {
+			return super.getBytes();
+		}
 	}
 }
