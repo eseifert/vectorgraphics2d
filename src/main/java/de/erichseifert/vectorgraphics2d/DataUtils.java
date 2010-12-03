@@ -58,7 +58,7 @@ public abstract class DataUtils {
 	 * @param elements Float array.
 	 * @return Joined string.
 	 */
-	public static String join(String separator, float[] elements) {
+	public static String join(String separator, float... elements) {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}
@@ -78,7 +78,7 @@ public abstract class DataUtils {
 	 * @param elements Double array.
 	 * @return Joined string.
 	 */
-	public static String join(String separator, double[] elements) {
+	public static String join(String separator, double... elements) {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}

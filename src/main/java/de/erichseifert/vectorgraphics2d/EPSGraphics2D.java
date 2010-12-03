@@ -34,7 +34,6 @@ import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map;
@@ -390,7 +389,6 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		int height = bufferedImg.getHeight();
 		int bands = bufferedImg.getSampleModel().getNumBands();
 		StringBuffer str = new StringBuffer(width*height*bands*2);
-		ColorModel cm = bufferedImg.getColorModel();
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				int pixel = bufferedImg.getRGB(x, y) & 0xffffff;

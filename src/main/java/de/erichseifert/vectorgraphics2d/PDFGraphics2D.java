@@ -27,6 +27,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -165,14 +166,25 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height) {
-		// TODO Create PDF image object (see PDF Spec. 1.7, p. 209)
-		/*
-		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(image);
-		String imgData = getPdf(bufferedImg);
-		writeln("q");
-		writeln(imgWidth/width, " 0 0 ", imgHeight/height, " ", x, " ", y, " cm");
-		writeln(imgObj, ">");
-		writeln("Q");*/
+		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
+		String imageResourceId = getImageResource(bufferedImg);
+		// Save graphics state
+		write("q ");
+		// Take current transformations into account
+		AffineTransform txCurrent = getTransform();
+		if (!txCurrent.isIdentity()) {
+			double[] matrix = new double[6];
+			txCurrent.getMatrix(matrix);
+			write(DataUtils.join(" ", matrix), " cm ");
+		}
+		// Move image to correct position and scale it to (width, height)
+		write(width, " 0 0 ", height, " ", x, " ", y, " cm ");
+		// Swap y axis
+		write("1 0 0 -1 0 1 cm ");
+		// Draw image
+		write("/", imageResourceId, " Do ");
+		// Restore old graphics state
+		writeln("Q");
 	}
 
 	@Override
@@ -441,6 +453,30 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		}
 	}
 
+	/**
+	 * Returns a string which represents the data of the specified image.
+	 * @param bufferedImg Image to convert.
+	 * @return String with image data.
+	 */
+	private String getPdf(BufferedImage bufferedImg) {
+		int width = bufferedImg.getWidth();
+		int height = bufferedImg.getHeight();
+		int bands = bufferedImg.getSampleModel().getNumBands();
+		StringBuffer str = new StringBuffer(width*height*bands*2);
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int pixel = bufferedImg.getRGB(x, y) & 0xffffff;
+				if (bands >= 3) {
+					String hex = String.format("%06x", pixel);
+					str.append(hex);
+				} else if (bands == 1) {
+					str.append(String.format("%02x", pixel));
+				}
+			}
+		}
+		return str.toString();
+	}
+
 	@Override
 	protected String getFooter() {
 		StringBuffer footer = new StringBuffer();
@@ -473,9 +509,31 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			for (Map.Entry<Font, String> entry : fontResources.entrySet()) {
 				Font font = entry.getKey();
 				String resourceId = entry.getValue();
-				footer.append("  /").append(resourceId).append(" << /Type /Font")
+				footer.append("  /").append(resourceId)
+					.append(" << /Type /Font")
 					.append(" /Subtype /").append("TrueType").append(" /BaseFont /").append(font.getPSName())
 					.append(" >>\n");
+			}
+			footer.append(" >>\n");
+		}
+
+		// Add resources for images
+		if (!imageResources.isEmpty()) {
+			footer.append(" /XObject <<\n");
+			for (Map.Entry<BufferedImage, String> entry : imageResources.entrySet()) {
+				BufferedImage image = entry.getKey();
+				String imageData = getPdf(image);
+				String resourceId = entry.getValue();
+				footer.append("  /").append(resourceId)
+					.append(" << /Type /XObject /Subtype /Image")
+					.append(" /Width ").append(image.getWidth())
+					.append(" /Height ").append(image.getHeight())
+					.append(" /ColorSpace /DeviceRGB")
+					.append(" /BitsPerComponent 8")
+					.append(" /Length ").append(imageData.length())
+					.append(" /Filter /ASCIIHexDecode")
+					.append(" >>\n");
+				footer.append("stream\n").append(imageData).append("\nendstream\n");
 			}
 			footer.append(" >>\n");
 		}
@@ -486,7 +544,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			for (Map.Entry<Double, String> entry : transpResources.entrySet()) {
 				Double alpha = entry.getKey();
 				String resourceId = entry.getValue();
-				footer.append("  /").append(resourceId).append(" << /Type /ExtGState")
+				footer.append("  /").append(resourceId)
+					.append(" << /Type /ExtGState")
 					.append(" /ca ").append(alpha).append(" /CA ").append(alpha)
 					.append(" >>\n");
 			}
