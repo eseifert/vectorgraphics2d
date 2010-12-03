@@ -504,6 +504,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		footer.append("<<\n");
 		footer.append(" /ProcSet [/PDF /Text /ImageB /ImageC /ImageI]\n");
 
+
 		// Add resources for fonts
 		if (!fontResources.isEmpty()) {
 			footer.append(" /Font <<\n");
@@ -521,20 +522,15 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		// Add resources for images
 		if (!imageResources.isEmpty()) {
 			footer.append(" /XObject <<\n");
+
+			int objIdOffset = 0;
 			for (Map.Entry<BufferedImage, String> entry : imageResources.entrySet()) {
 				BufferedImage image = entry.getKey();
-				String imageData = getPdf(image);
 				String resourceId = entry.getValue();
-				footer.append("  /").append(resourceId)
-					.append(" << /Type /XObject /Subtype /Image")
-					.append(" /Width ").append(image.getWidth())
-					.append(" /Height ").append(image.getHeight())
-					.append(" /ColorSpace /DeviceRGB")
-					.append(" /BitsPerComponent 8")
-					.append(" /Length ").append(imageData.length())
-					.append(" /Filter /ASCIIHexDecode")
-					.append(" >>\n");
-				footer.append("stream\n").append(imageData).append("\nendstream\n");
+
+				footer.append("  /").append(resourceId).append(' ')
+					.append(curObjId + objIdOffset).append(" 0 R\n");
+				objIdOffset++;
 			}
 			footer.append(" >>\n");
 		}
@@ -555,6 +551,27 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 		footer.append(">>\n");
 		footer.append("endobj\n");
+
+		// Add data of images
+		for (BufferedImage image : imageResources.keySet()) {
+			int imageObjId = nextObjId(size() + footer.length());
+			footer.append(imageObjId).append(" 0 obj\n");
+			footer.append("<<\n");
+			String imageData = getPdf(image);
+			footer.append("/Type /XObject\n")
+				.append("/Subtype /Image\n")
+				.append("/Width ").append(image.getWidth()).append('\n')
+				.append("/Height ").append(image.getHeight()).append('\n')
+				.append("/ColorSpace /DeviceRGB\n")
+				.append("/BitsPerComponent 8\n")
+				.append("/Length ").append(imageData.length()).append('\n')
+				.append("/Filter /ASCIIHexDecode\n")
+				.append(">>\n")
+				.append("stream\n")
+				.append(imageData)
+				.append("\nendstream\n")
+				.append("endobj\n");
+		}
 
 		int objs = objPositions.size() + 1;
 
