@@ -43,11 +43,11 @@ import java.util.TreeMap;
  */
 public class PDFGraphics2D extends VectorGraphics2D {
 	/** Prefix string for PDF font resource ids. */
-	protected static final String FONT_RESOURCE_PREFIX = "Fnt";
+	protected static final String FONT_RESOURCE_PREFIX = "F";
 	/** Prefix string for PDF image resource ids. */
-	protected static final String IMAGE_RESOURCE_PREFIX = "Img";
+	protected static final String IMAGE_RESOURCE_PREFIX = "Im";
 	/** Prefix string for PDF transparency resource ids. */
-	protected static final String TRANSPARENCY_RESOURCE_PREFIX = "Trn";
+	protected static final String TRANSPARENCY_RESOURCE_PREFIX = "T";
 
 	/** Constant to convert values from millimeters to PostScript®/PDF units (1/72th inch). */
 	protected static final double MM_IN_UNITS = 72.0 / 25.4;
@@ -334,7 +334,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	protected String getTransparencyResource(double a) {
 		String name = transpResources.get(a);
 		if (name == null) {
-			name = String.format("%s%04d", TRANSPARENCY_RESOURCE_PREFIX, transpResources.size());
+			name = String.format("%s%d", TRANSPARENCY_RESOURCE_PREFIX, transpResources.size() + 1);
 			transpResources.put(a, name);
 		}
 		return name;
@@ -348,7 +348,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	protected String getImageResource(BufferedImage bufferedImg) {
 		String name = imageResources.get(bufferedImg);
 		if (name == null) {
-			name = String.format("%s%04d", IMAGE_RESOURCE_PREFIX, imageResources.size());
+			name = String.format("%s%d", IMAGE_RESOURCE_PREFIX, imageResources.size() + 1);
 			imageResources.put(bufferedImg, name);
 		}
 		return name;
@@ -362,7 +362,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	protected String getFontResource(Font font) {
 		String name = fontResources.get(font);
 		if (name == null) {
-			name = String.format("%s%04d", FONT_RESOURCE_PREFIX, fontResources.size());
+			name = String.format("%s%d", FONT_RESOURCE_PREFIX, fontResources.size() + 1);
 			fontResources.put(font, name);
 		}
 		return name;
@@ -473,8 +473,9 @@ public class PDFGraphics2D extends VectorGraphics2D {
 					str.append(String.format("%02x", pixel));
 				}
 			}
+			str.append('\n');
 		}
-		return str.toString();
+		return str.append('>').toString();
 	}
 
 	@Override
@@ -560,9 +561,11 @@ public class PDFGraphics2D extends VectorGraphics2D {
 		int xrefPos = size() + footer.length();
 		footer.append("xref\n");
 		footer.append("0 ").append(objs).append('\n');
-		footer.append(String.format("%010d %05d f", 0, 65535)).append('\n');
+		// lines of xref entries must must be exactly 20 bytes long
+		// (including line break) and thus end with <SPACE NEWLINE>
+		footer.append(String.format("%010d %05d", 0, 65535)).append(" f \n");
 		for (int pos : objPositions.values()) {
-			footer.append(String.format("%010d %05d n", pos, 0)).append('\n');
+			footer.append(String.format("%010d %05d", pos, 0)).append(" n \n");
 		}
 
 		footer.append("trailer\n");
