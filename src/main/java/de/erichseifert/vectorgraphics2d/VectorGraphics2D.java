@@ -42,6 +42,7 @@ import java.awt.font.GlyphVector;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -75,11 +76,9 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	private Color background;
 	private Color color;
 	private Shape clip;
-	private Rectangle clipBounds;
 	private Composite composite;
-	private GraphicsConfiguration deviceConfig;
+	private final GraphicsConfiguration deviceConfig;
 	private Font font;
-	private FontMetrics fontMetrics;
 	private final FontRenderContext fontRenderContext;
 	private Paint paint;
 	private Stroke stroke;
@@ -106,6 +105,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		background = Color.WHITE;
 		color = Color.BLACK;
 		composite = AlphaComposite.getInstance(AlphaComposite.CLEAR);
+		deviceConfig = null;
 		font = Font.decode(null);
 		fontRenderContext = new FontRenderContext(null, false, true);
 		paint = color;
@@ -122,7 +122,13 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void clip(Shape s) {
-		// TODO
+		if ((getClip() != null) && (s != null)) {
+			Area clipAreaOld = new Area(getClip());
+			Area clipAreaNew = new Area(s);
+			clipAreaNew.intersect(clipAreaOld);
+			s = clipAreaNew;
+		}
+		setClip(s);
 	}
 
 	@Override
@@ -137,14 +143,16 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
+	public boolean drawImage(Image img, AffineTransform xform,
+			ImageObserver obs) {
 		BufferedImage bimg = getTransformedImage(img, xform);
 		drawImage(bimg, null, bimg.getMinX(), bimg.getMinY());
 		return true;
 	}
 
 	@Override
-	public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
+	public void drawImage(BufferedImage img, BufferedImageOp op,
+			int x, int y) {
 		if (op != null) {
 			img = op.filter(img, null);
 		}
@@ -152,44 +160,53 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
+	public void drawRenderableImage(RenderableImage img,
+			AffineTransform xform) {
 		drawRenderedImage(img.createDefaultRendering(), xform);
 	}
 
 	@Override
-	public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
+	public void drawRenderedImage(RenderedImage img,
+			AffineTransform xform) {
 		// TODO
 	}
 
 	@Override
 	public void drawString(String str, int x, int y) {
-		drawString(str, (float)x, (float)y);
+		drawString(str, (float) x, (float) y);
 	}
 
 	@Override
 	public void drawString(String str, float x, float y) {
 		switch (getFontRendering()) {
 		case VECTORS:
-			TextLayout layout = new TextLayout(str, getFont(), getFontRenderContext());
-			Shape s = layout.getOutline(AffineTransform.getTranslateInstance(x, y));
+			TextLayout layout = new TextLayout(str, getFont(),
+					getFontRenderContext());
+			Shape s = layout.getOutline(
+					AffineTransform.getTranslateInstance(x, y));
 			fill(s);
 			break;
 		case TEXT:
 			writeString(str, x, y);
 			break;
+		default:
+			throw new IllegalStateException("Unknown font rendering mode.");
 		}
 	}
 
 	@Override
-	public void drawString(AttributedCharacterIterator iterator, int x, int y) {
-		drawString(iterator, (float)x, (float)y);
+	public void drawString(AttributedCharacterIterator iterator,
+			int x, int y) {
+		drawString(iterator, (float) x, (float) y);
 	}
 
 	@Override
-	public void drawString(AttributedCharacterIterator iterator, float x, float y) {
+	public void drawString(AttributedCharacterIterator iterator,
+			float x, float y) {
 		// TODO Take text formatting into account
 		StringBuffer buf = new StringBuffer();
-		for (char c = iterator.first(); c != AttributedCharacterIterator.DONE; c = iterator.next()) {
+		for (char c = iterator.first(); c != AttributedCharacterIterator.DONE;
+				c = iterator.next()) {
 			buf.append(c);
 		}
 		drawString(buf.toString(), x, y);
@@ -276,7 +293,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 				setColor((Color) paint);
 			} else if (paint instanceof MultipleGradientPaint) {
 				// Set brightest or least opaque color for gradients
-				Color[] colors = ((MultipleGradientPaint)paint).getColors();
+				Color[] colors = ((MultipleGradientPaint) paint).getColors();
 				if (colors.length == 1) {
 					setColor(colors[0]);
 				} else if (colors.length > 1) {
@@ -333,6 +350,10 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		setAffineTransform(tx);
 	}
 
+	/**
+	 * Sets the current transformation.
+	 * @param tx Current transformation
+	 */
 	protected void setAffineTransform(AffineTransform tx) {
 		if (!transform.equals(tx)) {
 			transform.setTransform(tx);
@@ -356,7 +377,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void translate(int x, int y) {
-		translate((double)x, (double)y);
+		translate((double) x, (double) y);
 	}
 
 	@Override
@@ -389,17 +410,20 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void clearRect(int x, int y, int width, int height) {
-		// TODO Auto-generated method stub
+		// TODO Implement
+		throw new UnsupportedOperationException("clearRect() isn't supported by VectorGraphics2D.");
 	}
 
 	@Override
 	public void clipRect(int x, int y, int width, int height) {
-		// TODO Auto-generated method stub
+		Shape clipNew = new Rectangle(x, y, width, height);
+		clip(clipNew);
 	}
 
 	@Override
 	public void copyArea(int x, int y, int width, int height, int dx, int dy) {
-		// TODO Auto-generated method stub
+		// TODO Implement
+		throw new UnsupportedOperationException("copyArea() isn't supported by VectorGraphics2D.");
 	}
 
 	@Override
@@ -412,20 +436,23 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public void drawArc(int x, int y, int width, int height, int startAngle,
-			int arcAngle) {
-		draw(new Arc2D.Double(x, y, width, height, startAngle, arcAngle, Arc2D.OPEN));
+	public void drawArc(int x, int y, int width, int height,
+			int startAngle, int arcAngle) {
+		draw(new Arc2D.Double(x, y, width, height,
+				startAngle, arcAngle, Arc2D.OPEN));
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-		return drawImage(img, x, y, img.getWidth(observer), img.getHeight(observer), observer);
+		return drawImage(img, x, y,
+				img.getWidth(observer), img.getHeight(observer), observer);
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, Color bgcolor,
 			ImageObserver observer) {
-		return drawImage(img, x, y, img.getWidth(observer), img.getHeight(observer), observer);
+		return drawImage(img, x, y,
+				img.getWidth(observer), img.getHeight(observer), observer);
 	}
 
 	@Override
@@ -503,13 +530,15 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public void drawRoundRect(int x, int y, int width, int height,
 			int arcWidth, int arcHeight) {
-		draw(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight));
+		draw(new RoundRectangle2D.Double(x, y, width, height,
+				arcWidth, arcHeight));
 	}
 
 	@Override
-	public void fillArc(int x, int y, int width, int height, int startAngle,
-			int arcAngle) {
-		fill(new Arc2D.Double(x, y, width, height, startAngle, arcAngle, Arc2D.PIE));
+	public void fillArc(int x, int y, int width, int height,
+			int startAngle, int arcAngle) {
+		fill(new Arc2D.Double(x, y, width, height,
+				startAngle, arcAngle, Arc2D.PIE));
 	}
 
 	@Override
@@ -540,7 +569,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public void fillRoundRect(int x, int y, int width, int height,
 			int arcWidth, int arcHeight) {
-		fill(new RoundRectangle2D.Double(x, y, width, height, arcWidth, arcHeight));
+		fill(new RoundRectangle2D.Double(x, y, width, height,
+				arcWidth, arcHeight));
 	}
 
 	@Override
@@ -550,7 +580,10 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Rectangle getClipBounds() {
-		return clipBounds;
+		if (clip == null) {
+			return null;
+		}
+		return clip.getBounds();
 	}
 
 	@Override
@@ -565,7 +598,13 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public FontMetrics getFontMetrics(Font f) {
-		return fontMetrics;
+		// TODO Find a better way for creating a new FontMetrics instance
+		BufferedImage bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
+	    Graphics g = bi.getGraphics();
+	    FontMetrics fontMetrics = g.getFontMetrics(font);
+	    g.dispose();
+	    bi = null;
+	    return fontMetrics;
 	}
 
 	@Override
@@ -609,7 +648,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		for (Object o : strs) {
 			String str = o.toString();
 			if ((o instanceof Double) || (o instanceof Float)) {
-				str = String.format(Locale.ENGLISH, "%.7f", o).replaceAll("\\.?0+$", "");
+				str = String.format(Locale.ENGLISH, "%.7f", o)
+					.replaceAll("\\.?0+$", "");
 			}
 			document.append(str);
 		}
@@ -637,12 +677,15 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	 * @param img Image to be rendered.
 	 * @param imgWidth Number of pixels in horizontal direction.
 	 * @param imgHeight Number of pixels in vertical direction
-	 * @param x Horizontal position in document units where the upper left corner of the image should be placed.
-	 * @param y Vertical position in document units where the upper left corner of the image should be placed.
+	 * @param x Horizontal position in document units where the
+	 *          upper left corner of the image should be placed.
+	 * @param y Vertical position in document units where the
+	 *          upper left corner of the image should be placed.
 	 * @param width Width of the image in document units.
 	 * @param height Height of the image in document units.
 	 */
-	protected abstract void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height);
+	protected abstract void writeImage(Image img, int imgWidth, int imgHeight,
+			double x, double y, double width, double height);
 
 	/**
 	 * Write a text string to the document at a specified position.
@@ -672,11 +715,15 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	 */
 	protected abstract String getFooter();
 
-	private BufferedImage getTransformedImage(Image image, AffineTransform xform) {
-		Integer interpolationType = (Integer)hints.get(RenderingHints.KEY_INTERPOLATION);
-		if (RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR.equals(interpolationType)) {
+	private BufferedImage getTransformedImage(Image image,
+			AffineTransform xform) {
+		Integer interpolationType =
+			(Integer) hints.get(RenderingHints.KEY_INTERPOLATION);
+		if (RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+				.equals(interpolationType)) {
 			interpolationType = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
-		} else if (RenderingHints.VALUE_INTERPOLATION_BILINEAR.equals(interpolationType)) {
+		} else if (RenderingHints.VALUE_INTERPOLATION_BILINEAR
+				.equals(interpolationType)) {
 			interpolationType = AffineTransformOp.TYPE_BILINEAR;
 		} else {
 			interpolationType = AffineTransformOp.TYPE_BICUBIC;
@@ -696,7 +743,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 			return false;
 		}
 		int type = transform.getType();
-		int otherButTranslatedOrScaled = ~(AffineTransform.TYPE_TRANSLATION | AffineTransform.TYPE_MASK_SCALE);
+		int otherButTranslatedOrScaled = ~(AffineTransform.TYPE_TRANSLATION
+				| AffineTransform.TYPE_MASK_SCALE);
 		return (type & otherButTranslatedOrScaled) != 0;
 	}
 

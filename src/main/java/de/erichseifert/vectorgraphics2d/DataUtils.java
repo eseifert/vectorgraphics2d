@@ -30,6 +30,13 @@ import java.util.Map;
  */
 public abstract class DataUtils {
 	/**
+	 * Default constructor that prevents creation of class.
+	 */
+	protected DataUtils() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
 	 * Creates a mapping from two arrays, one with keys, one with values.
 	 * @param <K> Data type of the keys.
 	 * @param <V> Data type of the values.
@@ -40,7 +47,9 @@ public abstract class DataUtils {
 	public static <K,V> Map<K, V> map(K[] keys, V[] values) {
 		// Check for valid parameters
 		if (keys.length != values.length) {
-			throw new IllegalArgumentException("Number of keys and values is different. Cannot create map.");
+			throw new IllegalArgumentException(
+					"Number of keys and values is different. " +
+					"Cannot create map.");
 		}
 		// Fill map with keys and values
 		Map<K, V> map = new HashMap<K, V>();

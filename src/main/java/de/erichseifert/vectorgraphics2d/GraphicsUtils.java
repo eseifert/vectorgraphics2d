@@ -40,6 +40,13 @@ import javax.swing.ImageIcon;
  */
 public abstract class GraphicsUtils {
 	/**
+	 * Default constructor that prevents creation of class.
+	 */
+	protected GraphicsUtils() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
 	 * This method returns <code>true</code> if the specified image
 	 * has transparent pixels.
 	 * Taken from http://www.exampledepot.com/egs/java.awt.image/HasAlpha.html
@@ -73,7 +80,7 @@ public abstract class GraphicsUtils {
 	 */
 	public static BufferedImage toBufferedImage(Image image) {
 		if (image instanceof BufferedImage) {
-			return (BufferedImage)image;
+			return (BufferedImage) image;
 		}
 		// This code ensures that all the pixels in the image are loaded
 		image = new ImageIcon(image).getImage();
@@ -82,7 +89,8 @@ public abstract class GraphicsUtils {
 		boolean hasAlpha = hasAlpha(image);
 		// Create a buffered image with a format that's compatible with the screen
 		BufferedImage bimage = null;
-		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsEnvironment ge = GraphicsEnvironment
+			.getLocalGraphicsEnvironment();
 		try {
 			// Determine the type of transparency of the new buffered image
 			int transparency = Transparency.OPAQUE;
@@ -102,7 +110,8 @@ public abstract class GraphicsUtils {
 			if (hasAlpha) {
 				type = BufferedImage.TYPE_INT_ARGB;
 			}
-			bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+			bimage = new BufferedImage(
+					image.getWidth(null), image.getHeight(null), type);
 		}
 		// Copy image to buffered image
 		Graphics g = bimage.createGraphics();

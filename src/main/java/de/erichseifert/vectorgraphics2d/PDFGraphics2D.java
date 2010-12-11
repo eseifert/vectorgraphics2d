@@ -97,9 +97,6 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			return;
 		}
 
-		// TODO Encode string
-		//byte[] bytes = str.getBytes("ISO-8859-1");
-
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\\\\\")
 			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
@@ -156,8 +153,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			if (bs.getEndCap() != bsPrev.getEndCap()) {
 				writeln(STROKE_ENDCAPS.get(bs.getEndCap()), " J");
 			}
-			if ((!Arrays.equals(bs.getDashArray(), bsPrev.getDashArray())) ||
-				(bs.getDashPhase() != bsPrev.getDashPhase())) {
+			if ((!Arrays.equals(bs.getDashArray(), bsPrev.getDashArray()))
+					|| (bs.getDashPhase() != bsPrev.getDashPhase())) {
 				writeln("[", DataUtils.join(" ", bs.getDashArray()), "] ",
 						bs.getDashPhase(), " d");
 			}
@@ -165,7 +162,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	protected void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height) {
+	protected void writeImage(Image img, int imgWidth, int imgHeight,
+			double x, double y,  double width, double height) {
 		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
 		String imageResourceId = getImageResource(bufferedImg);
 		// Save graphics state
@@ -198,7 +196,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 				String transpResourceId = getTransparencyResource(a);
 				writeln("/", transpResourceId, " gs");
 			}
-			if (color.getRed() != c.getRed() || color.getGreen() != c.getGreen() || color.getBlue() != c.getBlue()) {
+			if (color.getRed() != c.getRed() || color.getGreen() != c.getGreen()
+					|| color.getBlue() != c.getBlue()) {
 				double r = c.getRed()/255.0;
 				double g = c.getGreen()/255.0;
 				double b = c.getBlue()/255.0;
@@ -244,10 +243,10 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	@Override
 	protected void writeHeader() {
 		Rectangle2D bounds = getBounds();
-		int x = (int)Math.floor(bounds.getX() * MM_IN_UNITS);
-		int y = (int)Math.floor(bounds.getY() * MM_IN_UNITS);
-		int w = (int)Math.ceil(bounds.getWidth() * MM_IN_UNITS);
-		int h = (int)Math.ceil(bounds.getHeight() * MM_IN_UNITS);
+		int x = (int) Math.floor(bounds.getX() * MM_IN_UNITS);
+		int y = (int) Math.floor(bounds.getY() * MM_IN_UNITS);
+		int w = (int) Math.ceil(bounds.getWidth() * MM_IN_UNITS);
+		int h = (int) Math.ceil(bounds.getHeight() * MM_IN_UNITS);
 
 		writeln("%PDF-1.4");
 		// Object 1
@@ -334,7 +333,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	protected String getTransparencyResource(double a) {
 		String name = transpResources.get(a);
 		if (name == null) {
-			name = String.format("%s%d", TRANSPARENCY_RESOURCE_PREFIX, transpResources.size() + 1);
+			name = String.format("%s%d", TRANSPARENCY_RESOURCE_PREFIX,
+					transpResources.size() + 1);
 			transpResources.put(a, name);
 		}
 		return name;
@@ -348,7 +348,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	protected String getImageResource(BufferedImage bufferedImg) {
 		String name = imageResources.get(bufferedImg);
 		if (name == null) {
-			name = String.format("%s%d", IMAGE_RESOURCE_PREFIX, imageResources.size() + 1);
+			name = String.format("%s%d", IMAGE_RESOURCE_PREFIX,
+					imageResources.size() + 1);
 			imageResources.put(bufferedImg, name);
 		}
 		return name;
@@ -362,14 +363,16 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	protected String getFontResource(Font font) {
 		String name = fontResources.get(font);
 		if (name == null) {
-			name = String.format("%s%d", FONT_RESOURCE_PREFIX, fontResources.size() + 1);
+			name = String.format("%s%d", FONT_RESOURCE_PREFIX,
+					fontResources.size() + 1);
 			fontResources.put(font, name);
 		}
 		return name;
 	}
 
 	/**
-	 * Utility method for writing a tag closing fragment for drawing operations.
+	 * Utility method for writing a tag closing fragment for drawing
+	 * operations.
 	 */
 	@Override
 	protected void writeClosingDraw() {
@@ -377,7 +380,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	}
 
 	/**
-	 * Utility method for writing a tag closing fragment for filling operations.
+	 * Utility method for writing a tag closing fragment for filling
+	 * operations.
 	 */
 	@Override
 	protected void writeClosingFill() {
@@ -430,7 +434,9 @@ public class PDFGraphics2D extends VectorGraphics2D {
 					pointPrev[1] = coordsCur[1];
 					break;
 				case PathIterator.SEG_CUBICTO:
-					write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " c");
+					write(coordsCur[0], " ", coordsCur[1], " ",
+							coordsCur[2], " ", coordsCur[3], " ",
+							coordsCur[4], " ", coordsCur[5], " c");
 					pointPrev[0] = coordsCur[4];
 					pointPrev[1] = coordsCur[5];
 					break;
@@ -441,13 +447,16 @@ public class PDFGraphics2D extends VectorGraphics2D {
 					double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
 					double x3 = coordsCur[2];
 					double y3 = coordsCur[3];
-					write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " c");
+					write(x1, " ", y1, " ", x2, " ", y2, " ",
+							x3, " ", y3, " c");
 					pointPrev[0] = x3;
 					pointPrev[1] = y3;
 					break;
 				case PathIterator.SEG_CLOSE:
 					write("h");
 					break;
+				default:
+					throw new IllegalStateException("Unknown path operation.");
 				}
 			}
 		}
@@ -513,7 +522,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 				String resourceId = entry.getValue();
 				footer.append("  /").append(resourceId)
 					.append(" << /Type /Font")
-					.append(" /Subtype /").append("TrueType").append(" /BaseFont /").append(font.getPSName())
+					.append(" /Subtype /").append("TrueType")
+					.append(" /BaseFont /").append(font.getPSName())
 					.append(" >>\n");
 			}
 			footer.append(" >>\n");
@@ -524,10 +534,9 @@ public class PDFGraphics2D extends VectorGraphics2D {
 			footer.append(" /XObject <<\n");
 
 			int objIdOffset = 0;
-			for (Map.Entry<BufferedImage, String> entry : imageResources.entrySet()) {
-				BufferedImage image = entry.getKey();
+			for (Map.Entry<BufferedImage, String> entry :
+					imageResources.entrySet()) {
 				String resourceId = entry.getValue();
-
 				footer.append("  /").append(resourceId).append(' ')
 					.append(curObjId + objIdOffset).append(" 0 R\n");
 				objIdOffset++;

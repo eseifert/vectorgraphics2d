@@ -69,9 +69,6 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeString(String str, double x, double y) {
-		// TODO Encode string
-		//byte[] bytes = str.getBytes("ISO-8859-1");
-
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\\\\\")
 			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
@@ -129,7 +126,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	protected void writeImage(Image img, int imgWidth, int imgHeight, double x, double y, double width, double height) {
+	protected void writeImage(Image img, int imgWidth, int imgHeight,
+			double x, double y, double width, double height) {
 		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
 		String imgData = getEps(bufferedImg);
 		int bands = bufferedImg.getSampleModel().getNumBands();
@@ -139,7 +137,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		}
 		writeln("gsave");
 		writeln(x, " ", y, " ", width, " ", height, " ",
-			imgWidth, " ", imgHeight, " ", bitsPerSample, " img false ", bands, " colorimage"
+			imgWidth, " ", imgHeight, " ", bitsPerSample, " img false ", bands,
+			" colorimage"
 		);
 		writeln(imgData, ">");
 		writeln("grestore");
@@ -150,12 +149,13 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		Color color = getColor();
 		if (c != null) {
 			super.setColor(c);
-			// TODO Add transparency hints for PDF conversion
+			// TODO Add transparency hints for PDF conversion?
 			/*if (color.getAlpha() != c.getAlpha()) {
 				double a = c.getAlpha()/255.0;
 				writeln("[ /ca ", a, " /SetTransparency pdfmark");
 			}*/
-			if (color.getRed() != c.getRed() || color.getGreen() != c.getGreen() || color.getBlue() != c.getBlue()) {
+			if (color.getRed() != c.getRed() || color.getGreen() != c.getGreen()
+					|| color.getBlue() != c.getBlue()) {
 				double r = c.getRed()/255.0;
 				double g = c.getGreen()/255.0;
 				double b = c.getBlue()/255.0;
@@ -168,7 +168,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	public void setFont(Font font) {
 		if (!getFont().equals(font)) {
 			super.setFont(font);
-			writeln("/", font.getPSName(), " ", font.getSize2D(), " selectfont");
+			writeln("/", font.getPSName(), " ", font.getSize2D(),
+					" selectfont");
 
 		}
 	}
@@ -190,7 +191,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		super.setTransform(tx);
 		double[] matrix = new double[6];
 		getTransform().getMatrix(matrix);
-		writeln("basematrix setmatrix [", DataUtils.join(" ", matrix), "] concat");
+		writeln("basematrix setmatrix [", DataUtils.join(" ", matrix),
+				"] concat");
 	}
 
 	@Override
@@ -214,7 +216,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	@Override
 	public void rotate(double theta, double x, double y) {
 		super.rotate(theta, x, y);
-		writeln(x, " ", y, " translate ", theta/Math.PI*180.0, " rotate ", -x, " ", -y, " translate");
+		writeln(x, " ", y, " translate ", theta/Math.PI*180.0, " rotate ",
+				-x, " ", -y, " translate");
 	}
 
 	@Override
@@ -233,8 +236,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 		writeln("%!PS-Adobe-3.0 EPSF-3.0");
 		writeln("%%BoundingBox: ",
-				(int)Math.floor(x), " ", (int)Math.floor(y), " ",
-				(int)Math.ceil(x + w), " ", (int)Math.ceil(y + h));
+				(int) Math.floor(x), " ", (int) Math.floor(y), " ",
+				(int) Math.ceil(x + w), " ", (int) Math.ceil(y + h));
 		writeln("%%HiResBoundingBox: ", x, " ", y, " ", x + w, " ", y + h);
 		writeln("%%LanguageLevel: 3");
 		writeln("%%Pages: 1");
@@ -252,18 +255,22 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			"x y M width 0 RL 0 height RL width neg 0 RL ",
 			"} bind def");
 		writeln("/ellipse { ",
-			"/endangle exch def /startangle exch def /ry exch def /rx exch def /y exch def /x exch def ",
+			"/endangle exch def /startangle exch def ",
+			"/ry exch def /rx exch def /y exch def /x exch def ",
 			"/savematrix matrix currentmatrix def ",
 			"x y translate rx ry scale 0 0 1 startangle endangle arcn ",
 			"savematrix setmatrix ",
 			"} bind def");
 		writeln("/img { ",
-			"/bits exch def /imgheight exch def /imgwidth exch def /height exch def /width exch def /y exch def /x exch def ",
+			"/bits exch def /imgheight exch def /imgwidth exch def ",
+			"/height exch def /width exch def /y exch def /x exch def ",
 			"x y translate width height scale ",
-			"imgwidth imgheight bits [imgwidth 0 0 imgheight 0 0] currentfile /ASCIIHexDecode filter ",
+			"imgwidth imgheight bits [imgwidth 0 0 imgheight 0 0] currentfile ",
+			"/ASCIIHexDecode filter ",
 			"} bind def");
 		// Set default font
-		writeln("/", getFont().getPSName(), " ", getFont().getSize2D(), " selectfont");
+		writeln("/", getFont().getPSName(), " ", getFont().getSize2D(),
+				" selectfont");
 		//writeln("<< /AllowTransparency true >> setdistillerparams"); // TODO
 		// Save state
 		writeln("gsave");
@@ -323,7 +330,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			double y = e.getY() + e.getHeight()/2.0;
 			double rx = e.getWidth()/2.0;
 			double ry = e.getHeight()/2.0;
-			write(x, " ", y, " ", rx, " ", ry, " ", 360.0, " ", 0.0, " ellipse Z");
+			write(x, " ", y, " ", rx, " ", ry, " ", 360.0, " ", 0.0,
+					" ellipse Z");
 			return;
 		} else if (s instanceof Arc2D) {
 			Arc2D e = (Arc2D) s;
@@ -333,7 +341,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 			double ry = e.getHeight()/2.0;
 			double startAngle = -e.getAngleStart();
 			double endAngle = -(e.getAngleStart() + e.getAngleExtent());
-			write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle, " ellipse");
+			write(x, " ", y, " ", rx, " ", ry, " ", startAngle, " ", endAngle,
+					" ellipse");
 			if (e.getArcType() == Arc2D.CHORD) {
 				write(" Z");
 			} else if (e.getArcType() == Arc2D.PIE) {
@@ -361,7 +370,9 @@ public class EPSGraphics2D extends VectorGraphics2D {
 					pointPrev[1] = coordsCur[1];
 					break;
 				case PathIterator.SEG_CUBICTO:
-					write(coordsCur[0], " ", coordsCur[1], " ", coordsCur[2], " ", coordsCur[3], " ", coordsCur[4], " ", coordsCur[5], " C");
+					write(coordsCur[0], " ", coordsCur[1], " ",
+							coordsCur[2], " ", coordsCur[3], " ",
+							coordsCur[4], " ", coordsCur[5], " C");
 					pointPrev[0] = coordsCur[4];
 					pointPrev[1] = coordsCur[5];
 					break;
@@ -372,13 +383,16 @@ public class EPSGraphics2D extends VectorGraphics2D {
 					double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
 					double x3 = coordsCur[2];
 					double y3 = coordsCur[3];
-					write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3, " C");
+					write(x1, " ", y1, " ", x2, " ", y2, " ", x3, " ", y3,
+							" C");
 					pointPrev[0] = x3;
 					pointPrev[1] = y3;
 					break;
 				case PathIterator.SEG_CLOSE:
 					write("Z");
 					break;
+				default:
+					throw new IllegalStateException("Unknown path operation.");
 				}
 			}
 		}

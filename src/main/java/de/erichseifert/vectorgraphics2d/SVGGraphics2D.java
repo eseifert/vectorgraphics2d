@@ -169,7 +169,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		if (isTransformed()) {
 			double[] matrix = new double[6];
 			getTransform().getMatrix(matrix);
-			write("<g transform=\"matrix(", DataUtils.join(" ", matrix), ") \">");
+			write("<g transform=\"matrix(",
+					DataUtils.join(" ", matrix),") \">");
 		}
 	}
 
@@ -190,7 +191,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			"viewBox=\"", x, " ", y, " ", w, " ", h, "\"",
 			">");
 		writeln("<style type=\"text/css\"><![CDATA[");
-		writeln("text { font:", getFont().getSize2D(), "px ", getFont().getFamily(), "; }");
+		writeln("text { font:", getFont().getSize2D(), "px ",
+				getFont().getFamily(), "; }");
 		writeln("]]></style>");
 	}
 
@@ -209,11 +211,13 @@ public class SVGGraphics2D extends VectorGraphics2D {
 				write(";stroke-linecap:", STROKE_ENDCAPS.get(s.getEndCap()));
 			}
 			if (s.getLineJoin() != BasicStroke.JOIN_MITER) {
-				write(";stroke-linejoin:", STROKE_LINEJOIN.get(s.getLineJoin()));
+				write(";stroke-linejoin:",
+						STROKE_LINEJOIN.get(s.getLineJoin()));
 			}
 			//write(";stroke-miterlimit:", s.getMiterLimit());
-			if (s.getDashArray() != null && s.getDashArray().length>0) {
-				write(";stroke-dasharray:", DataUtils.join(",", s.getDashArray()));
+			if (s.getDashArray() != null && s.getDashArray().length > 0) {
+				write(";stroke-dasharray:",
+						DataUtils.join(",", s.getDashArray()));
 				write(";stroke-dashoffset:", s.getDashPhase());
 			}
 		}
@@ -247,14 +251,16 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			double y1 = l.getY1();
 			double x2 = l.getX2();
 			double y2 = l.getY2();
-			write("<line x1=\"", x1, "\" y1=\"", y1, "\" x2=\"", x2, "\" y2=\"", y2, "\" ");
+			write("<line x1=\"", x1, "\" y1=\"", y1,
+					"\" x2=\"", x2, "\" y2=\"", y2, "\" ");
 		} else if (s instanceof Rectangle2D) {
 			Rectangle2D r = (Rectangle2D) s;
 			double x = r.getX();
 			double y = r.getY();
 			double width = r.getWidth();
 			double height = r.getHeight();
-			write("<rect x=\"", x, "\" y=\"", y, "\" width=\"", width, "\" height=\"", height, "\" ");
+			write("<rect x=\"", x, "\" y=\"", y,
+					"\" width=\"", width, "\" height=\"", height, "\" ");
 		} else if (s instanceof RoundRectangle2D) {
 			RoundRectangle2D r = (RoundRectangle2D) s;
 			double x = r.getX();
@@ -263,14 +269,17 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			double height = r.getHeight();
 			double arcWidth = r.getArcWidth();
 			double arcHeight = r.getArcHeight();
-			write("<rect x=\"", x, "\" y=\"", y, "\" width=\"", width, "\" height=\"", height, "\" rx=\"", arcWidth, "\" ry=\"", arcHeight, "\" ");
+			write("<rect x=\"", x, "\" y=\"", y,
+					"\" width=\"", width, "\" height=\"", height,
+					"\" rx=\"", arcWidth, "\" ry=\"", arcHeight, "\" ");
 		} else if (s instanceof Ellipse2D) {
 			Ellipse2D e = (Ellipse2D) s;
 			double x = e.getX();
 			double y = e.getY();
 			double rx = e.getWidth()/2.0;
 			double ry = e.getHeight()/2.0;
-			write("<ellipse cx=\"", x+rx, "\" cy=\"", y+ry, "\" rx=\"", rx, "\" ry=\"", ry, "\" ");
+			write("<ellipse cx=\"", x + rx, "\" cy=\"", y + ry,
+					"\" rx=\"", rx, "\" ry=\"", ry, "\" ");
 		} else {
 			write("<path d=\"");
 			PathIterator segments = s.getPathIterator(null);
@@ -288,14 +297,19 @@ public class SVGGraphics2D extends VectorGraphics2D {
 					write("L", coords[0], ",", coords[1]);
 					break;
 				case PathIterator.SEG_CUBICTO:
-					write("C", coords[0], ",", coords[1], " ", coords[2], ",", coords[3], " ", coords[4], ",", coords[5]);
+					write("C", coords[0], ",", coords[1], " ",
+							coords[2], ",", coords[3], " ",
+							coords[4], ",", coords[5]);
 					break;
 				case PathIterator.SEG_QUADTO:
-					write("Q", coords[0], ",", coords[1], " ", coords[2], ",", coords[3]);
+					write("Q", coords[0], ",", coords[1], " ",
+							coords[2], ",", coords[3]);
 					break;
 				case PathIterator.SEG_CLOSE:
 					write("Z");
 					break;
+				default:
+					throw new IllegalStateException("Unknown path operation.");
 				}
 			}
 			write("\" ");
@@ -303,7 +317,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	}
 
 	private static String getSvg(Color c) {
-		String color = "rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")";
+		String color = "rgb(" + c.getRed() + "," + c.getGreen() + "," +
+			c.getBlue() + ")";
 		if (c.getAlpha() < 255) {
 			double opacity = c.getAlpha()/255.0;
 			color += ";opacity:" + opacity;
@@ -318,7 +333,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		} catch (IOException e) {
 			return "";
 		}
-		String dataBase64 = DatatypeConverter.printBase64Binary(data.toByteArray());
+		String dataBase64 = DatatypeConverter
+			.printBase64Binary(data.toByteArray());
 		return "data:image/png;base64," + dataBase64;
 	}
 
