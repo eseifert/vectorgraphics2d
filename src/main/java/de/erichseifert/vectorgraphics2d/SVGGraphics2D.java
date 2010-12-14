@@ -28,6 +28,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -109,41 +110,55 @@ public class SVGGraphics2D extends VectorGraphics2D {
 
 	@Override
 	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+		Path2D s = new Path2D.Double(Path2D.WIND_NON_ZERO, xPoints.length);
 		write("<polygon points=\"");
 		for (int i = 0; i < nPoints; i++) {
-			if (i > 0) {
+			if (i == 0) {
+				s.moveTo(xPoints[i], yPoints[i]);
+			} else {
+				s.lineTo(xPoints[i], yPoints[i]);
 				write(" ");
 			}
 			write(xPoints[i], ",", yPoints[i]);
 		}
 		write("\" ");
-		writeClosingDraw();
+		s.closePath();
+		writeClosingDraw(s);
 	}
 
 	@Override
 	public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
+		Path2D s = new Path2D.Double(Path2D.WIND_NON_ZERO, xPoints.length);
 		write("<polyline points=\"");
 		for (int i = 0; i < nPoints; i++) {
-			if (i > 0) {
+			if (i == 0) {
+				s.moveTo(xPoints[i], yPoints[i]);
+			} else {
+				s.lineTo(xPoints[i], yPoints[i]);
 				write(" ");
 			}
 			write(xPoints[i], ",", yPoints[i]);
 		}
 		write("\" ");
-		writeClosingDraw();
+		writeClosingDraw(s);
 	}
 
 	@Override
 	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+		Path2D s = new Path2D.Double(Path2D.WIND_NON_ZERO, xPoints.length);
 		write("<polygon points=\"");
 		for (int i = 0; i < nPoints; i++) {
-			if (i > 0) {
+			if (i == 0) {
+				s.moveTo(xPoints[i], yPoints[i]);
+			} else {
+				s.lineTo(xPoints[i], yPoints[i]);
 				write(" ");
 			}
 			write(xPoints[i], ",", yPoints[i]);
 		}
 		write("\" ");
-		writeClosingFill();
+		s.closePath();
+		writeClosingFill(s);
 	}
 
 	@Override
@@ -159,6 +174,9 @@ public class SVGGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void setAffineTransform(AffineTransform tx) {
+		if (getTransform().equals(tx)) {
+			return;
+		}
 		// Close previous transformation group
 		if (isTransformed()) {
 			writeln("</g>");
@@ -196,29 +214,26 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		writeln("]]></style>");
 	}
 
-	/**
-	 * Utility method for writing a tag closing fragment for drawing operations.
-	 */
 	@Override
-	protected void writeClosingDraw() {
+	protected void writeClosingDraw(Shape s) {
 		write("style=\"fill:none;stroke:", getSvg(getColor()));
 		if (getStroke() instanceof BasicStroke) {
-			BasicStroke s = (BasicStroke) getStroke();
-			if (s.getLineWidth() != 1f) {
-				write(";stroke-width:", s.getLineWidth());
+			BasicStroke stroke = (BasicStroke) getStroke();
+			if (stroke.getLineWidth() != 1f) {
+				write(";stroke-width:", stroke.getLineWidth());
 			}
-			if (s.getEndCap() != BasicStroke.CAP_BUTT) {
-				write(";stroke-linecap:", STROKE_ENDCAPS.get(s.getEndCap()));
+			if (stroke.getEndCap() != BasicStroke.CAP_BUTT) {
+				write(";stroke-linecap:", STROKE_ENDCAPS.get(stroke.getEndCap()));
 			}
-			if (s.getLineJoin() != BasicStroke.JOIN_MITER) {
+			if (stroke.getLineJoin() != BasicStroke.JOIN_MITER) {
 				write(";stroke-linejoin:",
-						STROKE_LINEJOIN.get(s.getLineJoin()));
+						STROKE_LINEJOIN.get(stroke.getLineJoin()));
 			}
 			//write(";stroke-miterlimit:", s.getMiterLimit());
-			if (s.getDashArray() != null && s.getDashArray().length > 0) {
+			if (stroke.getDashArray() != null && stroke.getDashArray().length > 0) {
 				write(";stroke-dasharray:",
-						DataUtils.join(",", s.getDashArray()));
-				write(";stroke-dashoffset:", s.getDashPhase());
+						DataUtils.join(",", stroke.getDashArray()));
+				write(";stroke-dashoffset:", stroke.getDashPhase());
 			}
 		}
 		if (getClip() != null) {
@@ -227,22 +242,20 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		writeln("\" />");
 	}
 
-	/**
-	 * Utility method for writing a tag closing fragment for filling operations.
-	 */
 	@Override
-	protected void writeClosingFill() {
-		write("style=\"fill:", getSvg(getColor()), ";stroke:none");
-		if (getClip() != null) {
-			write("\" clip-path=\"url(#", CLIP_PATH_ID, clipCounter, ")");
+	protected void writeClosingFill(Shape s) {
+		if (getPaint() instanceof Color) {
+			write("style=\"fill:", getSvg(getColor()), ";stroke:none");
+			if (getClip() != null) {
+				write("\" clip-path=\"url(#", CLIP_PATH_ID, clipCounter, ")");
+			}
+			writeln("\" />");
+		} else {
+			write("style=\"stroke:none\" />");
+			super.writeClosingFill(s);
 		}
-		writeln("\" />");
 	}
 
-	/**
-	 * Utility method for writing an arbitrary shape to.
-	 * It tries to translate Java2D shapes to the corresponding SVG shape tags.
-	 */
 	@Override
 	protected void writeShape(Shape s) {
 		if (s instanceof Line2D) {

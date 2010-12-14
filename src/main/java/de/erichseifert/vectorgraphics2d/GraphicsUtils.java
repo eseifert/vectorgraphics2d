@@ -84,10 +84,10 @@ public abstract class GraphicsUtils {
 		}
 		// This code ensures that all the pixels in the image are loaded
 		image = new ImageIcon(image).getImage();
-		// Determine if the image has transparent pixels; for this method's
-		// implementation, see Determining If an Image Has Transparent Pixels
+		// Determine if the image has transparent pixels
 		boolean hasAlpha = hasAlpha(image);
-		// Create a buffered image with a format that's compatible with the screen
+		// Create a buffered image with a format that's compatible with the
+		// screen
 		BufferedImage bimage = null;
 		GraphicsEnvironment ge = GraphicsEnvironment
 			.getLocalGraphicsEnvironment();
@@ -104,7 +104,8 @@ public abstract class GraphicsUtils {
 					image.getWidth(null), image.getHeight(null), transparency);
 		} catch (HeadlessException e) {
 			// The system does not have a screen
-		} if (bimage == null) {
+		}
+		if (bimage == null) {
 			// Create a buffered image using the default color model
 			int type = BufferedImage.TYPE_INT_RGB;
 			if (hasAlpha) {

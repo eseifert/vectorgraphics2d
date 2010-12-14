@@ -43,7 +43,8 @@ import java.util.Map;
  * in the <i>Encapsulated PostScript®</i> (EPS) format.
  */
 public class EPSGraphics2D extends VectorGraphics2D {
-	/** Constant to convert values from millimeters to PostScript® units (1/72th inch). */
+	/** Constant to convert values from millimeters to PostScript® units
+	(1/72th inch). */
 	protected static final double MM_IN_UNITS = 72.0 / 25.4;
 
 	/** Mapping of stroke endcap values from Java to PostScript®. */
@@ -52,7 +53,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		new Integer[] { 0, 1, 2 }
 	);
 
-	/** Mapping of line join values for path drawing from Java to PostScript®. */
+	/** Mapping of line join values for path drawing from Java to
+	PostScript®. */
 	private static final Map<Integer, Integer> STROKE_LINEJOIN = DataUtils.map(
 		new Integer[] { BasicStroke.JOIN_MITER, BasicStroke.JOIN_ROUND, BasicStroke.JOIN_BEVEL },
 		new Integer[] { 0, 1, 2 }
@@ -70,22 +72,25 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	@Override
 	protected void writeString(String str, double x, double y) {
 		// Escape string
-		str = str.replaceAll("\\\\", "\\\\\\\\")
-			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
+		str = str.replaceAll("\\\\", "\\\\\\\\").replaceAll("\t", "\\\\t")
+			.replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
 			.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
 
 		//float fontSize = getFont().getSize2D();
-		//float leading = getFont().getLineMetrics("", getFontRenderContext()).getLeading();
+		//float leading = getFont().getLineMetrics("", getFontRenderContext())
+		//	.getLeading();
 
 		write("gsave 1 -1 scale ");
 
 		/*
 		// Extract lines
-		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n").split("\n");
+		String[] lines = str.replaceAll("\r\n", "\n").replaceAll("\r", "\n")
+			.split("\n");
 		// Output lines
 		for (int i = 0; i < lines.length; i++) {
 			String line = lines[i];
-			write(x, " -", y + i*fontSize + ((i>0) ? leading : 0f), " M (", line, ") show ");
+			write(x, " -", y + i*fontSize + ((i>0) ? leading : 0f),
+				" M (", line, ") show ");
 		}
 		*/
 
@@ -131,7 +136,9 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
 		String imgData = getEps(bufferedImg);
 		int bands = bufferedImg.getSampleModel().getNumBands();
-		int bitsPerSample = bufferedImg.getColorModel().getPixelSize() / bands;
+		int bitsPerPixel = (int) Math.ceil(
+				bufferedImg.getColorModel().getPixelSize() / 8.0) * 8;
+		int bitsPerSample = bitsPerPixel / bands;
 		if (bands > 3) {
 			bands = 3;
 		}
@@ -188,6 +195,9 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	@Override
 	public void setTransform(AffineTransform tx) {
+		if (getTransform().equals(tx)) {
+			return;
+		}
 		super.setTransform(tx);
 		double[] matrix = new double[6];
 		getTransform().getMatrix(matrix);
@@ -198,32 +208,42 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	@Override
 	public void translate(double tx, double ty) {
 		super.translate(tx, ty);
-		writeln(tx, " ", ty, " translate");
+		if ((tx != 0.0) || (ty != 0.0)) {
+			writeln(tx, " ", ty, " translate");
+		}
 	}
 
 	@Override
-	public void scale(double tx, double ty) {
-		super.scale(tx, ty);
-		writeln(tx, " ", ty, " scale");
+	public void scale(double sx, double sy) {
+		super.scale(sx, sy);
+		if ((sx != 1.0) || (sy != 1.0)) {
+			writeln(sx, " ", sy, " scale");
+		}
 	}
 
 	@Override
 	public void rotate(double theta) {
 		super.rotate(theta);
-		writeln(theta/Math.PI*180.0, " rotate");
+		if (theta != 0.0) {
+			writeln(theta/Math.PI*180.0, " rotate");
+		}
 	}
 
 	@Override
 	public void rotate(double theta, double x, double y) {
 		super.rotate(theta, x, y);
-		writeln(x, " ", y, " translate ", theta/Math.PI*180.0, " rotate ",
+		if (theta != 0.0) {
+			writeln(x, " ", y, " translate ", theta/Math.PI*180.0, " rotate ",
 				-x, " ", -y, " translate");
+		}
 	}
 
 	@Override
 	public void shear(double sx, double sy) {
 		super.shear(sx, sy);
-		setTransform(getTransform());
+		if ((sx != 0.0) || (sy != 0.0)) {
+			setTransform(getTransform());
+		}
 	}
 
 	@Override
@@ -288,7 +308,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 * Utility method for writing a tag closing fragment for drawing operations.
 	 */
 	@Override
-	protected void writeClosingDraw() {
+	protected void writeClosingDraw(Shape s) {
 		writeln(" stroke");
 	}
 
@@ -296,8 +316,12 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 * Utility method for writing a tag closing fragment for filling operations.
 	 */
 	@Override
-	protected void writeClosingFill() {
+	protected void writeClosingFill(Shape s) {
+		// TODO Omit fill operation if paint isn't a Color object
 		writeln(" fill");
+		if (!(getPaint() instanceof Color)) {
+			super.writeClosingFill(s);
+		}
 	}
 
 	/**

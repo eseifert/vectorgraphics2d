@@ -60,10 +60,15 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Base for classed that want to implement vector export.
+ * @author Erich Seifert
+ */
 public abstract class VectorGraphics2D extends Graphics2D {
 	/** Constants to define how fonts are rendered. */
 	public static enum FontRendering {
-		/** Constant indicating that fonts should be rendered as text objects. */
+		/** Constant indicating that fonts should be rendered as
+		text objects. */
 		TEXT,
 		/** Constant indicating that fonts should be converted to vectors. */
 		VECTORS
@@ -134,7 +139,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public void draw(Shape s) {
 		writeShape(s);
-		writeClosingDraw();
+		writeClosingDraw(s);
 	}
 
 	@Override
@@ -168,7 +173,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public void drawRenderedImage(RenderedImage img,
 			AffineTransform xform) {
-		// TODO
+		// TODO Implement
+		//throw new UnsupportedOperationException("Rendered images aren't supported.");
 	}
 
 	@Override
@@ -178,6 +184,9 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawString(String str, float x, float y) {
+		if (str != null && str.trim().isEmpty()) {
+			return;
+		}
 		switch (getFontRendering()) {
 		case VECTORS:
 			TextLayout layout = new TextLayout(str, getFont(),
@@ -215,7 +224,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public void fill(Shape s) {
 		writeShape(s);
-		writeClosingFill();
+		writeClosingFill(s);
 	}
 
 	@Override
@@ -411,28 +420,29 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public void clearRect(int x, int y, int width, int height) {
 		// TODO Implement
-		throw new UnsupportedOperationException("clearRect() isn't supported by VectorGraphics2D.");
+		//throw new UnsupportedOperationException("clearRect() isn't supported by VectorGraphics2D.");
 	}
 
 	@Override
 	public void clipRect(int x, int y, int width, int height) {
-		Shape clipNew = new Rectangle(x, y, width, height);
-		clip(clipNew);
+		clip(new Rectangle(x, y, width, height));
 	}
 
 	@Override
 	public void copyArea(int x, int y, int width, int height, int dx, int dy) {
 		// TODO Implement
-		throw new UnsupportedOperationException("copyArea() isn't supported by VectorGraphics2D.");
+		//throw new UnsupportedOperationException("copyArea() isn't supported by VectorGraphics2D.");
 	}
 
 	@Override
 	public Graphics create() {
+		// TODO Implement
 		return this;
 	}
 
 	@Override
 	public void dispose() {
+		// TODO Implement
 	}
 
 	@Override
@@ -473,16 +483,52 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2,
 			int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
-		// TODO Auto-generated method stub
-		return false;
+		if (img == null) {
+			return true;
+		}
+
+		int sx = Math.min(sx1, sx2);
+		int sy = Math.min(sy1, sy2);
+		int sw = Math.abs(sx2 - sx1);
+		int sh = Math.abs(sy2 - sy1);
+		int dx = Math.min(dx1, dx2);
+		int dy = Math.min(dy1, dy2);
+		int dw = Math.abs(dx2 - dx1);
+		int dh = Math.abs(dy2 - dy1);
+
+		// Draw image
+		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
+		Image cropped = bufferedImg.getSubimage(sx, sy, sw, sh);
+		return drawImage(cropped, dx, dy, dw, dh, observer);
 	}
 
 	@Override
 	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2,
 			int sx1, int sy1, int sx2, int sy2, Color bgcolor,
 			ImageObserver observer) {
-		// TODO Auto-generated method stub
-		return false;
+		if (img == null) {
+			return true;
+		}
+
+		int sx = Math.min(sx1, sx2);
+		int sy = Math.min(sy1, sy2);
+		int sw = Math.abs(sx2 - sx1);
+		int sh = Math.abs(sy2 - sy1);
+		int dx = Math.min(dx1, dx2);
+		int dy = Math.min(dy1, dy2);
+		int dw = Math.abs(dx2 - dx1);
+		int dh = Math.abs(dy2 - dy1);
+
+		// Fill Rectangle with bgcolor
+		Color bgcolorOld = getColor();
+		setColor(bgcolor);
+		fill(new Rectangle(dx, dy, dw, dh));
+		setColor(bgcolorOld);
+
+		// Draw image on rectangle
+		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
+		Image cropped = bufferedImg.getSubimage(sx, sy, sw, sh);
+		return drawImage(cropped, dx, dy, dw, dh, observer);
 	}
 
 	@Override
@@ -599,7 +645,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	@Override
 	public FontMetrics getFontMetrics(Font f) {
 		// TODO Find a better way for creating a new FontMetrics instance
-		BufferedImage bi = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage bi =
+			new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
 	    Graphics g = bi.getGraphics();
 	    FontMetrics fontMetrics = g.getFontMetrics(font);
 	    g.dispose();
@@ -614,7 +661,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void setClip(int x, int y, int width, int height) {
-		clip = new Rectangle(x, y, width, height);
+		setClip(new Rectangle(x, y, width, height));
 	}
 
 	@Override
@@ -631,8 +678,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void setPaintMode() {
-		// TODO Auto-generated method stub
-
+		// TODO Implement
+		//throw new UnsupportedOperationException("setPaintMode() isn't supported.");
 	}
 
 	@Override
@@ -656,7 +703,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	/**
-	 * Utility method for writing a line of multiple objects to the SVG document.
+	 * Utility method for writing a line of multiple objects to the
+	 * SVG document.
 	 * @param strs Objects to be written
 	 */
 	protected void writeln(Object... strs) {
@@ -697,13 +745,47 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	/**
 	 * Write a command to draw the outline of a previously inserted shape.
+	 * @param s Shape that should be drawn.
 	 */
-	protected abstract void writeClosingDraw();
+	protected abstract void writeClosingDraw(Shape s);
 
 	/**
 	 * Write a command to fill the outline of a previously inserted shape.
+	 * @param s Shape that should be filled.
 	 */
-	protected abstract void writeClosingFill();
+	protected void writeClosingFill(Shape s) {
+		Rectangle2D shapeBounds = s.getBounds2D();
+
+		// TODO Use real DPI setting
+		final int DPI = 72;
+		// TODO Use setting
+		final int MAX_PAINT_RASTER = 128;
+
+		// Calculate dimensions of shape with current transformations
+		int wImage = (int) Math.ceil(shapeBounds.getWidth()*DPI);
+		int hImage = (int) Math.ceil(shapeBounds.getHeight()*DPI);
+		// Limit the size of images
+		wImage = Math.min(wImage, MAX_PAINT_RASTER);
+		hImage = Math.min(hImage, MAX_PAINT_RASTER);
+
+		// Create image to paint draw gradient with current transformations
+		BufferedImage paintImage = new BufferedImage(
+				wImage, hImage, BufferedImage.TYPE_INT_ARGB);
+
+		// Paint shape
+		Graphics2D g = (Graphics2D) paintImage.getGraphics();
+		g.scale(wImage/shapeBounds.getWidth(), hImage/shapeBounds.getHeight());
+		g.translate(-shapeBounds.getX(), -shapeBounds.getY());
+		g.setPaint(getPaint());
+		g.fill(s);
+		// Free resources
+		g.dispose();
+
+		// Output image of gradient
+		writeImage(paintImage, wImage, hImage,
+			shapeBounds.getX(), shapeBounds.getY(),
+			shapeBounds.getWidth(), shapeBounds.getHeight());
+	}
 
 	/**
 	 * Write the header to start a new document.
@@ -715,6 +797,12 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	 */
 	protected abstract String getFooter();
 
+	/**
+	 * Returns a transformed version of an image.
+	 * @param image Image to be transformed
+	 * @param xform Affine transform to be applied
+	 * @return Image with transformed content
+	 */
 	private BufferedImage getTransformedImage(Image image,
 			AffineTransform xform) {
 		Integer interpolationType =
@@ -736,7 +824,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	/**
 	 * Returns whether a distorting transformation has been applied to the
 	 * document.
-	 * @return <code>true</code> if the document is distorted, otherwise <code>false</code>.
+	 * @return <code>true</code> if the document is distorted,
+	 *         otherwise <code>false</code>.
 	 */
 	protected boolean isDistorted() {
 		if (!isTransformed()) {

@@ -93,10 +93,6 @@ public class PDFGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeString(String str, double x, double y) {
-		if (str == null || str.isEmpty()) {
-			return;
-		}
-
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\\\\\")
 			.replaceAll("\t", "\\\\t").replaceAll("\b", "\\\\b").replaceAll("\f", "\\\\f")
@@ -224,6 +220,9 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	/*
 	@Override
 	protected void setAffineTransform(AffineTransform tx) {
+		if (getTransform().equals(tx)) {
+			return;
+		}
 		// Undo previous transforms
 		if (isTransformed()) {
 			writeln("Q");
@@ -375,7 +374,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	 * operations.
 	 */
 	@Override
-	protected void writeClosingDraw() {
+	protected void writeClosingDraw(Shape s) {
 		writeln(" S");
 	}
 
@@ -384,8 +383,11 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	 * operations.
 	 */
 	@Override
-	protected void writeClosingFill() {
+	protected void writeClosingFill(Shape s) {
 		writeln(" f");
+		if (!(getPaint() instanceof Color)) {
+			super.writeClosingFill(s);
+		}
 	}
 
 	/**
