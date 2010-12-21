@@ -73,25 +73,46 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		/** Constant indicating that fonts should be converted to vectors. */
 		VECTORS
 	}
+	/** Maximal resolution for image rastering. */
+	private static final int DEFAULT_PAINT_IMAGE_SIZE_MAXIMUM = 128;
 
-	private final RenderingHints hints;
+	/** Document contents. */
 	private final StringBuffer document;
+	/** Rectangular bounds of the documents. */
 	private final Rectangle2D bounds;
-
-	private Color background;
-	private Color color;
-	private Shape clip;
-	private Composite composite;
-	private final GraphicsConfiguration deviceConfig;
-	private Font font;
-	private final FontRenderContext fontRenderContext;
-	private Paint paint;
-	private Stroke stroke;
-	private final AffineTransform transform;
-	private boolean transformed;
-	private Color xorMode;
-
+	/** Resolution in dots per inch that is used to raster paints. */
+	private double resolution;
+	/** Maximal size of images that are used to raster paints. */
+	private int rasteredImageSizeMaximum;
+	/** Font rendering mode. */
 	private FontRendering fontRendering;
+	/** Flag that stores whether affine transformations have been applied. */
+	private boolean transformed;
+
+	/** Rendering hints. */
+	private final RenderingHints hints;
+	/** Current background color. */
+	private Color background;
+	/** Current foreground color. */
+	private Color color;
+	/** Shape used for clipping paint operations. */
+	private Shape clip;
+	/** Method used for compositing. */
+	private Composite composite;
+	/** Device configuration settings. */
+	private final GraphicsConfiguration deviceConfig;
+	/** Current font. */
+	private Font font;
+	/** Context settings used to render fonts. */
+	private final FontRenderContext fontRenderContext;
+	/** Paint used to fill shapes. */
+	private Paint paint;
+	/** Stroke used for drawing shapes. */
+	private Stroke stroke;
+	/** Current transformation matrix. */
+	private final AffineTransform transform;
+	/** XOR mode used for rendering. */
+	private Color xorMode;
 
 	/**
 	 * Constructor to initialize a new {@code VectorGraphics2D} document.
@@ -106,6 +127,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		document = new StringBuffer();
 		bounds = new Rectangle2D.Double(x, y, width, height);
 		fontRendering = FontRendering.TEXT;
+		resolution = 72.0;
+		rasteredImageSizeMaximum = DEFAULT_PAINT_IMAGE_SIZE_MAXIMUM;
 
 		background = Color.WHITE;
 		color = Color.BLACK;
@@ -756,17 +779,12 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	protected void writeClosingFill(Shape s) {
 		Rectangle2D shapeBounds = s.getBounds2D();
 
-		// TODO Use real DPI setting
-		final int DPI = 72;
-		// TODO Use setting
-		final int MAX_PAINT_RASTER = 128;
-
 		// Calculate dimensions of shape with current transformations
-		int wImage = (int) Math.ceil(shapeBounds.getWidth()*DPI);
-		int hImage = (int) Math.ceil(shapeBounds.getHeight()*DPI);
+		int wImage = (int) Math.ceil(shapeBounds.getWidth()*getResolution());
+		int hImage = (int) Math.ceil(shapeBounds.getHeight()*getResolution());
 		// Limit the size of images
-		wImage = Math.min(wImage, MAX_PAINT_RASTER);
-		hImage = Math.min(hImage, MAX_PAINT_RASTER);
+		wImage = Math.min(wImage, rasteredImageSizeMaximum);
+		hImage = Math.min(hImage, rasteredImageSizeMaximum);
 
 		// Create image to paint draw gradient with current transformations
 		BufferedImage paintImage = new BufferedImage(
@@ -899,4 +917,41 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		return transformed;
 	}
 
+	/**
+	 * Returns the resolution in pixels per inch.
+	 * @return Resolution in pixels per inch.
+	 */
+	public double getResolution() {
+		return resolution;
+	}
+
+	/**
+	 * Sets the resolution in pixels per inch.
+	 * @param resolution New resolution in pixels per inch.
+	 */
+	public void setResolution(double resolution) {
+		if (resolution <= 0.0) {
+			throw new IllegalArgumentException(
+					"Only positive non-zero values allowed");
+		}
+		this.resolution = resolution;
+	}
+
+	/**
+	 * Returns the maximal size of images which are used to raster paints
+	 * like e.g. gradients, or patterns. The default value is 128.
+	 * @return Current maximal image size in pixels.
+	 */
+	public int getRasteredImageSizeMaximum() {
+		return rasteredImageSizeMaximum;
+	}
+
+	/**
+	 * Sets the maximal size of images which are used to raster paints
+	 * like e.g. gradients, or patterns.
+	 * @param paintImageSizeMaximum New maximal image size in pixels.
+	 */
+	public void setRasteredImageSizeMaximum(int paintImageSizeMaximum) {
+		this.rasteredImageSizeMaximum = paintImageSizeMaximum;
+	}
 }
