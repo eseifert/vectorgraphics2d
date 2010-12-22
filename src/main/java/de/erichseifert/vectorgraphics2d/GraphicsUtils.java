@@ -104,7 +104,7 @@ public abstract class GraphicsUtils {
 					image.getWidth(null), image.getHeight(null), transparency);
 		} catch (HeadlessException e) {
 			// The system does not have a screen
-			return null;
+			bimage = null;
 		}
 		if (bimage == null) {
 			// Create a buffered image using the default color model
