@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -65,6 +65,10 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	/**
 	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
 	 * The document dimension must be specified as parameters.
+	 * @param x Left offset of document.
+	 * @param y Top offset of document.
+	 * @param width Width of document.
+	 * @param height Height of document.
 	 */
 	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
@@ -329,6 +333,11 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		}
 	}
 
+	/**
+	 * Converts a <code>Color</code> object to an SVG color statement.
+	 * @param c Color object.
+	 * @return String representation in SVG compatible format.
+	 */
 	private static String getSvg(Color c) {
 		String color = "rgb(" + c.getRed() + "," + c.getGreen() + "," +
 			c.getBlue() + ")";
@@ -339,6 +348,12 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		return color;
 	}
 
+	/**
+	 * Converts a <code>BufferedImage</code> object to an SVG base64 encoded
+	 * string.
+	 * @param bufferedImg Image object.
+	 * @return String representation in SVG base64 format.
+	 */
 	private static String getSvg(BufferedImage bufferedImg) {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		try {

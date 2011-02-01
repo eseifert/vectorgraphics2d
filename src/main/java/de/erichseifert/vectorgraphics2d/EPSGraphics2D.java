@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -306,6 +306,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	/**
 	 * Utility method for writing a tag closing fragment for drawing operations.
+	 * @param s Shape.
 	 */
 	@Override
 	protected void writeClosingDraw(Shape s) {
@@ -314,6 +315,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 
 	/**
 	 * Utility method for writing a tag closing fragment for filling operations.
+	 * @param s Shape.
 	 */
 	@Override
 	protected void writeClosingFill(Shape s) {
@@ -328,6 +330,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 * Utility method for writing an arbitrary shape to.
 	 * It tries to translate Java2D shapes to the corresponding EPS shape
 	 * commands.
+	 * @param s Shape.
 	 */
 	@Override
 	protected void writeShape(Shape s) {
@@ -422,7 +425,12 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		}
 	}
 
-	public static String getEps(BufferedImage bufferedImg) {
+	/**
+	 * Returns a string containing the image data in an EPS compatible format.
+	 * @param bufferedImg Image object.
+	 * @return String representation in EPS hexadecimal format.
+	 */
+	private static String getEps(BufferedImage bufferedImg) {
 		int width = bufferedImg.getWidth();
 		int height = bufferedImg.getHeight();
 		int bands = bufferedImg.getSampleModel().getNumBands();

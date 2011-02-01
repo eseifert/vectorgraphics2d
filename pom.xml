@@ -49,7 +49,7 @@
                 </mapping>
                 <properties>
                     <owner>Erich Seifert</owner>
-                    <year>${project.inceptionYear}</year>
+                    <year>${project.inceptionYear}-2011</year>
                     <email>dev[at]erichseifert.de</email>
                 </properties>
                 <excludes>

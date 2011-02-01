@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -66,6 +66,7 @@ public abstract class GraphicsUtils {
 		try {
 			pg.grabPixels();
 		} catch (InterruptedException e) {
+			return false;
 		}
 		// Get the image's color model
 		ColorModel cm = pg.getColorModel();

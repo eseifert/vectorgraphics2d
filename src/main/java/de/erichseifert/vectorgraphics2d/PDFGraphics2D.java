@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -467,7 +467,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	/**
 	 * Returns a string which represents the data of the specified image.
 	 * @param bufferedImg Image to convert.
-	 * @return String with image data.
+	 * @return String representation of image in PDF hexadecimal format.
 	 */
 	private String getPdf(BufferedImage bufferedImg) {
 		int width = bufferedImg.getWidth();
