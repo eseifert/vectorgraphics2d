@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2012 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -41,7 +41,7 @@ import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
 /**
- * <code>Graphics2D</code> implementation that saves all operations to a string
+ * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
 public class SVGGraphics2D extends VectorGraphics2D {
@@ -63,7 +63,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	private long clipCounter;
 
 	/**
-	 * Constructor that initializes a new <code>SVGGraphics2D</code> instance.
+	 * Constructor that initializes a new {@code SVGGraphics2D} instance.
 	 * The document dimension must be specified as parameters.
 	 * @param x Left offset of document.
 	 * @param y Top offset of document.
@@ -334,7 +334,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	}
 
 	/**
-	 * Converts a <code>Color</code> object to an SVG color statement.
+	 * Converts a {@code Color} object to an SVG color statement.
 	 * @param c Color object.
 	 * @return String representation in SVG compatible format.
 	 */
@@ -349,7 +349,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	}
 
 	/**
-	 * Converts a <code>BufferedImage</code> object to an SVG base64 encoded
+	 * Converts a {@code BufferedImage} object to an SVG base64 encoded
 	 * string.
 	 * @param bufferedImg Image object.
 	 * @return String representation in SVG base64 format.

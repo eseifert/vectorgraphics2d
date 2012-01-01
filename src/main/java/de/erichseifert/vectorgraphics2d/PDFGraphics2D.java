@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2012 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * <code>Graphics2D</code> implementation that saves all operations to a string
+ * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Portable Document Format</i> (PDF).
  */
 public class PDFGraphics2D extends VectorGraphics2D {
@@ -78,7 +78,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	private int contentStart;
 
 	/**
-	 * Constructor that initializes a new <code>PDFGraphics2D</code> instance.
+	 * Constructor that initializes a new {@code PDFGraphics2D} instance.
 	 * The document dimension must be specified as parameters.
 	 */
 	public PDFGraphics2D(double x, double y, double width, double height) {

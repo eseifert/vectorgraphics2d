@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2012 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -47,12 +47,12 @@ public abstract class GraphicsUtils {
 	}
 
 	/**
-	 * This method returns <code>true</code> if the specified image
+	 * This method returns {@code true} if the specified image
 	 * has transparent pixels.
 	 * Taken from http://www.exampledepot.com/egs/java.awt.image/HasAlpha.html
 	 * @param image
-	 * @return <code>true</code> if the specified image has transparent pixels,
-	 *         <code>false</code> otherwise
+	 * @return {@code true} if the specified image has transparent pixels,
+	 *         {@code false} otherwise
 	 */
 	public static boolean hasAlpha(Image image) {
 		// If buffered image, the color model is readily available

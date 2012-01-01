@@ -95,7 +95,7 @@
                 </mapping>
                 <properties>
                     <owner>Erich Seifert</owner>
-                    <year>${project.inceptionYear}-2011</year>
+                    <year>${project.inceptionYear}-2012</year>
                     <email>dev[at]erichseifert.de</email>
                 </properties>
                 <excludes>

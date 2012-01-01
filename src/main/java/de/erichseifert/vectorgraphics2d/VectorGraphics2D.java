@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010-2011 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2012 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -842,8 +842,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	/**
 	 * Returns whether a distorting transformation has been applied to the
 	 * document.
-	 * @return <code>true</code> if the document is distorted,
-	 *         otherwise <code>false</code>.
+	 * @return {@code true} if the document is distorted,
+	 *         otherwise {@code false}.
 	 */
 	protected boolean isDistorted() {
 		if (!isTransformed()) {
@@ -910,8 +910,8 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	/**
 	 * Returns whether an affine transformation like translation, scaling,
 	 * rotation or shearing has been applied to this graphics instance.
-	 * @return <code>true</code> if the instance has been transformed,
-	 *         <code>false</code> otherwise
+	 * @return {@code true} if the instance has been transformed,
+	 *         {@code false} otherwise
 	 */
 	protected boolean isTransformed() {
 		return transformed;
