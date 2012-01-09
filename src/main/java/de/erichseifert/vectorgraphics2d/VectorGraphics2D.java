@@ -649,10 +649,10 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Rectangle getClipBounds() {
-		if (clip == null) {
+		if (getClip() == null) {
 			return null;
 		}
-		return clip.getBounds();
+		return getClip().getBounds();
 	}
 
 	@Override
@@ -671,7 +671,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		BufferedImage bi =
 			new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
 	    Graphics g = bi.getGraphics();
-	    FontMetrics fontMetrics = g.getFontMetrics(font);
+	    FontMetrics fontMetrics = g.getFontMetrics(getFont());
 	    g.dispose();
 	    bi = null;
 	    return fontMetrics;

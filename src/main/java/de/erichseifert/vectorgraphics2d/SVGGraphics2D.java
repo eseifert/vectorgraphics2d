@@ -44,6 +44,7 @@ import javax.xml.bind.DatatypeConverter;
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
+@SuppressWarnings("restriction")
 public class SVGGraphics2D extends VectorGraphics2D {
 	/** Mapping of stroke endcap values from Java to SVG. */
 	private static final Map<Integer, String> STROKE_ENDCAPS = DataUtils.map(
