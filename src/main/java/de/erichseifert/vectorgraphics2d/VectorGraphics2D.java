@@ -45,6 +45,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -59,6 +60,8 @@ import java.text.AttributedCharacterIterator;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 /**
  * Base for classed that want to implement vector export.
@@ -178,6 +181,30 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		return true;
 	}
 
+	/**
+	 * Returns a transformed version of an image.
+	 * @param image Image to be transformed
+	 * @param xform Affine transform to be applied
+	 * @return Image with transformed content
+	 */
+	private BufferedImage getTransformedImage(Image image,
+			AffineTransform xform) {
+		Integer interpolationType =
+			(Integer) hints.get(RenderingHints.KEY_INTERPOLATION);
+		if (RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+				.equals(interpolationType)) {
+			interpolationType = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
+		} else if (RenderingHints.VALUE_INTERPOLATION_BILINEAR
+				.equals(interpolationType)) {
+			interpolationType = AffineTransformOp.TYPE_BILINEAR;
+		} else {
+			interpolationType = AffineTransformOp.TYPE_BICUBIC;
+		}
+		AffineTransformOp op = new AffineTransformOp(xform, interpolationType);
+		BufferedImage bufferedImage = GraphicsUtils.toBufferedImage(image);
+		return op.filter(bufferedImage, null);
+	}
+
 	@Override
 	public void drawImage(BufferedImage img, BufferedImageOp op,
 			int x, int y) {
@@ -194,10 +221,9 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public void drawRenderedImage(RenderedImage img,
-			AffineTransform xform) {
-		// TODO Implement
-		//throw new UnsupportedOperationException("Rendered images aren't supported.");
+	public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
+		BufferedImage bimg = GraphicsUtils.toBufferedImage(img);
+		drawImage(bimg, xform, null);
 	}
 
 	@Override
@@ -644,6 +670,14 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Shape getClip() {
+		Shape clip = this.clip;
+		if (clip != null) {
+			try {
+		      clip = transform.createInverse().createTransformedShape(this.clip);
+		    } catch (NoninvertibleTransformException e) {
+		      clip = null;
+		    }
+		}
 		return clip;
 	}
 
@@ -679,7 +713,11 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void setClip(Shape clip) {
-		this.clip = clip;
+		if (clip != null) {
+			this.clip = transform.createTransformedShape(clip);
+		} else {
+			this.clip = null;
+		}
 	}
 
 	@Override
@@ -814,30 +852,6 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	 * Returns a string of the footer to end a document.
 	 */
 	protected abstract String getFooter();
-
-	/**
-	 * Returns a transformed version of an image.
-	 * @param image Image to be transformed
-	 * @param xform Affine transform to be applied
-	 * @return Image with transformed content
-	 */
-	private BufferedImage getTransformedImage(Image image,
-			AffineTransform xform) {
-		Integer interpolationType =
-			(Integer) hints.get(RenderingHints.KEY_INTERPOLATION);
-		if (RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
-				.equals(interpolationType)) {
-			interpolationType = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
-		} else if (RenderingHints.VALUE_INTERPOLATION_BILINEAR
-				.equals(interpolationType)) {
-			interpolationType = AffineTransformOp.TYPE_BILINEAR;
-		} else {
-			interpolationType = AffineTransformOp.TYPE_BICUBIC;
-		}
-		AffineTransformOp op = new AffineTransformOp(xform, interpolationType);
-		BufferedImage bufferedImage = GraphicsUtils.toBufferedImage(image);
-		return op.filter(bufferedImage, null);
-	}
 
 	/**
 	 * Returns whether a distorting transformation has been applied to the

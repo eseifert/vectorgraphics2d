@@ -37,6 +37,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import de.erichseifert.vectorgraphics2d.util.DataUtils;
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Portable Document Format</i> (PDF).

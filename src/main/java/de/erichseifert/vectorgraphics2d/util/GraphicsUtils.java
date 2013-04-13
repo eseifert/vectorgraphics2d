@@ -19,7 +19,7 @@
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.util;
 
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
@@ -31,6 +31,12 @@ import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
 
@@ -73,10 +79,33 @@ public abstract class GraphicsUtils {
 		return cm.hasAlpha();
 	}
 
+	public static BufferedImage toBufferedImage(RenderedImage image) {
+		if (image instanceof BufferedImage) {
+			return (BufferedImage) image;
+		}
+
+		ColorModel cm = image.getColorModel();
+		WritableRaster raster = cm.createCompatibleWritableRaster(
+				image.getWidth(), image.getHeight());
+		boolean isRasterPremultiplied = cm.isAlphaPremultiplied();
+		Hashtable<String, Object> properties = null;
+		if (image.getPropertyNames() != null) {
+			properties = new Hashtable<String, Object>();
+			for (String key : image.getPropertyNames()) {
+				properties.put(key, image.getProperty(key));
+			}
+		}
+
+		BufferedImage bimage = new BufferedImage(cm, raster,
+				isRasterPremultiplied, properties);
+		image.copyData(raster);
+		return bimage;
+	}
+
 	/**
 	 * This method returns a buffered image with the contents of an image.
 	 * Taken from http://www.exampledepot.com/egs/java.awt.image/Image2Buf.html
-	 * @param image Image ot be converted
+	 * @param image Image to be converted
 	 * @return a buffered image with the contents of the specified image
 	 */
 	public static BufferedImage toBufferedImage(Image image) {
@@ -87,6 +116,7 @@ public abstract class GraphicsUtils {
 		image = new ImageIcon(image).getImage();
 		// Determine if the image has transparent pixels
 		boolean hasAlpha = hasAlpha(image);
+
 		// Create a buffered image with a format that's compatible with the
 		// screen
 		BufferedImage bimage = null;
@@ -96,7 +126,7 @@ public abstract class GraphicsUtils {
 			// Determine the type of transparency of the new buffered image
 			int transparency = Transparency.OPAQUE;
 			if (hasAlpha) {
-				transparency = Transparency.BITMASK;
+				transparency = Transparency.TRANSLUCENT;
 			}
 			// Create the buffered image
 			GraphicsDevice gs = ge.getDefaultScreenDevice();
@@ -122,5 +152,28 @@ public abstract class GraphicsUtils {
 		g.drawImage(image, 0, 0, null);
 		g.dispose();
 		return bimage;
+	}
+
+	public static InputStream toInputStream(Image image) {
+		// FIXME Too many assumptions about the color model (RGB/RGBA);
+		BufferedImage bimage = toBufferedImage(image);
+		Raster raster = bimage.getRaster();
+		boolean hasAlpha = bimage.getAlphaRaster() != null;
+
+		byte[] bytes = new byte[bimage.getWidth()*bimage.getHeight()*4];
+		int b = 0;
+
+		int[] samples = new int[raster.getNumBands()];
+	    for (int y = 0; y < raster.getHeight(); y++) {
+	    	for (int x = 0; x < raster.getWidth(); x++) {
+	    		raster.getPixel(x, y, samples);
+    			bytes[b++] = hasAlpha ? (byte) samples[3] : 0;
+	    		bytes[b++] = (byte) samples[0];
+	    		bytes[b++] = (byte) samples[1];
+	    		bytes[b++] = (byte) samples[2];
+	    	}
+		}
+		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
+	    return stream;
 	}
 }

@@ -40,6 +40,9 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.xml.bind.DatatypeConverter;
 
+import de.erichseifert.vectorgraphics2d.util.DataUtils;
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Scaled Vector Graphics</i> (SVG) format.
@@ -57,11 +60,6 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		new Integer[] { BasicStroke.JOIN_MITER, BasicStroke.JOIN_ROUND, BasicStroke.JOIN_BEVEL },
 		new String[] { "miter", "round", "bevel" }
 	);
-
-	/** Prefix string for ids of clipping paths. */
-	private static final String CLIP_PATH_ID = "clip";
-	/** Number of the current clipping path. */
-	private long clipCounter;
 
 	/**
 	 * Constructor that initializes a new {@code SVGGraphics2D} instance.
@@ -167,17 +165,6 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	public void setClip(Shape clip) {
-		super.setClip(clip);
-		if (getClip() != null) {
-			writeln("<clipPath id=\"", CLIP_PATH_ID, ++clipCounter, "\">");
-			writeShape(getClip());
-			writeln("/>");
-			writeln("</clipPath>");
-		}
-	}
-
-	@Override
 	protected void setAffineTransform(AffineTransform tx) {
 		if (getTransform().equals(tx)) {
 			return;
@@ -242,7 +229,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			}
 		}
 		if (getClip() != null) {
-			write("\" clip-path=\"url(#", CLIP_PATH_ID, clipCounter, ")");
+			write("\" clip-path=\"");
+			writePath(getClip());
 		}
 		writeln("\" />");
 	}
@@ -252,7 +240,8 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		if (getPaint() instanceof Color) {
 			write("style=\"fill:", getSvg(getColor()), ";stroke:none");
 			if (getClip() != null) {
-				write("\" clip-path=\"url(#", CLIP_PATH_ID, clipCounter, ")");
+				write("\" clip-path=\"");
+				writePath(getClip());
 			}
 			writeln("\" />");
 		} else {
@@ -300,37 +289,41 @@ public class SVGGraphics2D extends VectorGraphics2D {
 					"\" rx=\"", rx, "\" ry=\"", ry, "\" ");
 		} else {
 			write("<path d=\"");
-			PathIterator segments = s.getPathIterator(null);
-			double[] coords = new double[6];
-			for (int i = 0; !segments.isDone(); i++, segments.next()) {
-				if (i > 0) {
-					write(" ");
-				}
-				int segmentType = segments.currentSegment(coords);
-				switch (segmentType) {
-				case PathIterator.SEG_MOVETO:
-					write("M", coords[0], ",", coords[1]);
-					break;
-				case PathIterator.SEG_LINETO:
-					write("L", coords[0], ",", coords[1]);
-					break;
-				case PathIterator.SEG_CUBICTO:
-					write("C", coords[0], ",", coords[1], " ",
-							coords[2], ",", coords[3], " ",
-							coords[4], ",", coords[5]);
-					break;
-				case PathIterator.SEG_QUADTO:
-					write("Q", coords[0], ",", coords[1], " ",
-							coords[2], ",", coords[3]);
-					break;
-				case PathIterator.SEG_CLOSE:
-					write("Z");
-					break;
-				default:
-					throw new IllegalStateException("Unknown path operation.");
-				}
-			}
+			writePath(s);
 			write("\" ");
+		}
+	}
+
+	protected void writePath(Shape s) {
+		PathIterator segments = s.getPathIterator(null);
+		double[] coords = new double[6];
+		for (int i = 0; !segments.isDone(); i++, segments.next()) {
+			if (i > 0) {
+				write(" ");
+			}
+			int segmentType = segments.currentSegment(coords);
+			switch (segmentType) {
+			case PathIterator.SEG_MOVETO:
+				write("M", coords[0], ",", coords[1]);
+				break;
+			case PathIterator.SEG_LINETO:
+				write("L", coords[0], ",", coords[1]);
+				break;
+			case PathIterator.SEG_CUBICTO:
+				write("C", coords[0], ",", coords[1], " ",
+						coords[2], ",", coords[3], " ",
+						coords[4], ",", coords[5]);
+				break;
+			case PathIterator.SEG_QUADTO:
+				write("Q", coords[0], ",", coords[1], " ",
+						coords[2], ",", coords[3]);
+				break;
+			case PathIterator.SEG_CLOSE:
+				write("Z");
+				break;
+			default:
+				throw new IllegalStateException("Unknown path operation.");
+			}
 		}
 	}
 

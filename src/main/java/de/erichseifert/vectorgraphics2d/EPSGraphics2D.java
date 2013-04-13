@@ -38,6 +38,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map;
 
+import de.erichseifert.vectorgraphics2d.util.DataUtils;
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Encapsulated PostScript®</i> (EPS) format.

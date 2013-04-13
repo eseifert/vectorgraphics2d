@@ -19,8 +19,11 @@
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,5 +102,53 @@ public abstract class DataUtils {
 			sb.append(elements[i]);
 		}
 		return sb.toString();
+	}
+
+	public static void encodeAscii85(InputStream input, OutputStream output,
+			String prefix, String suffix) throws IOException {
+		for (byte b : prefix.getBytes()) {
+			output.write(b);
+		}
+
+	    byte[] bytes = new byte[4];
+		byte[] encoded = new byte[5];
+		int byteCount;
+	    do {
+	    	byteCount = input.read(bytes);
+	        long uint32 = toUInt32(bytes, byteCount);
+	        int padByteCount = 4 - byteCount;
+	        int encodedSize = encodeAscii85Chunk(uint32, encoded, padByteCount);
+	        output.write(encoded, 0, encodedSize);
+	    } while (byteCount == 4);
+		for (byte b : suffix.getBytes()) {
+			output.write(b);
+		}
+	}
+
+	private static final long[] POW_85 = { 52200625, 614125, 7225, 85, 1 };
+
+	private static long toUInt32(byte[] bytes, int size) {
+		long uint32 = 0L;
+	    for (int i = 0; i < 4 && i < size; i++) {
+	        uint32 |= (bytes[i] & 0xff) << (3 - i)*8;
+	    }
+	    return toUnsignedInt(uint32);
+	}
+
+	private static int encodeAscii85Chunk(long uint32, byte[] encoded,
+			int padByteCount) {
+		if (uint32 == 0L && padByteCount == 0) {
+			encoded[0] = 'z';
+			return 1;
+		}
+	    int size = 5 - padByteCount;
+	    for (int i = 0; i < size; i++) {
+	        encoded[i] = (byte) (uint32/POW_85[i]%85 + 33);
+	    }
+	    return size;
+	}
+
+	private static long toUnsignedInt(long x) {
+	    return x & 0x00000000ffffffffL;
 	}
 }

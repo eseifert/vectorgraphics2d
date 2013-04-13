@@ -19,7 +19,7 @@
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -33,6 +33,8 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 
 import org.junit.Test;
+
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 
 public class GraphicsUtilsTest {

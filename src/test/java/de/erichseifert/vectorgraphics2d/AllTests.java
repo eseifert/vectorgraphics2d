@@ -24,9 +24,11 @@ package de.erichseifert.vectorgraphics2d;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import de.erichseifert.vectorgraphics2d.util.UtilTests;
+
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	GraphicsUtilsTest.class,
+	UtilTests.class,
 	EPSGraphics2DTest.class,
 	PDFGraphics2DTest.class,
 	SVGGraphics2DTest.class
