@@ -63,7 +63,7 @@
             <dependencies>
               <dependency>
                 <groupId>net.sf.proguard</groupId>
-                <artifactId>proguard</artifactId>
+                <artifactId>proguard-base</artifactId>
                 <version>4.9</version>
                 <scope>runtime</scope>
               </dependency>
