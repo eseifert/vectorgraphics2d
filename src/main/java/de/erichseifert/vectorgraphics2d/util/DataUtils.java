@@ -24,7 +24,10 @@ package de.erichseifert.vectorgraphics2d.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,11 +54,11 @@ public abstract class DataUtils {
 		// Check for valid parameters
 		if (keys.length != values.length) {
 			throw new IllegalArgumentException(
-					"Number of keys and values is different. " +
-					"Cannot create map.");
+					"Cannot create a Map: " +
+					"The number of keys and values differs.");
 		}
 		// Fill map with keys and values
-		Map<K, V> map = new HashMap<K, V>();
+		Map<K, V> map = new LinkedHashMap<K, V>();
 		for (int i = 0; i < keys.length; i++) {
 			K key = keys[i];
 			V value = values[i];
@@ -65,90 +68,132 @@ public abstract class DataUtils {
 	}
 
 	/**
-	 * Returns a string with all float values divided by a specified separator.
+	 * Returns a string containing all elements concatenated by a specified
+	 * separator.
 	 * @param separator Separator string.
-	 * @param elements Float array.
-	 * @return Joined string.
+	 * @param elements List of elements that should be concatenated.
+	 * @return a concatenated string.
 	 */
-	public static String join(String separator, float... elements) {
-		if (elements == null || elements.length == 0) {
+	public static String join(String separator, List<?> elements) {
+		if (elements == null || elements.size() == 0) {
 			return "";
 		}
-		StringBuffer sb = new StringBuffer(elements.length*3);
-		for (int i = 0; i < elements.length; i++) {
-			if (i > 0) {
+		StringBuffer sb = new StringBuffer(elements.size()*3);
+		int i = 0;
+		for (Object elem : elements) {
+			if (i++ > 0) {
 				sb.append(separator);
 			}
-			sb.append(elements[i]);
+			sb.append(format(elem));
 		}
 		return sb.toString();
 	}
 
 	/**
-	 * Returns a string with all float values divided by a specified separator.
+	 * Returns a string containing all elements concatenated by a specified
+	 * separator.
+	 * @param separator Separator string.
+	 * @param elements List of elements that should be concatenated.
+	 * @return a concatenated string.
+	 */
+	public static String join(String separator, Object... elements) {
+		if (elements == null || elements.length == 0) {
+			return "";
+		}
+		return join(separator, Arrays.asList(elements));
+	}
+
+	/**
+	 * Returns a string with all float values concatenated by a specified
+	 * separator.
+	 * @param separator Separator string.
+	 * @param elements Float array.
+	 * @return a concatenated string.
+	 */
+	public static String join(String separator, float... elements) {
+		if (elements == null || elements.length == 0) {
+			return "";
+		}
+		List<Number> list = new ArrayList<Number>(elements.length);
+		for (Float elem : elements) {
+			list.add(elem);
+		}
+		return join(separator, list);
+	}
+
+	/**
+	 * Returns a string with all double values concatenated by a specified
+	 * separator.
 	 * @param separator Separator string.
 	 * @param elements Double array.
-	 * @return Joined string.
+	 * @return a concatenated string.
 	 */
 	public static String join(String separator, double... elements) {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}
-		StringBuffer sb = new StringBuffer(elements.length*3);
-		for (int i = 0; i < elements.length; i++) {
-			if (i > 0) {
-				sb.append(separator);
+		List<Number> list = new ArrayList<Number>(elements.length);
+		for (Double elem : elements) {
+			list.add(elem);
+		}
+		return join(separator, list);
+	}
+
+	/**
+	 * Returns the largest of all specified values.
+	 * @param values Several integer values.
+	 * @return largest value.
+	 */
+	public static int max(int... values) {
+		int max = values[0];
+		for (int i = 1; i < values.length; i++) {
+			if (values[i] > max) {
+				max = values[i];
 			}
-			sb.append(elements[i]);
 		}
-		return sb.toString();
+		return max;
 	}
 
-	public static void encodeAscii85(InputStream input, OutputStream output,
-			String prefix, String suffix) throws IOException {
-		for (byte b : prefix.getBytes()) {
-			output.write(b);
-		}
-
-	    byte[] bytes = new byte[4];
-		byte[] encoded = new byte[5];
-		int byteCount;
-	    do {
-	    	byteCount = input.read(bytes);
-	        long uint32 = toUInt32(bytes, byteCount);
-	        int padByteCount = 4 - byteCount;
-	        int encodedSize = encodeAscii85Chunk(uint32, encoded, padByteCount);
-	        output.write(encoded, 0, encodedSize);
-	    } while (byteCount == 4);
-		for (byte b : suffix.getBytes()) {
-			output.write(b);
+	/**
+	 * Copies data from an input stream to an output stream using a buffer of
+	 * specified size.
+	 * @param in Input stream.
+	 * @param out Output stream.
+	 * @param bufferSize Size of the copy buffer.
+	 * @throws IOException when an error occurs while copying.
+	 */
+	public static void transfer(InputStream in, OutputStream out, int bufferSize)
+			throws IOException {
+		byte[] buffer = new byte[bufferSize];
+		int bytesRead;
+		while ((bytesRead = in.read(buffer)) != -1) {
+			out.write(buffer, 0, bytesRead);
 		}
 	}
 
-	private static final long[] POW_85 = { 52200625, 614125, 7225, 85, 1 };
-
-	private static long toUInt32(byte[] bytes, int size) {
-		long uint32 = 0L;
-	    for (int i = 0; i < 4 && i < size; i++) {
-	        uint32 |= (bytes[i] & 0xff) << (3 - i)*8;
-	    }
-	    return toUnsignedInt(uint32);
+	/**
+	 * Returns a formatted string of the specified number. All trailing zeroes
+	 * or decimal points will be stripped.
+	 * @param number Number to convert to a string.
+	 * @return A formatted string.
+	 */
+	public static String format(Number number) {
+		String formatted = Double.toString(number.doubleValue())
+				.replaceAll("\\.0+$", "")
+				.replaceAll("(\\.[0-9]*[1-9])0+$", "$1");
+		return formatted;
 	}
 
-	private static int encodeAscii85Chunk(long uint32, byte[] encoded,
-			int padByteCount) {
-		if (uint32 == 0L && padByteCount == 0) {
-			encoded[0] = 'z';
-			return 1;
+	/**
+	 * Returns a formatted string of the specified object.
+	 * @param number Object to convert to a string.
+	 * @return A formatted string.
+	 */
+	public static String format(Object obj) {
+		if (obj instanceof Number) {
+			return format((Number) obj);
+		} else {
+			return obj.toString();
 		}
-	    int size = 5 - padByteCount;
-	    for (int i = 0; i < size; i++) {
-	        encoded[i] = (byte) (uint32/POW_85[i]%85 + 33);
-	    }
-	    return size;
-	}
-
-	private static long toUnsignedInt(long x) {
-	    return x & 0x00000000ffffffffL;
 	}
 }

@@ -139,9 +139,8 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
 		String imgData = getEps(bufferedImg);
 		int bands = bufferedImg.getSampleModel().getNumBands();
-		int bitsPerPixel = (int) Math.ceil(
-				bufferedImg.getColorModel().getPixelSize() / 8.0) * 8;
-		int bitsPerSample = bitsPerPixel / bands;
+		int bitsPerSample = DataUtils.max(bufferedImg.getSampleModel().getSampleSize());
+		bitsPerSample = (int) (Math.ceil(bitsPerSample/8.0)*8.0);
 		if (bands > 3) {
 			bands = 3;
 		}

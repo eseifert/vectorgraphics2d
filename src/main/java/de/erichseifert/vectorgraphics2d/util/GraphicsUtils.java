@@ -30,12 +30,11 @@ import java.awt.Image;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.PixelGrabber;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
@@ -53,32 +52,66 @@ public abstract class GraphicsUtils {
 	}
 
 	/**
-	 * This method returns {@code true} if the specified image
-	 * has transparent pixels.
-	 * Taken from http://www.exampledepot.com/egs/java.awt.image/HasAlpha.html
-	 * @param image
-	 * @return {@code true} if the specified image has transparent pixels,
+	 * This method returns {@code true} if the specified image has the
+	 * possibility to store transparent pixels.
+	 * Inspired by http://www.exampledepot.com/egs/java.awt.image/HasAlpha.html
+	 * @param image Image that should be checked for alpha channel.
+	 * @return {@code true} if the specified image can have transparent pixels,
 	 *         {@code false} otherwise
 	 */
 	public static boolean hasAlpha(Image image) {
+		ColorModel cm;
 		// If buffered image, the color model is readily available
 		if (image instanceof BufferedImage) {
 			BufferedImage bimage = (BufferedImage) image;
-			return bimage.getColorModel().hasAlpha();
+			cm = bimage.getColorModel();
+		} else {
+			// Use a pixel grabber to retrieve the image's color model;
+			// grabbing a single pixel is usually sufficient
+			PixelGrabber pg = new PixelGrabber(image, 0, 0, 1, 1, false);
+			try {
+				pg.grabPixels();
+			} catch (InterruptedException e) {
+				return false;
+			}
+			// Get the image's color model
+			cm = pg.getColorModel();
 		}
-		// Use a pixel grabber to retrieve the image's color model;
-		// grabbing a single pixel is usually sufficient
-		PixelGrabber pg = new PixelGrabber(image, 0, 0, 1, 1, false);
-		try {
-			pg.grabPixels();
-		} catch (InterruptedException e) {
-			return false;
-		}
-		// Get the image's color model
-		ColorModel cm = pg.getColorModel();
 		return cm.hasAlpha();
 	}
 
+	/**
+	 * This method returns {@code true} if the specified image has at least one
+	 * pixel that is not fully opaque.
+	 * @param image Image that should be checked for non-opaque pixels.
+	 * @return {@code true} if the specified image has transparent pixels,
+	 *         {@code false} otherwise
+	 */
+	public static boolean usesAlpha(Image image) {
+		if (image == null) {
+			return false;
+		}
+		BufferedImage bimage = toBufferedImage(image);
+		Raster alphaRaster = bimage.getAlphaRaster();
+		if (alphaRaster == null) {
+			return false;
+		}
+		DataBuffer dataBuffer = alphaRaster.getDataBuffer();
+		for (int i = 0; i < dataBuffer.getSize(); i++) {
+			int alpha = dataBuffer.getElem(i);
+			if (alpha < 255) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Converts an arbitrary image to a {@code BufferedImage}.
+	 * @param image Image that should be converted.
+	 * @return a buffered image containing the image pixels, or the original
+	 *         instance if the image already was of type {@code BufferedImage}.
+	 */
 	public static BufferedImage toBufferedImage(RenderedImage image) {
 		if (image instanceof BufferedImage) {
 			return (BufferedImage) image;
@@ -152,28 +185,5 @@ public abstract class GraphicsUtils {
 		g.drawImage(image, 0, 0, null);
 		g.dispose();
 		return bimage;
-	}
-
-	public static InputStream toInputStream(Image image) {
-		// FIXME Too many assumptions about the color model (RGB/RGBA);
-		BufferedImage bimage = toBufferedImage(image);
-		Raster raster = bimage.getRaster();
-		boolean hasAlpha = bimage.getAlphaRaster() != null;
-
-		byte[] bytes = new byte[bimage.getWidth()*bimage.getHeight()*4];
-		int b = 0;
-
-		int[] samples = new int[raster.getNumBands()];
-	    for (int y = 0; y < raster.getHeight(); y++) {
-	    	for (int x = 0; x < raster.getWidth(); x++) {
-	    		raster.getPixel(x, y, samples);
-    			bytes[b++] = hasAlpha ? (byte) samples[3] : 0;
-	    		bytes[b++] = (byte) samples[0];
-	    		bytes[b++] = (byte) samples[1];
-	    		bytes[b++] = (byte) samples[2];
-	    	}
-		}
-		ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
-	    return stream;
 	}
 }
