@@ -1,3 +1,9 @@
+VectorGraphics2D 0.9.1 (2013-05-31)
+===================================
+
+- Added Maven repository location to POM
+- Fixed issue 14 which caused invalid SVG clipping
+
 VectorGraphics2D 0.9 (2013-05-12)
 =================================
 

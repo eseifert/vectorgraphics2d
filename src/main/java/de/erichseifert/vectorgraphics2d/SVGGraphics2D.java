@@ -61,6 +61,11 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		new String[] { "miter", "round", "bevel" }
 	);
 
+	/** Prefix string for ids of clipping paths. */
+	private static final String CLIP_PATH_ID = "clip";
+	/** Number of the current clipping path. */
+	private long clipCounter;
+
 	/**
 	 * Constructor that initializes a new {@code SVGGraphics2D} instance.
 	 * The document dimension must be specified as parameters.
@@ -179,7 +184,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		if (isTransformed()) {
 			double[] matrix = new double[6];
 			getTransform().getMatrix(matrix);
-			write("<g transform=\"matrix(",
+			writeln("<g transform=\"matrix(",
 					DataUtils.join(" ", matrix),") \">");
 		}
 	}
@@ -229,8 +234,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 			}
 		}
 		if (getClip() != null) {
-			write("\" clip-path=\"");
-			writePath(getClip());
+			write("\" clip-path=\"url(#", getClipId(), ")");
 		}
 		writeln("\" />");
 	}
@@ -240,8 +244,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		if (getPaint() instanceof Color) {
 			write("style=\"fill:", getSvg(getColor()), ";stroke:none");
 			if (getClip() != null) {
-				write("\" clip-path=\"");
-				writePath(getClip());
+				write("\" clip-path=\"url(#", getClipId(), ")");
 			}
 			writeln("\" />");
 		} else {
@@ -252,6 +255,46 @@ public class SVGGraphics2D extends VectorGraphics2D {
 
 	@Override
 	protected void writeShape(Shape s) {
+		writeClip();
+		writeUnclippedShape(s);
+	}
+
+	/**
+	 * Returns the id of the current clipping path.
+	 * @return id string of the current clipping path.
+	 */
+	private String getClipId() {
+		return CLIP_PATH_ID + clipCounter;
+	}
+
+	/**
+	 * Generates a new id for a clipping path.
+	 * @return id string of the next clipping path.
+	 */
+	private String nextClipId() {
+		clipCounter++;
+		return getClipId();
+	}
+
+	/**
+	 * Writes the current clipping path.
+	 */
+	private void writeClip() {
+		Shape clip = getClip();
+		if (clip == null) {
+			return;
+		}
+		write("<clipPath id=\"", nextClipId(), "\">");
+		writeUnclippedShape(clip);
+		write("/>");
+		writeln("</clipPath>");
+	}
+
+	/**
+	 * Writes the specified shape without clipping path information.
+	 * @param s Shape to be written.
+	 */
+	private void writeUnclippedShape(Shape s) {
 		if (s instanceof Line2D) {
 			Line2D l = (Line2D) s;
 			double x1 = l.getX1();
@@ -294,6 +337,11 @@ public class SVGGraphics2D extends VectorGraphics2D {
 		}
 	}
 
+	/**
+	 * Writes the beginning of the specified shape without any closing
+	 * commands.
+	 * @param s Shape to be written.
+	 */
 	protected void writePath(Shape s) {
 		PathIterator segments = s.getPathIterator(null);
 		double[] coords = new double[6];
@@ -374,7 +422,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	@Override
 	public String toString() {
 		String doc = super.toString();
-		doc = doc.replaceAll("<g transform=\"[^\"]*\"></g>\n", "");
+		doc = doc.replaceAll("<g transform=\"[^\"]*\">\n*</g>\n", "");
 		return doc;
 	}
 }
