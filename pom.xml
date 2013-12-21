@@ -205,7 +205,7 @@
             <artifactId>maven-pmd-plugin</artifactId>
             <version>2.5</version>
             <configuration>
-                <linkXref>true</linkXref>
+                <linkXRef>true</linkXRef>
                 <targetJdk>${compileSource}</targetJdk>
             </configuration>
         </plugin>
@@ -223,9 +223,8 @@
   </dependencies>
 
   <scm>
-    <connection>scm:svn:svn://erichseifert.de/vectorgraphics2d/trunk</connection>
-    <developerConnection>scm:svn:svn://erichseifert.de/vectorgraphics2d/trunk</developerConnection>
-    <tag>HEAD</tag>
+    <connection>scm:git:ssh://erichseifert.de/vectorgraphics2d.git</connection>
+    <developerConnection>scm:git:ssh://git@erichseifert.de/vectorgraphics2d.git</developerConnection>
   </scm>
 
   <issueManagement>
