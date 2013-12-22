@@ -24,14 +24,19 @@ package de.erichseifert.vectorgraphics2d;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import de.erichseifert.vectorgraphics2d.eps.EPSTests;
+import de.erichseifert.vectorgraphics2d.intermediate.IRTests;
+import de.erichseifert.vectorgraphics2d.pdf.PDFTests;
+import de.erichseifert.vectorgraphics2d.svg.SVGTests;
 import de.erichseifert.vectorgraphics2d.util.UtilTests;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	UtilTests.class,
-	EPSGraphics2DTest.class,
-	PDFGraphics2DTest.class,
-	SVGGraphics2DTest.class
+	IRTests.class,
+	EPSTests.class,
+	PDFTests.class,
+	SVGTests.class
 })
 public class AllTests {
 }
