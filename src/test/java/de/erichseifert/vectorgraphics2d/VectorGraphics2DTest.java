@@ -67,12 +67,6 @@ public abstract class VectorGraphics2DTest {
 	}
 
 	@Test
-	public void testBounds() {
-		Rectangle2D bounds = new Rectangle2D.Double(DOC_X, DOC_Y, DOC_W, DOC_H);
-		assertEquals(bounds, g.getBounds());
-	}
-
-	@Test
 	public void testDraw() {
 		g.drawArc(0, 0, 210, 297, 30, 330);
 		g.drawLine(0, 0, 210, 297);
@@ -96,7 +90,7 @@ public abstract class VectorGraphics2DTest {
 
 	@Test
 	public void testShapes() {
-		Path2D path = new GeneralPath();
+		Path2D path = new Path2D.Float();
 		path.moveTo(0.0, 0.0);
 		path.lineTo(1.0, 1.0);
 		path.curveTo(0.7, 1.0, 0.0, 0.7, 0.0, 0.5);

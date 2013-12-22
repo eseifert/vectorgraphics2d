@@ -22,7 +22,6 @@
 package de.erichseifert.vectorgraphics2d;
 
 import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
@@ -31,154 +30,165 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
-import java.awt.MultipleGradientPaint;
 import java.awt.Paint;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.RenderingHints.Key;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.TextLayout;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Area;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Path2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
+import java.awt.geom.*;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
-import java.io.UnsupportedEncodingException;
 import java.text.AttributedCharacterIterator;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandStream;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.RotateCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.ScaleCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetBackgroundCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetClipCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetCompositeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetFontCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetHintCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetPaintCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetXORModeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.ShearCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 /**
  * Base for classed that want to implement vector export.
  * @author Erich Seifert
+ * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
-public abstract class VectorGraphics2D extends Graphics2D {
-	/** Constants to define how fonts are rendered. */
-	public static enum FontRendering {
-		/** Constant indicating that fonts should be rendered as
-		text objects. */
-		TEXT,
-		/** Constant indicating that fonts should be converted to vectors. */
-		VECTORS
-	}
-	/** Maximal resolution for image rastering. */
-	private static final int DEFAULT_PAINT_IMAGE_SIZE_MAXIMUM = 128;
-
-	/** Document contents. */
-	private final StringBuffer document;
-	/** Rectangular bounds of the documents. */
-	private final Rectangle2D bounds;
-	/** Resolution in dots per inch that is used to raster paints. */
-	private double resolution;
-	/** Maximal size of images that are used to raster paints. */
-	private int rasteredImageSizeMaximum;
-	/** Font rendering mode. */
-	private FontRendering fontRendering;
-	/** Flag that stores whether affine transformations have been applied. */
-	private boolean transformed;
-
-	/** Rendering hints. */
-	private final RenderingHints hints;
-	/** Current background color. */
-	private Color background;
-	/** Current foreground color. */
-	private Color color;
-	/** Shape used for clipping paint operations. */
-	private Shape clip;
-	/** Method used for compositing. */
-	private Composite composite;
+public class VectorGraphics2D extends Graphics2D implements Cloneable {
+	/** List of operations that were performed on this graphics object and its
+	 * derived objects. */
+	private final CommandStream commands;
 	/** Device configuration settings. */
 	private final GraphicsConfiguration deviceConfig;
-	/** Current font. */
-	private Font font;
 	/** Context settings used to render fonts. */
 	private final FontRenderContext fontRenderContext;
-	/** Paint used to fill shapes. */
-	private Paint paint;
-	/** Stroke used for drawing shapes. */
-	private Stroke stroke;
-	/** Current transformation matrix. */
-	private final AffineTransform transform;
-	/** XOR mode used for rendering. */
-	private Color xorMode;
+	/** Flag that tells whether this graphics object has been disposed. */
+	private boolean disposed;
 
-	/**
-	 * Constructor to initialize a new {@code VectorGraphics2D} document.
-	 * The dimensions of the document must be passed.
-	 * @param x Horizontal position of document origin.
-	 * @param y Vertical position of document origin.
-	 * @param width Width of document.
-	 * @param height Height of document.
-	 */
-	public VectorGraphics2D(double x, double y, double width, double height) {
-		hints = new RenderingHints(new HashMap<RenderingHints.Key, Object>());
-		document = new StringBuffer();
-		bounds = new Rectangle2D.Double(x, y, width, height);
-		fontRendering = FontRendering.TEXT;
-		resolution = 72.0;
-		rasteredImageSizeMaximum = DEFAULT_PAINT_IMAGE_SIZE_MAXIMUM;
+	private GraphicsState state;
 
-		background = Color.WHITE;
-		color = Color.BLACK;
-		composite = AlphaComposite.getInstance(AlphaComposite.CLEAR);
+	private Graphics2D _debug_validate_graphics;
+
+	public VectorGraphics2D() {
+		commands = new CommandStream();
 		deviceConfig = null;
-		font = Font.decode(null);
 		fontRenderContext = new FontRenderContext(null, false, true);
-		paint = color;
-		stroke = new BasicStroke(1f);
-		transform = new AffineTransform();
-		transformed = false;
-		xorMode = Color.BLACK;
+
+		state = new GraphicsState();
+
+		BufferedImage _debug_validate_bimg = new BufferedImage(200, 250, BufferedImage.TYPE_INT_ARGB);
+		_debug_validate_graphics = (Graphics2D) _debug_validate_bimg.getGraphics();
+		_debug_validate_graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	}
 
 	@Override
-	public void addRenderingHints(Map<?,?> hints) {
-		this.hints.putAll(hints);
+	public Object clone() throws CloneNotSupportedException {
+		try {
+			VectorGraphics2D clone = (VectorGraphics2D) super.clone();
+			clone.state = (GraphicsState) state.clone();
+			return clone;
+		} catch (CloneNotSupportedException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public void addRenderingHints(Map<?, ?> hints) {
+		if (isDisposed()) {
+			return;
+		}
+		for (Entry<?, ?> entry : hints.entrySet()) {
+			setRenderingHint((Key) entry.getKey(), entry.getValue());
+		}
 	}
 
 	@Override
 	public void clip(Shape s) {
-		if ((getClip() != null) && (s != null)) {
-			Area clipAreaOld = new Area(getClip());
-			Area clipAreaNew = new Area(s);
-			clipAreaNew.intersect(clipAreaOld);
-			s = clipAreaNew;
+		_debug_validate_graphics.clip(s);
+		Shape clipOld = getClip();
+
+		Shape clip = getClip();
+		if ((clip != null) && (s != null)) {
+			s = intersectShapes(clip, s);
 		}
 		setClip(s);
+
+		Shape clipNew = getClip();
+		if ((clipNew == null || _debug_validate_graphics.getClip() == null) && clipNew != _debug_validate_graphics.getClip())
+			System.err.println("clip() validation failed: clip("+clipOld+", "+s+") => "+clipNew+" != "+_debug_validate_graphics.getClip());
+		if (clipNew != null && !clipNew.equals(_debug_validate_graphics.getClip()))
+			System.err.println("clip() validation failed: clip("+clipOld+", "+s+") => "+clipNew+" != "+_debug_validate_graphics.getClip());
+	}
+
+	private static Shape intersectShapes(Shape s1, Shape s2) {
+		if (s1 instanceof Rectangle2D && s2 instanceof Rectangle2D) {
+			Rectangle2D r1 = (Rectangle2D) s1;
+			Rectangle2D r2 = (Rectangle2D) s2;
+	        double x1 = Math.max(r1.getMinX(), r2.getMinX());
+	        double y1 = Math.max(r1.getMinY(), r2.getMinY());
+	        double x2 = Math.min(r1.getMaxX(), r2.getMaxX());
+	        double y2 = Math.min(r1.getMaxY(), r2.getMaxY());
+
+	        Rectangle2D intersection = new Rectangle2D.Double();
+	        if ((x2 < x1) || (y2 < y1)) {
+	        	intersection.setFrameFromDiagonal(0, 0, 0, 0);
+	        } else {
+	        	intersection.setFrameFromDiagonal(x1, y1, x2, y2);
+	        }
+	        return intersection;
+        } else {
+			Area intersection = new Area(s1);
+			intersection.intersect(new Area(s2));
+			return intersection;
+        }
 	}
 
 	@Override
 	public void draw(Shape s) {
-		writeShape(s);
-		writeClosingDraw(s);
+		if (isDisposed() || s == null) {
+			return;
+		}
+		emit(new DrawShapeCommand(s));
+
+		_debug_validate_graphics.draw(s);
 	}
 
 	@Override
 	public void drawGlyphVector(GlyphVector g, float x, float y) {
-		draw(g.getOutline(x, y));
+		Shape s = g.getOutline(x, y);
+		draw(s);
 	}
 
 	@Override
-	public boolean drawImage(Image img, AffineTransform xform,
-			ImageObserver obs) {
+	public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
 		BufferedImage bimg = getTransformedImage(img, xform);
-		drawImage(bimg, null, bimg.getMinX(), bimg.getMinY());
-		return true;
+		return drawImage(bimg, bimg.getMinX(), bimg.getMinY(),
+			bimg.getWidth(), bimg.getHeight(), null, null);
 	}
 
 	/**
@@ -190,7 +200,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	private BufferedImage getTransformedImage(Image image,
 			AffineTransform xform) {
 		Integer interpolationType =
-			(Integer) hints.get(RenderingHints.KEY_INTERPOLATION);
+			(Integer) getRenderingHint(RenderingHints.KEY_INTERPOLATION);
 		if (RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
 				.equals(interpolationType)) {
 			interpolationType = AffineTransformOp.TYPE_NEAREST_NEIGHBOR;
@@ -206,17 +216,15 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public void drawImage(BufferedImage img, BufferedImageOp op,
-			int x, int y) {
+	public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
 		if (op != null) {
 			img = op.filter(img, null);
 		}
-		drawImage(img, x, y, img.getWidth(), img.getHeight(), null);
+		drawImage(img, x, y, img.getWidth(), img.getHeight(), null, null);
 	}
 
 	@Override
-	public void drawRenderableImage(RenderableImage img,
-			AffineTransform xform) {
+	public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
 		drawRenderedImage(img.createDefaultRendering(), xform);
 	}
 
@@ -233,36 +241,34 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawString(String str, float x, float y) {
-		if (str != null && str.trim().isEmpty()) {
+		if (isDisposed() || str == null || str.trim().length() == 0) {
 			return;
 		}
-		switch (getFontRendering()) {
-		case VECTORS:
+		boolean isTextAsVectors = false;
+		if (isTextAsVectors) {
 			TextLayout layout = new TextLayout(str, getFont(),
 					getFontRenderContext());
 			Shape s = layout.getOutline(
 					AffineTransform.getTranslateInstance(x, y));
 			fill(s);
-			break;
-		case TEXT:
-			writeString(str, x, y);
-			break;
-		default:
-			throw new IllegalStateException("Unknown font rendering mode.");
+		} else {
+			emit(new DrawStringCommand(str, x, y));
+
+			_debug_validate_graphics.drawString(str, x, y);
 		}
+
 	}
 
 	@Override
-	public void drawString(AttributedCharacterIterator iterator,
-			int x, int y) {
+	public void drawString(AttributedCharacterIterator iterator, int x, int y) {
 		drawString(iterator, (float) x, (float) y);
 	}
 
 	@Override
-	public void drawString(AttributedCharacterIterator iterator,
-			float x, float y) {
-		// TODO Take text formatting into account
-		StringBuffer buf = new StringBuffer();
+	public void drawString(AttributedCharacterIterator iterator, float x,
+			float y) {
+		// TODO Draw styled text
+		StringBuilder buf = new StringBuilder();
 		for (char c = iterator.first(); c != AttributedCharacterIterator.DONE;
 				c = iterator.next()) {
 			buf.append(c);
@@ -272,18 +278,22 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void fill(Shape s) {
-		writeShape(s);
-		writeClosingFill(s);
+		if (isDisposed() || s == null) {
+			return;
+		}
+		emit(new FillShapeCommand(s));
+
+		_debug_validate_graphics.fill(s);
 	}
 
 	@Override
 	public Color getBackground() {
-		return background;
+		return state.getBackground();
 	}
 
 	@Override
 	public Composite getComposite() {
-		return composite;
+		return state.getComposite();
 	}
 
 	@Override
@@ -298,11 +308,11 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Paint getPaint() {
-		return paint;
+		return state.getPaint();
 	}
 
 	@Override
-	public Object getRenderingHint(RenderingHints.Key hintKey) {
+	public Object getRenderingHint(Key hintKey) {
 		if (RenderingHints.KEY_ANTIALIASING.equals(hintKey)) {
 			return RenderingHints.VALUE_ANTIALIAS_OFF;
 		} else if (RenderingHints.KEY_TEXT_ANTIALIASING.equals(hintKey)) {
@@ -310,127 +320,158 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		} else if (RenderingHints.KEY_FRACTIONALMETRICS.equals(hintKey)) {
 			return RenderingHints.VALUE_FRACTIONALMETRICS_ON;
 		}
-		return hints.get(hintKey);
+		return state.getHints().get(hintKey);
 	}
 
 	@Override
 	public RenderingHints getRenderingHints() {
-		return hints;
+		return (RenderingHints) state.getHints().clone();
 	}
 
 	@Override
 	public Stroke getStroke() {
-		return stroke;
+		return state.getStroke();
 	}
 
 	@Override
 	public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
+		Shape hitShape = s;
 		if (onStroke) {
-			Shape sStroke = getStroke().createStrokedShape(s);
-			return sStroke.intersects(rect);
-		} else  {
-			return s.intersects(rect);
+			hitShape = getStroke().createStrokedShape(hitShape);
 		}
+		hitShape = state.transformShape(hitShape);
+		boolean hit = hitShape.intersects(rect);
+
+		boolean _debug_hit = _debug_validate_graphics.hit(rect, s, onStroke);
+		if (hit != _debug_hit) System.err.println("setClip() validation failed");
+
+		return hit;
 	}
 
 	@Override
 	public void setBackground(Color color) {
-		background = color;
+		if (isDisposed() || color == null || getColor().equals(color)) {
+			return;
+		}
+		emit(new SetBackgroundCommand(color));
+		state.setBackground(color);
+
+		_debug_validate_graphics.setBackground(color);
+		if (!getBackground().equals(_debug_validate_graphics.getBackground())) System.err.println("setBackground() validation failed");
 	}
 
 	@Override
 	public void setComposite(Composite comp) {
-		composite = comp;
+		if (isDisposed()) {
+			return;
+		}
+		if (comp == null) {
+			throw new IllegalArgumentException("Cannot set a null composite.");
+		}
+		emit(new SetCompositeCommand(comp));
+		state.setComposite(comp);
+
+		_debug_validate_graphics.setComposite(comp);
+		if (!getComposite().equals(_debug_validate_graphics.getComposite())) System.err.println("setComposite() validation failed");
 	}
 
 	@Override
 	public void setPaint(Paint paint) {
-		if (paint != null) {
-			this.paint = paint;
-			if (paint instanceof Color) {
-				setColor((Color) paint);
-			} else if (paint instanceof MultipleGradientPaint) {
-				// Set brightest or least opaque color for gradients
-				Color[] colors = ((MultipleGradientPaint) paint).getColors();
-				if (colors.length == 1) {
-					setColor(colors[0]);
-				} else if (colors.length > 1) {
-					Color colLight = colors[0];
-					float brightness = getBrightness(colLight);
-					int alpha = colLight.getAlpha();
-
-					for (int i = 1; i < colors.length; i++) {
-						Color c = colors[i];
-						float b = getBrightness(c);
-						int a = c.getAlpha();
-						if (b < brightness || a < alpha) {
-							colLight = c;
-							brightness = b;
-						}
-					}
-					setColor(colLight);
-				}
-			}
+		if (isDisposed() || paint == null) {
+			return;
 		}
-	}
+		if (paint instanceof Color) {
+			setColor((Color) paint);
+			return;
+		}
+		if (getPaint().equals(paint)) {
+			return;
+		}
+		emit(new SetPaintCommand(paint));
+		state.setPaint(paint);
 
-	/**
-	 * Utility method to get the brightness of a specified color.
-	 * @param c Color.
-	 * @return Brightness value between 0f (black) and 1f (white).
-	 */
-	private static float getBrightness(Color c) {
-		return Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null)[2];
+		_debug_validate_graphics.setPaint(paint);
+		if (!getPaint().equals(_debug_validate_graphics.getPaint())) System.err.println("setPaint() validation failed");
 	}
 
 	@Override
-	public void setRenderingHint(RenderingHints.Key hintKey, Object hintValue) {
-		hints.put(hintKey, hintValue);
+	public void setRenderingHint(Key hintKey, Object hintValue) {
+		if (isDisposed()) {
+			return;
+		}
+		state.getHints().put(hintKey, hintValue);
+		emit(new SetHintCommand(hintKey, hintValue));
 	}
 
 	@Override
 	public void setRenderingHints(Map<?, ?> hints) {
-		this.hints.putAll(hints);
-	}
-
-	@Override
-	public void setStroke(Stroke s) {
-		stroke = s;
-	}
-
-	@Override
-	public AffineTransform getTransform() {
-		return new AffineTransform(transform);
-	}
-
-	@Override
-	public void setTransform(AffineTransform tx) {
-		setAffineTransform(tx);
-	}
-
-	/**
-	 * Sets the current transformation.
-	 * @param tx Current transformation
-	 */
-	protected void setAffineTransform(AffineTransform tx) {
-		if (!transform.equals(tx)) {
-			transform.setTransform(tx);
-			transformed = true;
+		if (isDisposed()) {
+			return;
+		}
+		state.getHints().clear();
+		for (Entry<?, ?> hint : hints.entrySet()) {
+			setRenderingHint((Key) hint.getKey(), hint.getValue());
 		}
 	}
 
 	@Override
+	public void setStroke(Stroke s) {
+		if (isDisposed()) {
+			return;
+		}
+		if (s == null) {
+			throw new IllegalArgumentException("Cannot set a null stroke.");
+		}
+		emit(new SetStrokeCommand(s));
+		state.setStroke(s);
+
+		_debug_validate_graphics.setStroke(s);
+		if (!getStroke().equals(_debug_validate_graphics.getStroke())) System.err.println("setStroke() validation failed");
+	}
+
+	@Override
+	public AffineTransform getTransform() {
+		return new AffineTransform(state.getTransform());
+	}
+
+	@Override
+	public void setTransform(AffineTransform tx) {
+		if (isDisposed() || tx == null || state.getTransform().equals(tx)) {
+			return;
+		}
+		emit(new SetTransformCommand(tx));
+		state.setTransform(tx);
+
+		_debug_validate_graphics.setTransform(tx);
+		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("setTransform() validation failed");
+	}
+
+	@Override
 	public void shear(double shx, double shy) {
-		AffineTransform transform = getTransform();
-		transform.shear(shx, shy);
-		setAffineTransform(transform);
+		if (shx == 0.0 && shy == 0.0) {
+			return;
+		}
+		AffineTransform txNew = getTransform();
+		txNew.shear(shx, shy);
+		emit(new ShearCommand(shx, shy, txNew));
+		state.setTransform(txNew);
+
+		_debug_validate_graphics.shear(shx, shy);
+		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("shear() validation failed");
 	}
 
 	@Override
 	public void transform(AffineTransform tx) {
-		AffineTransform transform = getTransform();
-		transform.concatenate(tx);
-		setAffineTransform(transform);
+		if (tx.isIdentity()) {
+			return;
+		}
+		AffineTransform txNew = getTransform();
+		txNew.concatenate(tx);
+		emit(new TransformCommand(tx, txNew));
+		state.setTransform(txNew);
+
+		_debug_validate_graphics.transform(tx);
+		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("transform() validation failed");
 	}
 
 	@Override
@@ -440,36 +481,68 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void translate(double tx, double ty) {
-		AffineTransform transform = getTransform();
-		transform.translate(tx, ty);
-		setAffineTransform(transform);
+		if (tx == 0.0 && ty == 0.0) {
+			return;
+		}
+		AffineTransform txNew = getTransform();
+		txNew.translate(tx, ty);
+		emit(new TranslateCommand(tx, ty, txNew));
+		state.setTransform(txNew);
+
+		_debug_validate_graphics.translate(tx, ty);
+		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("translate() validation failed");
 	}
 
 	@Override
 	public void rotate(double theta) {
-		AffineTransform transform = getTransform();
-		transform.rotate(theta);
-		setAffineTransform(transform);
+		rotate(theta, 0.0, 0.0);
 	}
 
 	@Override
 	public void rotate(double theta, double x, double y) {
-		AffineTransform transform = getTransform();
-		transform.rotate(theta, x, y);
-		setAffineTransform(transform);
+		if (theta == 0.0) {
+			return;
+		}
+
+		AffineTransform txNew = getTransform();
+		if (x == 0.0 && y == 0.0) {
+			txNew.rotate(theta);
+		} else {
+			txNew.rotate(theta, x, y);
+		}
+
+		emit(new RotateCommand(theta, x, y, txNew));
+		state.setTransform(txNew);
+
+		if (x == 0.0 && y == 0.0) {
+			_debug_validate_graphics.rotate(theta);
+			if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("rotate(theta) validation failed");
+		} else {
+			_debug_validate_graphics.rotate(theta, x, y);
+			if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("rotate(theta,x,y) validation failed");
+		}
 	}
 
 	@Override
 	public void scale(double sx, double sy) {
-		AffineTransform transform = getTransform();
-		transform.scale(sx, sy);
-		setAffineTransform(transform);
+		if (sx == 1.0 && sy == 1.0) {
+			return;
+		}
+		AffineTransform txNew = getTransform();
+		txNew.scale(sx, sy);
+		emit(new ScaleCommand(sx, sy, txNew));
+		state.setTransform(txNew);
+
+		_debug_validate_graphics.scale(sx, sy);
+		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("scale() validation failed");
 	}
 
 	@Override
 	public void clearRect(int x, int y, int width, int height) {
-		// TODO Implement
-		//throw new UnsupportedOperationException("clearRect() isn't supported by VectorGraphics2D.");
+		Color colorOld = getColor();
+		setColor(getBackground());
+		fillRect(x, y, width, height);
+		setColor(colorOld);
 	}
 
 	@Override
@@ -485,70 +558,91 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Graphics create() {
-		// TODO Implement
-		return this;
+		if (isDisposed()) {
+			return null;
+		}
+		VectorGraphics2D clone = null;
+		try {
+			clone = (VectorGraphics2D) this.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+
+		if (clone != null) {
+			clone._debug_validate_graphics = (Graphics2D) _debug_validate_graphics.create();
+		}
+
+		return clone;
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Implement
+		if (isDisposed()) {
+			return;
+		}
+
+		disposed = true;
+
+		_debug_validate_graphics.dispose();
 	}
 
 	@Override
-	public void drawArc(int x, int y, int width, int height,
-			int startAngle, int arcAngle) {
+	public void drawArc(int x, int y, int width, int height, int startAngle,
+			int arcAngle) {
 		draw(new Arc2D.Double(x, y, width, height,
-				startAngle, arcAngle, Arc2D.OPEN));
+			startAngle, arcAngle, Arc2D.OPEN));
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-		return drawImage(img, x, y,
-				img.getWidth(observer), img.getHeight(observer), observer);
+		return drawImage(img, x, y, img.getWidth(observer),
+			img.getHeight(observer), null, observer);
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, Color bgcolor,
 			ImageObserver observer) {
-		return drawImage(img, x, y,
-				img.getWidth(observer), img.getHeight(observer), observer);
+		return drawImage(img, x, y, img.getWidth(observer),
+			img.getHeight(observer), bgcolor, observer);
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, int width, int height,
 			ImageObserver observer) {
-		int imgWidth = img.getWidth(observer);
-		int imgHeight = img.getHeight(observer);
-		writeImage(img, imgWidth, imgHeight, x, y, width, height);
-		return true;  // TODO Return only true if image data was complete
+		return drawImage(img, x, y, width, height, null, observer);
 	}
 
 	@Override
 	public boolean drawImage(Image img, int x, int y, int width, int height,
 			Color bgcolor, ImageObserver observer) {
-		return drawImage(img, x, y, width, height, observer);
+		if (isDisposed() || img == null) {
+			return true;
+		}
+
+		int imageWidth = img.getWidth(observer);
+		int imageHeight = img.getHeight(observer);
+		Rectangle bounds = new Rectangle(x, y, width, height);
+
+		if (bgcolor != null) {
+			// Fill rectangle with bgcolor
+			Color bgcolorOld = getColor();
+			setColor(bgcolor);
+			fill(bounds);
+			setColor(bgcolorOld);
+		}
+
+		emit(new DrawImageCommand(img, imageWidth, imageHeight, x, y, width, height));
+
+		_debug_validate_graphics.drawImage(img, x, y, width, height, bgcolor, observer);
+
+		return true;
 	}
 
 	@Override
 	public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2,
 			int sx1, int sy1, int sx2, int sy2, ImageObserver observer) {
-		if (img == null) {
-			return true;
-		}
-
-		int sx = Math.min(sx1, sx2);
-		int sy = Math.min(sy1, sy2);
-		int sw = Math.abs(sx2 - sx1);
-		int sh = Math.abs(sy2 - sy1);
-		int dx = Math.min(dx1, dx2);
-		int dy = Math.min(dy1, dy2);
-		int dw = Math.abs(dx2 - dx1);
-		int dh = Math.abs(dy2 - dy1);
-
-		// Draw image
-		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
-		Image cropped = bufferedImg.getSubimage(sx, sy, sw, sh);
-		return drawImage(cropped, dx, dy, dw, dh, observer);
+		return drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null,
+			observer);
 	}
 
 	@Override
@@ -568,16 +662,10 @@ public abstract class VectorGraphics2D extends Graphics2D {
 		int dw = Math.abs(dx2 - dx1);
 		int dh = Math.abs(dy2 - dy1);
 
-		// Fill Rectangle with bgcolor
-		Color bgcolorOld = getColor();
-		setColor(bgcolor);
-		fill(new Rectangle(dx, dy, dw, dh));
-		setColor(bgcolorOld);
-
 		// Draw image on rectangle
 		BufferedImage bufferedImg = GraphicsUtils.toBufferedImage(img);
 		Image cropped = bufferedImg.getSubimage(sx, sy, sw, sh);
-		return drawImage(cropped, dx, dy, dw, dh, observer);
+		return drawImage(cropped, dx, dy, dw, dh, bgcolor, observer);
 	}
 
 	@Override
@@ -591,17 +679,13 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-		Path2D p = new Path2D.Float();
-		for (int i = 0; i < nPoints; i++) {
-			if (i > 0) {
-				p.lineTo(xPoints[i], yPoints[i]);
-			} else {
-				p.moveTo(xPoints[i], yPoints[i]);
-			}
-		}
-		p.closePath();
+	public void drawPolygon(Polygon p) {
 		draw(p);
+	}
+
+	@Override
+	public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+		draw(new Polygon(xPoints, yPoints, nPoints));
 	}
 
 	@Override
@@ -619,7 +703,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void drawRect(int x, int y, int width, int height) {
-		draw(new Rectangle2D.Double(x, y, width, height));
+		draw(new Rectangle(x, y, width, height));
 	}
 
 	@Override
@@ -642,23 +726,18 @@ public abstract class VectorGraphics2D extends Graphics2D {
 	}
 
 	@Override
-	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-		Path2D p = new Path2D.Float();
-		for (int i = 0; i < nPoints; i++) {
-			if (i > 0) {
-				p.lineTo(xPoints[i], yPoints[i]);
-			} else {
-				p.moveTo(xPoints[i], yPoints[i]);
-			}
-		}
-		p.closePath();
-
+	public void fillPolygon(Polygon p) {
 		fill(p);
 	}
 
 	@Override
+	public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
+		fill(new Polygon(xPoints, yPoints, nPoints));
+	}
+
+	@Override
 	public void fillRect(int x, int y, int width, int height) {
-		fill(new Rectangle2D.Double(x, y, width, height));
+		fill(new Rectangle(x, y, width, height));
 	}
 
 	@Override
@@ -670,15 +749,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Shape getClip() {
-		Shape clip = this.clip;
-		if (clip != null) {
-			try {
-		      clip = transform.createInverse().createTransformedShape(this.clip);
-		    } catch (NoninvertibleTransformException e) {
-		      clip = null;
-		    }
-		}
-		return clip;
+		return state.getClip();
 	}
 
 	@Override
@@ -691,32 +762,38 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public Color getColor() {
-		return color;
+		return state.getColor();
 	}
 
 	@Override
 	public Font getFont() {
-		return font;
+		return state.getFont();
 	}
 
 	@Override
 	public FontMetrics getFontMetrics(Font f) {
-		// TODO Find a better way for creating a new FontMetrics instance
 		BufferedImage bi =
 			new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
 	    Graphics g = bi.getGraphics();
 	    FontMetrics fontMetrics = g.getFontMetrics(getFont());
 	    g.dispose();
-	    bi = null;
 	    return fontMetrics;
 	}
 
 	@Override
 	public void setClip(Shape clip) {
-		if (clip != null) {
-			this.clip = transform.createTransformedShape(clip);
-		} else {
-			this.clip = null;
+		if (isDisposed()) {
+			return;
+		}
+		emit(new SetClipCommand(clip));
+		state.setClip(clip);
+
+		_debug_validate_graphics.setClip(clip);
+		if (getClip() == null) {
+			if (_debug_validate_graphics.getClip() != null)
+				System.err.printf("setClip() validation failed: clip=null, validation=%s\n", _debug_validate_graphics.getClip());
+		} else if (!getClip().equals(_debug_validate_graphics.getClip())) {
+			System.err.printf("setClip() validation failed: clip=%s, validation=%s\n", getClip(), _debug_validate_graphics.getClip());
 		}
 	}
 
@@ -727,245 +804,61 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	@Override
 	public void setColor(Color c) {
-		color = c;
+		if (isDisposed() || c == null || getColor().equals(c)) {
+			return;
+		}
+		emit(new SetColorCommand(c));
+		state.setColor(c);
+		state.setPaint(c);
+
+		_debug_validate_graphics.setColor(c);
+		if (!getColor().equals(_debug_validate_graphics.getColor())) System.err.println("setColor() validation failed");
 	}
 
 	@Override
 	public void setFont(Font font) {
-		if (!this.font.equals(font)) {
-			this.font = font;
+		if (isDisposed() || (font != null && getFont().equals(font))) {
+			return;
 		}
+		emit(new SetFontCommand(font));
+		state.setFont(font);
+
+		_debug_validate_graphics.setFont(font);
+		if (!getFont().equals(_debug_validate_graphics.getFont())) System.err.println("setFont() validation failed");
 	}
 
 	@Override
 	public void setPaintMode() {
-		// TODO Implement
-		//throw new UnsupportedOperationException("setPaintMode() isn't supported.");
+		setComposite(AlphaComposite.SrcOver);
+
+		_debug_validate_graphics.setPaintMode();
+	}
+
+	public Color getXORMode() {
+		return state.getXorMode();
 	}
 
 	@Override
 	public void setXORMode(Color c1) {
-		xorMode = c1;
-	}
-
-	/**
-	 * Utility method for writing multiple objects to the SVG document.
-	 * @param strs Objects to be written
-	 */
-	protected void write(Object... strs) {
-		for (Object o : strs) {
-			String str = o.toString();
-			if ((o instanceof Double) || (o instanceof Float)) {
-				str = String.format(Locale.ENGLISH, "%.7f", o)
-					.replaceAll("\\.?0+$", "");
-			}
-			document.append(str);
+		if (isDisposed() || c1 == null) {
+			return;
 		}
+		emit(new SetXORModeCommand(c1));
+		state.setXorMode(c1);
+
+		_debug_validate_graphics.setXORMode(c1);
 	}
 
-	/**
-	 * Utility method for writing a line of multiple objects to the
-	 * SVG document.
-	 * @param strs Objects to be written
-	 */
-	protected void writeln(Object... strs) {
-		write(strs);
-		write("\n");
+	private void emit(Command<?> command) {
+		commands.add(this, command);
 	}
 
-	/**
-	 * Write the specified shape to the document. This does not necessarily
-	 * contain the actual command to paint the shape.
-	 * @param s Shape to be written.
-	 */
-	protected abstract void writeShape(Shape s);
-
-	/**
-	 * Write the specified image to the document. A number of dimensions will
-	 * specify how the image will be placed in the document.
-	 * @param img Image to be rendered.
-	 * @param imgWidth Number of pixels in horizontal direction.
-	 * @param imgHeight Number of pixels in vertical direction
-	 * @param x Horizontal position in document units where the
-	 *          upper left corner of the image should be placed.
-	 * @param y Vertical position in document units where the
-	 *          upper left corner of the image should be placed.
-	 * @param width Width of the image in document units.
-	 * @param height Height of the image in document units.
-	 */
-	protected abstract void writeImage(Image img, int imgWidth, int imgHeight,
-			double x, double y, double width, double height);
-
-	/**
-	 * Write a text string to the document at a specified position.
-	 * @param str Text to be rendered.
-	 * @param x Horizontal position in document units.
-	 * @param y Vertical position in document units.
-	 */
-	protected abstract void writeString(String str, double x, double y);
-
-	/**
-	 * Write a command to draw the outline of a previously inserted shape.
-	 * @param s Shape that should be drawn.
-	 */
-	protected abstract void writeClosingDraw(Shape s);
-
-	/**
-	 * Write a command to fill the outline of a previously inserted shape.
-	 * @param s Shape that should be filled.
-	 */
-	protected void writeClosingFill(Shape s) {
-		Rectangle2D shapeBounds = s.getBounds2D();
-
-		// Calculate dimensions of shape with current transformations
-		int wImage = (int) Math.ceil(shapeBounds.getWidth()*getResolution());
-		int hImage = (int) Math.ceil(shapeBounds.getHeight()*getResolution());
-		// Limit the size of images
-		wImage = Math.min(wImage, rasteredImageSizeMaximum);
-		hImage = Math.min(hImage, rasteredImageSizeMaximum);
-
-		// Create image to paint draw gradient with current transformations
-		BufferedImage paintImage = new BufferedImage(
-				wImage, hImage, BufferedImage.TYPE_INT_ARGB);
-
-		// Paint shape
-		Graphics2D g = (Graphics2D) paintImage.getGraphics();
-		g.scale(wImage/shapeBounds.getWidth(), hImage/shapeBounds.getHeight());
-		g.translate(-shapeBounds.getX(), -shapeBounds.getY());
-		g.setPaint(getPaint());
-		g.fill(s);
-		// Free resources
-		g.dispose();
-
-		// Output image of gradient
-		writeImage(paintImage, wImage, hImage,
-			shapeBounds.getX(), shapeBounds.getY(),
-			shapeBounds.getWidth(), shapeBounds.getHeight());
+	protected Iterable<Command<?>> getCommands() {
+		return commands;
 	}
 
-	/**
-	 * Write the header to start a new document.
-	 */
-	protected abstract void writeHeader();
-
-	/**
-	 * Returns a string of the footer to end a document.
-	 */
-	protected abstract String getFooter();
-
-	/**
-	 * Returns whether a distorting transformation has been applied to the
-	 * document.
-	 * @return {@code true} if the document is distorted,
-	 *         otherwise {@code false}.
-	 */
-	protected boolean isDistorted() {
-		if (!isTransformed()) {
-			return false;
-		}
-		int type = transform.getType();
-		int otherButTranslatedOrScaled = ~(AffineTransform.TYPE_TRANSLATION
-				| AffineTransform.TYPE_MASK_SCALE);
-		return (type & otherButTranslatedOrScaled) != 0;
-	}
-
-	@Override
-	public String toString() {
-		return document.toString() + getFooter();
-	}
-
-	/**
-	 * Encodes the painted data into a sequence of bytes.
-	 * @return A byte array containing the data in the current file format.
-	 */
-	public byte[] getBytes() {
-		try {
-			return toString().getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return toString().getBytes();
-		}
-	}
-
-	/**
-	 * Returns the dimensions of the document.
-	 * @return dimensions of the document.
-	 */
-	public Rectangle2D getBounds() {
-		Rectangle2D b = new Rectangle2D.Double();
-		b.setFrame(bounds);
-		return b;
-	}
-
-	/**
-	 * Returns the number of bytes of the document.
-	 * @return size of the document in bytes.
-	 */
-	protected int size() {
-		return document.length();
-	}
-
-	/**
-	 * Returns how fonts should be rendered.
-	 * @return Font rendering mode.
-	 */
-	public FontRendering getFontRendering() {
-		return fontRendering;
-	}
-
-	/**
-	 * Sets how fonts should be rendered. For example, they can be converted
-	 * to vector shapes.
-	 * @param mode New font rendering mode.
-	 */
-	public void setFontRendering(FontRendering mode) {
-		fontRendering = mode;
-	}
-
-	/**
-	 * Returns whether an affine transformation like translation, scaling,
-	 * rotation or shearing has been applied to this graphics instance.
-	 * @return {@code true} if the instance has been transformed,
-	 *         {@code false} otherwise
-	 */
-	protected boolean isTransformed() {
-		return transformed;
-	}
-
-	/**
-	 * Returns the resolution in pixels per inch.
-	 * @return Resolution in pixels per inch.
-	 */
-	public double getResolution() {
-		return resolution;
-	}
-
-	/**
-	 * Sets the resolution in pixels per inch.
-	 * @param resolution New resolution in pixels per inch.
-	 */
-	public void setResolution(double resolution) {
-		if (resolution <= 0.0) {
-			throw new IllegalArgumentException(
-					"Only positive non-zero values allowed");
-		}
-		this.resolution = resolution;
-	}
-
-	/**
-	 * Returns the maximal size of images which are used to raster paints
-	 * like e.g. gradients, or patterns. The default value is 128.
-	 * @return Current maximal image size in pixels.
-	 */
-	public int getRasteredImageSizeMaximum() {
-		return rasteredImageSizeMaximum;
-	}
-
-	/**
-	 * Sets the maximal size of images which are used to raster paints
-	 * like e.g. gradients, or patterns.
-	 * @param paintImageSizeMaximum New maximal image size in pixels.
-	 */
-	public void setRasteredImageSizeMaximum(int paintImageSizeMaximum) {
-		this.rasteredImageSizeMaximum = paintImageSizeMaximum;
+	protected boolean isDisposed() {
+		return disposed;
 	}
 }
+
