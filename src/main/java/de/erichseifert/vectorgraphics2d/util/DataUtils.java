@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Abstract class that contains utility functions for working with data
@@ -58,7 +59,7 @@ public abstract class DataUtils {
 					"The number of keys and values differs.");
 		}
 		// Fill map with keys and values
-		Map<K, V> map = new LinkedHashMap<K, V>();
+		Map<K, V> map = new LinkedHashMap<K, V>(keys.length);
 		for (int i = 0; i < keys.length; i++) {
 			K key = keys[i];
 			V value = values[i];
@@ -78,10 +79,10 @@ public abstract class DataUtils {
 		if (elements == null || elements.size() == 0) {
 			return "";
 		}
-		StringBuffer sb = new StringBuffer(elements.size()*3);
+		StringBuilder sb = new StringBuilder(elements.size()*3);
 		int i = 0;
 		for (Object elem : elements) {
-			if (i++ > 0) {
+			if (separator.length() > 0 && i++ > 0) {
 				sb.append(separator);
 			}
 			sb.append(format(elem));
@@ -93,10 +94,10 @@ public abstract class DataUtils {
 	 * Returns a string containing all elements concatenated by a specified
 	 * separator.
 	 * @param separator Separator string.
-	 * @param elements List of elements that should be concatenated.
+	 * @param elements Array of elements that should be concatenated.
 	 * @return a concatenated string.
 	 */
-	public static String join(String separator, Object... elements) {
+	public static String join(String separator, Object[] elements) {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}
@@ -104,37 +105,37 @@ public abstract class DataUtils {
 	}
 
 	/**
-	 * Returns a string with all float values concatenated by a specified
-	 * separator.
+	 * Returns a string containing all double numbers concatenated by a
+	 * specified separator.
 	 * @param separator Separator string.
-	 * @param elements Float array.
+	 * @param elements Array of double numbers that should be concatenated.
 	 * @return a concatenated string.
 	 */
-	public static String join(String separator, float... elements) {
+	public static String join(String separator, double[] elements) {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}
-		List<Number> list = new ArrayList<Number>(elements.length);
-		for (Float elem : elements) {
-			list.add(elem);
+		List<Double> list = new ArrayList<Double>(elements.length);
+		for (Double element : elements) {
+			list.add(element);
 		}
 		return join(separator, list);
 	}
 
 	/**
-	 * Returns a string with all double values concatenated by a specified
-	 * separator.
+	 * Returns a string containing all float numbers concatenated by a
+	 * specified separator.
 	 * @param separator Separator string.
-	 * @param elements Double array.
+	 * @param elements Array of float numbers that should be concatenated.
 	 * @return a concatenated string.
 	 */
-	public static String join(String separator, double... elements) {
+	public static String join(String separator, float[] elements) {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}
-		List<Number> list = new ArrayList<Number>(elements.length);
-		for (Double elem : elements) {
-			list.add(elem);
+		List<Float> list = new ArrayList<Float>(elements.length);
+		for (Float element : elements) {
+			list.add(element);
 		}
 		return join(separator, list);
 	}
@@ -178,15 +179,20 @@ public abstract class DataUtils {
 	 * @return A formatted string.
 	 */
 	public static String format(Number number) {
-		String formatted = Double.toString(number.doubleValue())
-				.replaceAll("\\.0+$", "")
-				.replaceAll("(\\.[0-9]*[1-9])0+$", "$1");
+		String formatted;
+		if (number instanceof Double || number instanceof Float) {
+			formatted = Double.toString(number.doubleValue())
+					.replaceAll("\\.0+$", "")
+					.replaceAll("(\\.[0-9]*[1-9])0+$", "$1");
+		} else {
+			formatted = number.toString();
+		}
 		return formatted;
 	}
 
 	/**
 	 * Returns a formatted string of the specified object.
-	 * @param number Object to convert to a string.
+	 * @param obj Object to convert to a string.
 	 * @return A formatted string.
 	 */
 	public static String format(Object obj) {
@@ -195,5 +201,49 @@ public abstract class DataUtils {
 		} else {
 			return obj.toString();
 		}
+	}
+
+	/**
+	 * Converts an array of {@code float} numbers to a list of {@code Float}s.
+	 * The list will be empty if the array is empty or {@code null}.
+	 * @param elements Array of float numbers.
+	 * @return A list with all numbers as {@code Float}.
+	 */
+	public static List<Float> asList(float[] elements) {
+		int size = (elements != null) ? elements.length : 0;
+		List<Float> list = new ArrayList<Float>(size);
+		if (elements != null) {
+			for (Float elem : elements) {
+				list.add(elem);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Converts an array of {@code double} numbers to a list of {@code Double}s.
+	 * The list will be empty if the array is empty or {@code null}.
+	 * @param elements Array of double numbers.
+	 * @return A list with all numbers as {@code Double}.
+	 */
+	public static List<Double> asList(double[] elements) {
+		int size = (elements != null) ? elements.length : 0;
+		List<Double> list = new ArrayList<Double>(size);
+		if (elements != null) {
+			for (Double elem : elements) {
+				list.add(elem);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Removes the specified trailing pattern from a string.
+	 * @param s string.
+	 * @param substr trailing pattern.
+	 * @return A string without the trailing pattern.
+	 */
+	public static String stripTrailing(String s, String substr) {
+		return s.replaceAll("(" + Pattern.quote(substr) + ")+$", "");
 	}
 }
