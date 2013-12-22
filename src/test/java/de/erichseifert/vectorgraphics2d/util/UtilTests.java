@@ -26,6 +26,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	DataUtilsTest.class,
+	ASCII85EncodeStreamTest.class,
+	Base64EncodeStreamTest.class,
 	GraphicsUtilsTest.class
 })
 public class UtilTests {
