@@ -246,7 +246,7 @@
   </dependencies>
 
   <scm>
-    <connection>scm:git:ssh://erichseifert.de/vectorgraphics2d.git</connection>
+    <connection>scm:git:git://erichseifert.de/vectorgraphics2d.git</connection>
     <developerConnection>scm:git:ssh://git@erichseifert.de/vectorgraphics2d.git</developerConnection>
   </scm>
 
