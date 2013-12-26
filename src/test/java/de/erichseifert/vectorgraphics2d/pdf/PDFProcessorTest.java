@@ -21,18 +21,17 @@
 
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import static org.junit.Assert.assertEquals;
+import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandStream;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
+import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.junit.Test;
-
-import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.CommandStream;
-import de.erichseifert.vectorgraphics2d.util.DataUtils;
-import de.erichseifert.vectorgraphics2d.util.PageSize;
+import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
+import static de.erichseifert.vectorgraphics2d.TestUtils.Template;
 
 public class PDFProcessorTest {
 	private static final String EOL = "\n";
@@ -55,7 +54,8 @@ public class PDFProcessorTest {
 
 	@Test public void envelopeForEmptyDocument() throws IOException {
 		String result = process();
-		String expected = DataUtils.join(EOL, new String[] {
+		Template actual = new Template(result.split(EOL));
+		Template expected = new Template(
 			HEADER,
 			"1 0 obj",
 			"<<",
@@ -101,7 +101,7 @@ public class PDFProcessorTest {
 			"/Fnt0 <<",
 			"/Type /Font",
 			"/Subtype /TrueType",
-			"/BaseFont /LucidaSans",
+			null, // "/BaseFont /LucidaSans",
 			">>",
 			">>",
 			">>",
@@ -121,11 +121,12 @@ public class PDFProcessorTest {
 			"/Root 1 0 R",
 			">>",
 			"startxref",
-			"591",
-			FOOTER, ""
-		});
+			null, // "591",
+			FOOTER,
+			""
+		);
 
-		assertEquals(expected, result);
+		assertTemplateEquals(expected, actual);
 	}
 }
 
