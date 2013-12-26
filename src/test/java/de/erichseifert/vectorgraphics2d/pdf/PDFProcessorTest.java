@@ -109,12 +109,12 @@ public class PDFProcessorTest {
 			"xref",
 			"0 7",
 			"0000000000 65535 f ",
-			"0000000009 00000 n ",
-			"0000000058 00000 n ",
-			"0000000115 00000 n ",
-			"0000000263 00000 n ",
-			"0000000415 00000 n ",
-			"0000000434 00000 n ",
+			null, // "0000000009 00000 n ",
+			null, // "0000000058 00000 n ",
+			null, // "0000000115 00000 n ",
+			null, // "0000000263 00000 n ",
+			null, // "0000000415 00000 n ",
+			null, // "0000000434 00000 n ",
 			"trailer",
 			"<<",
 			"/Size 7",
@@ -122,8 +122,7 @@ public class PDFProcessorTest {
 			">>",
 			"startxref",
 			null, // "591",
-			FOOTER,
-			""
+			FOOTER
 		);
 
 		assertTemplateEquals(expected, actual);
