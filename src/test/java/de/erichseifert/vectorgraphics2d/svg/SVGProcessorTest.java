@@ -33,17 +33,15 @@ import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static de.erichseifert.vectorgraphics2d.TestUtils.Template;
-import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
+import static de.erichseifert.vectorgraphics2d.TestUtils.assertXMLEquals;
 
 public class SVGProcessorTest {
 	private static final String EOL = "\n";
-	private static final Template HEADER = new Template(
-		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-		"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">",
-		"<svg height=\"7.937499999999999mm\" version=\"1.1\" viewBox=\"0 10 20 30\" width=\"5.291666666666666mm\" x=\"0mm\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" y=\"2.645833333333333mm\" xmlns=\"http://www.w3.org/2000/svg\">"
-	);
-	private static final Template FOOTER = new Template("</svg>");
+	private static final String HEADER =
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + EOL +
+		"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" + EOL +
+		"<svg height=\"7.937499999999999mm\" version=\"1.1\" viewBox=\"0 10 20 30\" width=\"5.291666666666666mm\" x=\"0mm\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" y=\"2.645833333333333mm\">" + EOL;
+	private static final String FOOTER = "</svg>";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
 	private final SVGProcessor processor = new SVGProcessor();
@@ -59,42 +57,31 @@ public class SVGProcessorTest {
 		return bytes.toString("UTF-8");
 	}
 
-	@Test public void envelopeForEmptyDocument() throws IOException {
+	@Test public void envelopeForEmptyDocument() throws Exception {
 		String result = process();
-		Template actual = new Template(result.split(EOL));
-
-		Template expected = new Template(HEADER);
-		expected.set(expected.size() - 1, ((String) expected.getLast()).replaceAll(">\n*$", "/>"));
-
-		assertTemplateEquals(expected, actual);
+		String expected = HEADER.replaceAll(">$", "/>");
+		assertXMLEquals(expected, result);
 	}
 
-	@Test public void drawShapeBlack() throws IOException {
+	@Test public void drawShapeBlack() throws Exception {
 		String result = process(
 			new DrawShapeCommand(new Rectangle2D.Double(1, 2, 3, 4))
 		);
-		Template actual = new Template(result.split(EOL));
-
-		Template expected = new Template(
-			HEADER,
-			new Template("  <rect height=\"4\" style=\"fill:none;stroke:rgb(255,255,255);stroke-miterlimit:10;stroke-linecap:square;\" width=\"3\" x=\"1\" y=\"2\"/>\n"),
-			FOOTER);
-
-		assertTemplateEquals(expected, actual);
+		String expected =
+			HEADER + EOL +
+			"  <rect height=\"4\" style=\"fill:none;stroke:rgb(255,255,255);stroke-miterlimit:10;stroke-linecap:square;\" width=\"3\" x=\"1\" y=\"2\"/>" + EOL +
+			FOOTER;
+		assertXMLEquals(expected, result);
 	}
 
-	@Test public void fillShapeBlack() throws IOException {
+	@Test public void fillShapeBlack() throws Exception {
 		String result = process(
 			new FillShapeCommand(new Rectangle2D.Double(1, 2, 3, 4))
 		);
-		Template actual = new Template(result.split(EOL));
-
-		Template expected = new Template(
-			HEADER,
-			new Template("  <rect height=\"4\" style=\"fill:rgb(255,255,255);stroke:none;\" width=\"3\" x=\"1\" y=\"2\"/>\n"),
-			FOOTER);
-
-		assertTemplateEquals(expected, actual);
+		String expected =
+			HEADER + EOL +
+			"  <rect height=\"4\" style=\"fill:rgb(255,255,255);stroke:none;\" width=\"3\" x=\"1\" y=\"2\"/>" + EOL +
+			FOOTER;
+		assertXMLEquals(expected, result);
 	}
 }
-
