@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
 import static de.erichseifert.vectorgraphics2d.TestUtils.Template;
@@ -101,7 +102,7 @@ public class PDFProcessorTest {
 			"/Fnt0 <<",
 			"/Type /Font",
 			"/Subtype /TrueType",
-			null, // "/BaseFont /LucidaSans",
+			Pattern.compile("/BaseFont /\\S+"),
 			">>",
 			">>",
 			">>",
@@ -109,19 +110,19 @@ public class PDFProcessorTest {
 			"xref",
 			"0 7",
 			"0000000000 65535 f ",
-			null, // "0000000009 00000 n ",
-			null, // "0000000058 00000 n ",
-			null, // "0000000115 00000 n ",
-			null, // "0000000263 00000 n ",
-			null, // "0000000415 00000 n ",
-			null, // "0000000434 00000 n ",
+			Pattern.compile("\\d{10} 00000 n "),
+			Pattern.compile("\\d{10} 00000 n "),
+			Pattern.compile("\\d{10} 00000 n "),
+			Pattern.compile("\\d{10} 00000 n "),
+			Pattern.compile("\\d{10} 00000 n "),
+			Pattern.compile("\\d{10} 00000 n "),
 			"trailer",
 			"<<",
 			"/Size 7",
 			"/Root 1 0 R",
 			">>",
 			"startxref",
-			null, // "591",
+			Pattern.compile("[1-9]\\d*"),
 			FOOTER
 		);
 

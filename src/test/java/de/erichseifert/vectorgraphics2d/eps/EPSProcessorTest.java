@@ -29,6 +29,7 @@ import org.junit.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
 import static de.erichseifert.vectorgraphics2d.TestUtils.Template;
@@ -52,7 +53,7 @@ public class EPSProcessorTest {
 		"/ellipse { /endangle exch def /startangle exch def /ry exch def /rx exch def /y exch def /x exch def /savematrix matrix currentmatrix def x y translate rx ry scale 0 0 1 startangle endangle arcn savematrix setmatrix } bind def",
 		"/imgdict { /datastream exch def /hasdata exch def /decodeScale exch def /bits exch def /bands exch def /imgheight exch def /imgwidth exch def << /ImageType 1 /Width imgwidth /Height imgheight /BitsPerComponent bits /Decode [bands {0 decodeScale} repeat] /ImageMatrix [imgwidth 0 0 imgheight 0 0] hasdata { /DataSource datastream } if >> } bind def",
 		"/latinize { /fontName exch def /fontNameNew exch def fontName findfont 0 dict copy begin /Encoding ISOLatin1Encoding def fontNameNew /FontName def currentdict end dup /FID undef fontNameNew exch definefont pop } bind def",
-		null,  // "/LucidaSansLat /LucidaSans latinize /LucidaSansLat 12.0 selectfont",
+		Pattern.compile("/\\S+?Lat /\\S+ latinize /\\S+?Lat 12.0 selectfont"),
 		"gsave",
 		"clipsave",
 		"/DeviceRGB setcolorspace",
