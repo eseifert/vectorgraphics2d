@@ -32,6 +32,7 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	TestUtilsTest.class,
 	UtilTests.class,
 	IRTests.class,
 	EPSTests.class,
