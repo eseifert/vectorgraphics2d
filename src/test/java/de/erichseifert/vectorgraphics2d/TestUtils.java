@@ -57,7 +57,7 @@ public abstract class TestUtils {
 
 		public enum FragmentType {
 			START_TAG, END_TAG, EMPTY_ELEMENT, CDATA,
-			DECLARATION, DOCTYPE, COMMENT };
+			DECLARATION, DOCTYPE, COMMENT }
 
 		public final String name;
 		public final FragmentType type;
@@ -167,7 +167,7 @@ public abstract class TestUtils {
 
 		@Override
 		public boolean equals(Object o) {
-			if (!(o instanceof XMLFragment) || o == null) {
+			if (!(o instanceof XMLFragment)) {
 				return false;
 			}
 			XMLFragment frag = (XMLFragment) o;
@@ -192,29 +192,29 @@ public abstract class TestUtils {
 
 		@Override
 		public String toString() {
-			String s = "<";
+			StringBuilder s = new StringBuilder("<");
 			if (FragmentType.END_TAG.equals(type)) {
-				s += "/";
+				s.append("/");
 			} else if (FragmentType.DECLARATION.equals(type)) {
-				s += "?";
+				s.append("?");
 			}
 
 			if (FragmentType.DOCTYPE.equals(type)) {
-				s += "!" + name;
+				s.append("!").append(name);
 				for (String partValue : attributes.values()) {
-					s += " " + partValue;
+					s.append(" ").append(partValue);
 				}
 			} else {
-				s += name;
+				s.append(name);
 				for (Map.Entry<String, String> attr : attributes.entrySet()) {
-					s += " " + attr.getKey() + "=\"" + attr.getValue() + "\"";
+					s.append(" ").append(attr.getKey()).append("=\"").append(attr.getValue()).append("\"");
 				}
 			}
 			if (FragmentType.DECLARATION.equals(type)) {
-				s += "?";
+				s.append("?");
 			}
-			s += ">";
-			return s;
+			s.append(">");
+			return s.toString();
 		}
 	}
 
@@ -238,7 +238,7 @@ public abstract class TestUtils {
 				Matcher matcher = expectedPattern.matcher((String) lineActual);
 				assertTrue(String.format(
 						"Line didn't match pattern.\nExpected: \"%s\"\nActual: \"%s\"",
-						matcher.pattern(), (String) lineActual),
+						matcher.pattern(), lineActual),
 						matcher.matches());
 			}
 		}
