@@ -2,7 +2,7 @@
 
     VectorGraphics2D: Vector export for Java(R) Graphics2D
 
-    (C) Copyright 2010-2013 Erich Seifert <dev[at]erichseifert.de>
+    (C) Copyright 2010-2014 Erich Seifert <dev[at]erichseifert.de>
 
     This file is part of VectorGraphics2D.
 
@@ -117,7 +117,7 @@
           </mapping>
           <properties>
             <owner>Erich Seifert</owner>
-            <year>${project.inceptionYear}-2013</year>
+            <year>${project.inceptionYear}-2014</year>
             <email>dev[at]erichseifert.de</email>
           </properties>
           <excludes>
