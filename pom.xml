@@ -65,7 +65,7 @@
           <plugin>
             <groupId>com.github.wvengen</groupId>
             <artifactId>proguard-maven-plugin</artifactId>
-            <version>2.0.6</version>
+            <version>2.0.8</version>
             <executions>
               <execution>
                 <phase>package</phase>
@@ -74,19 +74,19 @@
             </executions>
             <configuration>
               <proguardInclude>src/etc/proguard.conf</proguardInclude>
-                <options>
-                  <option>-target ${compileSource}</option>
-                </options>
-                <libs>
-                  <lib>${runtime.jar}</lib>
-                </libs>
+              <options>
+                <option>-target ${compileSource}</option>
+              </options>
+              <libs>
+                <lib>${runtime.jar}</lib>
+              </libs>
               <proguardVersion>4.9</proguardVersion>
             </configuration>
             <dependencies>
               <dependency>
                 <groupId>net.sf.proguard</groupId>
                 <artifactId>proguard-base</artifactId>
-                <version>4.9</version>
+                <version>5.1</version>
                 <scope>runtime</scope>
               </dependency>
             </dependencies>
