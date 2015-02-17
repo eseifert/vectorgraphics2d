@@ -36,7 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -135,12 +135,23 @@ public class EPSDocument extends SizedDocument {
 	}
 
 	public void write(OutputStream out) throws IOException {
-		PrintWriter o = new PrintWriter(out);
+		OutputStreamWriter o = new OutputStreamWriter(out, CHARSET);
 		for (String element : elements) {
 			if (element == null) {
 				continue;
 			}
-			o.println(element);
+			// Write current element in lines of 255 bytes (excluding line terminators)
+			int elementCharCount = element.length();
+			for (int i = 0; i < elementCharCount;) {
+				int remainingChars = elementCharCount - i;
+				int chunkSize = Math.min(remainingChars, 255);
+				o.write(element, i, chunkSize);
+				i += chunkSize;
+				if (i < elementCharCount) {
+					o.append(EOL);
+				}
+			}
+			o.append(EOL);
 		}
 		o.flush();
 	}
