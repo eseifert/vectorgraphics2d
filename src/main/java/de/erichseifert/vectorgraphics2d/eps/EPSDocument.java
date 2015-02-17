@@ -153,6 +153,7 @@ public class EPSDocument extends SizedDocument {
 			}
 			o.append(EOL);
 		}
+		o.append("%%EOF");
 		o.flush();
 	}
 
