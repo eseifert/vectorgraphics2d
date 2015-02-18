@@ -45,6 +45,14 @@
     </developer>
   </developers>
 
+  <repositories>
+	<repository>
+		<id>org.ghost4j.repository.releases</id>
+		<name>Ghost4J releases</name>
+		<url>http://repo.ghost4j.org/maven2/releases</url>
+	</repository>
+  </repositories>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compileSource>1.6</compileSource>
@@ -243,6 +251,13 @@
   	  <scope>test</scope>
   	  <optional>true</optional>
   	</dependency>
+    <dependency>
+        <groupId>org.ghost4j</groupId>
+        <artifactId>ghost4j</artifactId>
+        <version>0.5.1</version>
+        <scope>test</scope>
+        <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <scm>
