@@ -130,8 +130,7 @@ public class EPSDocument extends SizedDocument {
 			"/DeviceRGB setcolorspace",
 			"0 " + height + " translate",
 			UNITS_PER_MM + " " + (-UNITS_PER_MM) + " scale",
-			"/basematrix matrix currentmatrix def",
-			getOutput(Color.WHITE)
+			"/basematrix matrix currentmatrix def"
 		));
 	}
 

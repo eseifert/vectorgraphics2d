@@ -22,28 +22,8 @@ package de.erichseifert.vectorgraphics2d;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Map;
 
 import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
-import de.erichseifert.vectorgraphics2d.util.DataUtils;
-import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
-import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
@@ -64,6 +44,13 @@ public class EPSGraphics2D extends ProcessingPipeline {
 	public EPSGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
 		processor = new EPSProcessor();
+		/*
+		 * The following are the default settings for the graphics state in an EPS file.
+		 * Although they currently appear in the document output, they do not have to be set explicitly.
+		 */
+		// TODO: Default graphics state does not need to be printed in the document
+		setColor(Color.BLACK);
+		setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, null, 0f));
 	}
 
 	@Override
