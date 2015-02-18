@@ -112,6 +112,7 @@ public class EPSDocument extends SizedDocument {
 			"%%HiResBoundingBox: " + x + " " + y + " " + (x + width) + " " + (y + height),
 			"%%LanguageLevel: 3",
 			"%%Pages: 1",
+			"%%EndComments",
 			"%%Page: 1 1",
 			"/M /moveto load def",
 			"/L /lineto load def",
