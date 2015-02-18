@@ -12,17 +12,21 @@ import javax.imageio.ImageIO;
 
 import static org.junit.Assert.assertEquals;
 
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 import org.ghost4j.Ghostscript;
 import org.ghost4j.GhostscriptException;
 import org.junit.Test;
 
 public abstract class TestCase {
-	protected static final int width = 150;
-	protected static final int height = 150;
 	private static final double EPSILON = 1e-2;
+	private final PageSize pageSize;
 	private final BufferedImage reference;
 
 	public TestCase() throws IOException {
+		int width = 150;
+		int height = 150;
+		pageSize = new PageSize(0.0, 0.0, width, height);
+
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D referenceGraphics = (Graphics2D) reference.getGraphics();
 		referenceGraphics.setBackground(new Color(1f, 1f, 1f, 0f));
@@ -38,6 +42,8 @@ public abstract class TestCase {
 
 	@Test
 	public void testEPS() throws IOException, GhostscriptException {
+		int width = (int) Math.round(getPageSize().width);
+		int height = (int) Math.round(getPageSize().height);
 		EPSGraphics2D epsGraphics = new EPSGraphics2D(0, 0, width, height);
 		draw(epsGraphics);
 
@@ -69,5 +75,9 @@ public abstract class TestCase {
 		assertEquals(reference.getHeight(), actual.getHeight());
 		double difference = TestUtils.getMeanSquareError(reference, actual);
 		assertEquals(0.0, difference, EPSILON);
+	}
+
+	public PageSize getPageSize() {
+		return pageSize;
 	}
 }

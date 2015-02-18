@@ -31,8 +31,8 @@ public class ColorTest extends TestCase {
 
 	@Override
 	public void draw(Graphics2D g) {
-		final float wPage = width;
-		final float hPage = height;
+		final float wPage = (float) getPageSize().width;
+		final float hPage = (float) getPageSize().height;
 		final float wTile = Math.min(wPage/15f, hPage/15f);
 		final float hTile = wTile;
 
