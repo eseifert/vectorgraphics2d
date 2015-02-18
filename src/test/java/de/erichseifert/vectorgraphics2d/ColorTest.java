@@ -35,16 +35,27 @@ import static org.junit.Assert.assertEquals;
 
 import org.ghost4j.Ghostscript;
 import org.ghost4j.GhostscriptException;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ColorTest {
-	private static BufferedImage reference;
+	private final BufferedImage reference;
 	private static final int width = 150;
 	private static final int height = 150;
 	private static final double EPSILON = 1e-2;
 
-	public static void draw(Graphics2D g) {
+	public ColorTest() throws IOException {
+		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D referenceGraphics = (Graphics2D) reference.getGraphics();
+		referenceGraphics.setBackground(new Color(1f, 1f, 1f, 0f));
+		referenceGraphics.clearRect(0, 0, reference.getWidth(), reference.getHeight());
+		referenceGraphics.setColor(Color.BLACK);
+		draw(referenceGraphics);
+		File referenceImage = File.createTempFile(ColorTest.class.getName() + ".reference", ".png");
+		referenceImage.deleteOnExit();
+		ImageIO.write(reference, "png", referenceImage);
+	}
+
+	public void draw(Graphics2D g) {
 		final float wPage = width;
 		final float hPage = height;
 		final float wTile = Math.min(wPage/15f, hPage/15f);
@@ -63,19 +74,6 @@ public class ColorTest {
 				g.fill(new Rectangle2D.Float(x, y, wTile, hTile));
 			}
 		}
-	}
-
-	@BeforeClass
-	public static void setUpBeforeClass() throws IOException {
-		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D referenceGraphics = (Graphics2D) reference.getGraphics();
-		referenceGraphics.setBackground(new Color(1f, 1f, 1f, 0f));
-		referenceGraphics.clearRect(0, 0, reference.getWidth(), reference.getHeight());
-		referenceGraphics.setColor(Color.BLACK);
-		draw(referenceGraphics);
-		File referenceImage = File.createTempFile(ColorTest.class.getName() + ".reference", ".png");
-		referenceImage.deleteOnExit();
-		ImageIO.write(reference, "png", referenceImage);
 	}
 
 	@Test
