@@ -36,7 +36,8 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	IRTests.class,
 	EPSTests.class,
 	PDFTests.class,
-	SVGTests.class
+	SVGTests.class,
+	ColorTest.class
 })
 public class AllTests {
 }
