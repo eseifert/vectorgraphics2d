@@ -65,24 +65,6 @@ public class ColorTest {
 		}
 	}
 
-	public double getMeanSquareError(BufferedImage reference, BufferedImage actual) {
-		float meanSquareError = 0f;
-		for (int y = 0; y < reference.getHeight(); y++) {
-			for (int x = 0; x < reference.getWidth(); x++) {
-				Color rgbReference = new Color(reference.getRGB(x, y));
-				Color rgbActual = new Color(actual.getRGB(x, y));
-				float[] colorComponentsReference = rgbReference.getColorComponents(null);
-				float[] colorComponentsActual = rgbActual.getColorComponents(null);
-				for (int color = 0; color < colorComponentsReference.length; color++) {
-					float squareError = (float) Math.pow(colorComponentsReference[color] - colorComponentsActual[color], 2.0);
-					meanSquareError += squareError;
-				}
-			}
-		}
-		meanSquareError /= reference.getWidth()*reference.getHeight()*3;
-		return meanSquareError;
-	}
-
 	@BeforeClass
 	public static void setUpBeforeClass() throws IOException {
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -127,7 +109,7 @@ public class ColorTest {
 		BufferedImage actual = ImageIO.read(pngOutputFile);
 		assertEquals(reference.getWidth(), actual.getWidth());
 		assertEquals(reference.getHeight(), actual.getHeight());
-		double difference = getMeanSquareError(reference, actual);
+		double difference = TestUtils.getMeanSquareError(reference, actual);
 		assertEquals(0.0, difference, EPSILON);
 	}
 }

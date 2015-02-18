@@ -20,6 +20,8 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,24 @@ import static org.junit.Assert.assertTrue;
 public abstract class TestUtils {
 	protected TestUtils() {
 		throw new UnsupportedOperationException();
+	}
+
+	public static double getMeanSquareError(BufferedImage reference, BufferedImage actual) {
+		float meanSquareError = 0f;
+		for (int y = 0; y < reference.getHeight(); y++) {
+			for (int x = 0; x < reference.getWidth(); x++) {
+				Color rgbReference = new Color(reference.getRGB(x, y));
+				Color rgbActual = new Color(actual.getRGB(x, y));
+				float[] colorComponentsReference = rgbReference.getColorComponents(null);
+				float[] colorComponentsActual = rgbActual.getColorComponents(null);
+				for (int color = 0; color < colorComponentsReference.length; color++) {
+					float squareError = (float) Math.pow(colorComponentsReference[color] - colorComponentsActual[color], 2.0);
+					meanSquareError += squareError;
+				}
+			}
+		}
+		meanSquareError /= reference.getWidth()*reference.getHeight()*3;
+		return meanSquareError;
 	}
 
 	public static class Template extends LinkedList<Object> {
