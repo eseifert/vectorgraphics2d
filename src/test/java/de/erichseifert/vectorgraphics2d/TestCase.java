@@ -2,6 +2,7 @@ package de.erichseifert.vectorgraphics2d;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,11 +30,13 @@ public abstract class TestCase {
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D referenceGraphics = (Graphics2D) reference.getGraphics();
+		referenceGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		referenceGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		referenceGraphics.setBackground(new Color(1f, 1f, 1f, 0f));
 		referenceGraphics.clearRect(0, 0, reference.getWidth(), reference.getHeight());
 		referenceGraphics.setColor(Color.BLACK);
 		draw(referenceGraphics);
-		File referenceImage = File.createTempFile(ColorTest.class.getName() + ".reference", ".png");
+		File referenceImage = File.createTempFile(getClass().getName() + ".reference", ".png");
 		referenceImage.deleteOnExit();
 		ImageIO.write(reference, "png", referenceImage);
 	}
@@ -62,6 +65,8 @@ public abstract class TestCase {
 				"-dNOPAUSE",
 				"-dSAFER",
 				String.format("-g%dx%d", width, height),
+				"-dGraphicsAlphaBits=4",
+				"-dAlignToPixels=0",
 				"-dEPSCrop",
 				"-dPSFitPage",
 				"-sDEVICE=png16m",
