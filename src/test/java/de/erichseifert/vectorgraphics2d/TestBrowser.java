@@ -55,6 +55,13 @@ public class TestBrowser extends JFrame {
 		}
 
 		JList testList = new JList(testCases.toArray());
+		testList.setCellRenderer(new DefaultListCellRenderer() {
+			@Override
+			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				String testName = value.getClass().getSimpleName();
+				return super.getListCellRendererComponent(list, testName, index, isSelected, cellHasFocus);
+			}
+		});
 		getContentPane().add(testList, BorderLayout.WEST);
 
 		JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
