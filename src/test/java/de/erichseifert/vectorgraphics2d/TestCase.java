@@ -85,4 +85,8 @@ public abstract class TestCase {
 	public PageSize getPageSize() {
 		return pageSize;
 	}
+
+	public BufferedImage getReference() {
+		return reference;
+	}
 }
