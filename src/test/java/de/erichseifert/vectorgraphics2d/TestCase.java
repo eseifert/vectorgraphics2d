@@ -22,6 +22,7 @@ public abstract class TestCase {
 	private static final double EPSILON = 1;
 	private final PageSize pageSize;
 	private final BufferedImage reference;
+	private BufferedImage rasterizedEPS;
 
 	public TestCase() throws IOException {
 		int width = 150;
@@ -45,6 +46,26 @@ public abstract class TestCase {
 
 	@Test
 	public void testEPS() throws IOException, GhostscriptException {
+		BufferedImage actual = getRasterizedEPS();
+		assertEquals(reference.getWidth(), actual.getWidth());
+		assertEquals(reference.getHeight(), actual.getHeight());
+		double difference = TestUtils.getMeanSquareError(reference, actual);
+		assertEquals(0.0, difference, EPSILON);
+	}
+
+	public PageSize getPageSize() {
+		return pageSize;
+	}
+
+	public BufferedImage getReference() {
+		return reference;
+	}
+
+	public BufferedImage getRasterizedEPS() throws GhostscriptException, IOException {
+		if (rasterizedEPS != null) {
+			return rasterizedEPS;
+		}
+
 		int width = (int) Math.round(getPageSize().width);
 		int height = (int) Math.round(getPageSize().height);
 		EPSGraphics2D epsGraphics = new EPSGraphics2D(0, 0, width, height);
@@ -74,19 +95,7 @@ public abstract class TestCase {
 				epsInputFile.toString()
 		});
 		gs.exit();
-
-		BufferedImage actual = ImageIO.read(pngOutputFile);
-		assertEquals(reference.getWidth(), actual.getWidth());
-		assertEquals(reference.getHeight(), actual.getHeight());
-		double difference = TestUtils.getMeanSquareError(reference, actual);
-		assertEquals(0.0, difference, EPSILON);
-	}
-
-	public PageSize getPageSize() {
-		return pageSize;
-	}
-
-	public BufferedImage getReference() {
-		return reference;
+		rasterizedEPS = ImageIO.read(pngOutputFile);
+		return rasterizedEPS;
 	}
 }
