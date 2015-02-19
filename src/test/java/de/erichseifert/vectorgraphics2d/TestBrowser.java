@@ -21,14 +21,17 @@
 package de.erichseifert.vectorgraphics2d;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
 
@@ -51,8 +54,10 @@ public class TestBrowser extends JFrame {
 			e.printStackTrace();
 		}
 
+		JList testList = new JList(testCases.toArray());
+		getContentPane().add(testList, BorderLayout.WEST);
+
 		JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		// TODO: Allow test case selection
 		TestCase test = testCases.get(0);
 		BufferedImage reference = test.getReference();
 		jSplitPane.setTopComponent(new JLabel(new ImageIcon(reference)));
