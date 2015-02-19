@@ -33,12 +33,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.ghost4j.GhostscriptException;
 
 public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
+
+	private final JSplitPane imageComparisonPanel;
 
 	public TestBrowser() {
 		super("Test browser");
@@ -54,7 +59,8 @@ public class TestBrowser extends JFrame {
 			e.printStackTrace();
 		}
 
-		JList testList = new JList(testCases.toArray());
+		final JList testList = new JList(testCases.toArray());
+		testList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		testList.setCellRenderer(new DefaultListCellRenderer() {
 			@Override
 			public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
@@ -62,20 +68,35 @@ public class TestBrowser extends JFrame {
 				return super.getListCellRendererComponent(list, testName, index, isSelected, cellHasFocus);
 			}
 		});
+		testList.addListSelectionListener(new ListSelectionListener() {
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if (!e.getValueIsAdjusting()) {
+					int index = testList.getSelectedIndex();
+					TestCase test = testCases.get(index);
+					setTestCase(test);
+				}
+			}
+		});
 		getContentPane().add(testList, BorderLayout.WEST);
 
-		JSplitPane jSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		TestCase test = testCases.get(0);
+		imageComparisonPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		getContentPane().add(imageComparisonPanel, BorderLayout.CENTER);
+	}
+
+	public void setTestCase(TestCase test) {
 		BufferedImage reference = test.getReference();
-		jSplitPane.setTopComponent(new JLabel(new ImageIcon(reference)));
+		imageComparisonPanel.setTopComponent(new JLabel(new ImageIcon(reference)));
 		try {
-			jSplitPane.setBottomComponent(new JLabel(new ImageIcon(test.getRasterizedEPS())));
-		} catch (GhostscriptException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			imageComparisonPanel.setBottomComponent(new JLabel(new ImageIcon(test.getRasterizedEPS())));
+		} catch (GhostscriptException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
-		getContentPane().add(jSplitPane, BorderLayout.CENTER);
+		imageComparisonPanel.setDividerLocation(0.5);
+		imageComparisonPanel.revalidate();
+		imageComparisonPanel.repaint();
 	}
 
 	public static void main(String[] args) {
