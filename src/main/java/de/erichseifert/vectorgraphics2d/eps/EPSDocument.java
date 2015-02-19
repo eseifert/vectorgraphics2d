@@ -77,6 +77,7 @@ public class EPSDocument extends SizedDocument {
 	private static final double UNITS_PER_MM = 72.0 / 25.4;
 	private static final String CHARSET = "ISO-8859-1";
 	private static final String EOL = "\n";
+	private static final int MAX_LINE_WIDTH = 255;
 
 	/** Mapping of stroke endcap values from Java to PostScript®. */
 	private static final Map<Integer, Integer> STROKE_ENDCAPS = DataUtils.map(
@@ -141,11 +142,23 @@ public class EPSDocument extends SizedDocument {
 				continue;
 			}
 			// Write current element in lines of 255 bytes (excluding line terminators)
+			// Numbers must not be separated by line breaks or errors will occur
+			// TODO: Integrate functionality into LineWrapOutputStream
 			int elementCharCount = element.length();
 			for (int i = 0; i < elementCharCount;) {
 				int remainingChars = elementCharCount - i;
-				int chunkSize = Math.min(remainingChars, 255);
+
+				int chunkSize = remainingChars;
+				if (remainingChars > MAX_LINE_WIDTH) {
+					String maximumChunk = element.substring(i, i + MAX_LINE_WIDTH);
+					int whitespacePositionInChunk = maximumChunk.lastIndexOf(" ");
+					// TODO: Error, if no whitespace can be found in the chunk
+					chunkSize = i + whitespacePositionInChunk;
+					assert(chunkSize <= MAX_LINE_WIDTH);
+				}
+
 				o.write(element, i, chunkSize);
+
 				i += chunkSize;
 				if (i < elementCharCount) {
 					o.append(EOL);
