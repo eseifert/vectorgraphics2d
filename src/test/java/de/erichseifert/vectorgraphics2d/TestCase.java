@@ -19,7 +19,7 @@ import org.ghost4j.GhostscriptException;
 import org.junit.Test;
 
 public abstract class TestCase {
-	private static final double EPSILON = 1e-2;
+	private static final double EPSILON = 1;
 	private final PageSize pageSize;
 	private final BufferedImage reference;
 
