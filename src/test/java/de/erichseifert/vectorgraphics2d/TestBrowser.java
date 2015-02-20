@@ -55,6 +55,7 @@ public class TestBrowser extends JFrame {
 			testCases.add(new ColorTest());
 			testCases.add(new StrokeTest());
 			testCases.add(new ShapesTest());
+			testCases.add(new FontTest());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
