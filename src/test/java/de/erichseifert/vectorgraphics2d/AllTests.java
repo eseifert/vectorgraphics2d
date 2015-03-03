@@ -41,7 +41,8 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	ColorTest.class,
 	ShapesTest.class,
 	StrokeTest.class,
-	FontTest.class
+	FontTest.class,
+	ImageTest.class
 })
 public class AllTests {
 }
