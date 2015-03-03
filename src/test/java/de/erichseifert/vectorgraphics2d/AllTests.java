@@ -37,6 +37,7 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	EPSTests.class,
 	PDFTests.class,
 	SVGTests.class,
+	EmptyFileTest.class,
 	ColorTest.class,
 	ShapesTest.class,
 	StrokeTest.class,
