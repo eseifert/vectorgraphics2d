@@ -140,7 +140,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		Shape clipNew = getClip();
 		if ((clipNew == null || _debug_validate_graphics.getClip() == null) && clipNew != _debug_validate_graphics.getClip())
 			System.err.println("clip() validation failed: clip("+clipOld+", "+s+") => "+clipNew+" != "+_debug_validate_graphics.getClip());
-		if (clipNew != null && !clipNew.equals(_debug_validate_graphics.getClip()))
+		if (clipNew != null && !GraphicsUtils.equals(clipNew, _debug_validate_graphics.getClip()))
 			System.err.println("clip() validation failed: clip("+clipOld+", "+s+") => "+clipNew+" != "+_debug_validate_graphics.getClip());
 	}
 
@@ -791,7 +791,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		if (getClip() == null) {
 			if (_debug_validate_graphics.getClip() != null)
 				System.err.printf("setClip() validation failed: clip=null, validation=%s\n", _debug_validate_graphics.getClip());
-		} else if (!getClip().equals(_debug_validate_graphics.getClip())) {
+		} else if (!GraphicsUtils.equals(getClip(), _debug_validate_graphics.getClip())) {
 			System.err.printf("setClip() validation failed: clip=%s, validation=%s\n", getClip(), _debug_validate_graphics.getClip());
 		}
 	}
