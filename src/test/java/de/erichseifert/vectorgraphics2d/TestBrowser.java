@@ -22,16 +22,24 @@ package de.erichseifert.vectorgraphics2d;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
@@ -44,6 +52,55 @@ public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
 
 	private final JSplitPane imageComparisonPanel;
+
+	private static class ImageDisplayPanel extends JPanel {
+		private final BufferedImage renderedImage;
+		private final InputStream imageData;
+
+		public ImageDisplayPanel(BufferedImage renderedImage, InputStream imageData) {
+			super(new BorderLayout());
+			this.renderedImage = renderedImage;
+			this.imageData = imageData;
+
+			JLabel imageLabel = new JLabel(new ImageIcon(renderedImage));
+			add(imageLabel, BorderLayout.CENTER);
+
+			JButton saveToFileButton = new JButton("Save as...");
+			saveToFileButton.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JFileChooser saveFileDialog = new JFileChooser();
+					saveFileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
+					saveFileDialog.setMultiSelectionEnabled(false);
+					int userChoice = saveFileDialog.showSaveDialog(ImageDisplayPanel.this);
+					if (userChoice != JFileChooser.APPROVE_OPTION) {
+						return;
+					}
+
+					File dest = saveFileDialog.getSelectedFile();
+					FileOutputStream destStream = null;
+					try {
+						destStream = new FileOutputStream(dest);
+						int imageDataChunk;
+						while ((imageDataChunk = ImageDisplayPanel.this.imageData.read()) != -1){
+							destStream.write(imageDataChunk);
+						}
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					} finally {
+						if (destStream != null) {
+							try {
+								destStream.close();
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						}
+					}
+				}
+			});
+			add(saveToFileButton, BorderLayout.SOUTH);
+		}
+	}
 
 	public TestBrowser() {
 		super("Test browser");
@@ -78,7 +135,13 @@ public class TestBrowser extends JFrame {
 				if (!e.getValueIsAdjusting()) {
 					int index = testList.getSelectedIndex();
 					TestCase test = testCases.get(index);
-					setTestCase(test);
+					try {
+						setTestCase(test);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					} catch (GhostscriptException e1) {
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -88,16 +151,10 @@ public class TestBrowser extends JFrame {
 		getContentPane().add(imageComparisonPanel, BorderLayout.CENTER);
 	}
 
-	public void setTestCase(TestCase test) {
+	public void setTestCase(TestCase test) throws IOException, GhostscriptException {
 		BufferedImage reference = test.getReference();
 		imageComparisonPanel.setTopComponent(new JLabel(new ImageIcon(reference)));
-		try {
-			imageComparisonPanel.setBottomComponent(new JLabel(new ImageIcon(test.getRasterizedEPS())));
-		} catch (GhostscriptException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		imageComparisonPanel.setBottomComponent(new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS()));
 		imageComparisonPanel.setDividerLocation(0.5);
 		imageComparisonPanel.revalidate();
 		imageComparisonPanel.repaint();
