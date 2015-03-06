@@ -4,9 +4,11 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
@@ -22,12 +24,16 @@ public abstract class TestCase {
 	private static final double EPSILON = 1;
 	private final PageSize pageSize;
 	private final BufferedImage reference;
+	private final EPSGraphics2D epsGraphics;
 	private BufferedImage rasterizedEPS;
 
 	public TestCase() throws IOException {
 		int width = 150;
 		int height = 150;
 		pageSize = new PageSize(0.0, 0.0, width, height);
+
+		epsGraphics = new EPSGraphics2D(0, 0, width, height);
+		draw(epsGraphics);
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D referenceGraphics = (Graphics2D) reference.getGraphics();
@@ -61,15 +67,14 @@ public abstract class TestCase {
 		return reference;
 	}
 
+	public InputStream getEPS() {
+		return new ByteArrayInputStream(epsGraphics.getBytes());
+	}
+
 	public BufferedImage getRasterizedEPS() throws GhostscriptException, IOException {
 		if (rasterizedEPS != null) {
 			return rasterizedEPS;
 		}
-
-		int width = (int) Math.round(getPageSize().width);
-		int height = (int) Math.round(getPageSize().height);
-		EPSGraphics2D epsGraphics = new EPSGraphics2D(0, 0, width, height);
-		draw(epsGraphics);
 
 		File epsInputFile = File.createTempFile(getClass().getName() + ".testEPS", ".eps");
 		epsInputFile.deleteOnExit();
@@ -85,7 +90,7 @@ public abstract class TestCase {
 				"-dQUIET",
 				"-dNOPAUSE",
 				"-dSAFER",
-				String.format("-g%dx%d", width, height),
+				String.format("-g%dx%d", Math.round(getPageSize().width), Math.round(getPageSize().height)),
 				"-dGraphicsAlphaBits=4",
 				"-dAlignToPixels=0",
 				"-dEPSCrop",
