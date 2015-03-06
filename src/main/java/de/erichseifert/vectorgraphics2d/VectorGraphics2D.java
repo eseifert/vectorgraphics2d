@@ -74,7 +74,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 /**
- * Base for classed that want to implement vector export.
+ * Base for classes that want to implement vector export.
  * @author Erich Seifert
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
