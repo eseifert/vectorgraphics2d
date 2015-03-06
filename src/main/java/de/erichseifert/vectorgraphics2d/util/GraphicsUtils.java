@@ -385,4 +385,35 @@ public abstract class GraphicsUtils {
 
 		return alphaImage;
 	}
+
+	public static boolean equals(Shape shapeA, Shape shapeB) {
+		PathIterator pathAIterator = shapeA.getPathIterator(null);
+		PathIterator pathBIterator = shapeB.getPathIterator(null);
+
+		if (pathAIterator.getWindingRule() != pathBIterator.getWindingRule()) {
+			return false;
+		}
+		double[] pathASegment = new double[6];
+		double[] pathBSegment = new double[6];
+		while (!pathAIterator.isDone()) {
+			int pathASegmentType = pathAIterator.currentSegment(pathASegment);
+			int pathBSegmentType = pathBIterator.currentSegment(pathBSegment);
+			if (pathASegmentType != pathBSegmentType) {
+				return false;
+			}
+			for (int segmentIndex = 0; segmentIndex < pathASegment.length; segmentIndex++) {
+				if (pathASegment[segmentIndex] != pathBSegment[segmentIndex]) {
+					return false;
+				}
+			}
+
+			pathAIterator.next();
+			pathBIterator.next();
+		}
+		// When the iterator of shapeA is done and shapeA equals shapeB, the iterator of shapeB must also be done
+		if (!pathBIterator.isDone()) {
+			return false;
+		}
+		return true;
+	}
 }
