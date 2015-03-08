@@ -41,6 +41,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.SizedDocument;
@@ -78,6 +80,7 @@ public class EPSDocument extends SizedDocument {
 	private static final String CHARSET = "ISO-8859-1";
 	private static final String EOL = "\n";
 	private static final int MAX_LINE_WIDTH = 255;
+	private static final Pattern ELEMENT_SEPARATION_PATTERN = Pattern.compile("(.{1," + MAX_LINE_WIDTH + "})(\\s+|$)");
 
 	/** Mapping of stroke endcap values from Java to PostScript®. */
 	private static final Map<Integer, Integer> STROKE_ENDCAPS = DataUtils.map(
@@ -141,33 +144,23 @@ public class EPSDocument extends SizedDocument {
 			if (element == null) {
 				continue;
 			}
+
 			// Write current element in lines of 255 bytes (excluding line terminators)
 			// Numbers must not be separated by line breaks or errors will occur
 			// TODO: Integrate functionality into LineWrapOutputStream
-			int elementCharCount = element.length();
-			for (int i = 0; i < elementCharCount;) {
-				int remainingChars = elementCharCount - i;
+			Matcher chunkMatcher = ELEMENT_SEPARATION_PATTERN.matcher(element);
 
-				int chunkSize = remainingChars;
-				if (remainingChars > MAX_LINE_WIDTH) {
-					String maximumChunk = element.substring(i, i + MAX_LINE_WIDTH);
-					int whitespacePositionInChunk = maximumChunk.lastIndexOf(" ");
-					if (whitespacePositionInChunk < 0) {
-						// TODO: Exception, if no whitespace can be found in the chunk
-						System.err.println("Unable to divide eps element into lines: " + element);
-					}
-					chunkSize = i + whitespacePositionInChunk;
-					assert(chunkSize <= MAX_LINE_WIDTH);
-				}
-
-				o.write(element, i, chunkSize);
-
-				i += chunkSize;
-				if (i < elementCharCount) {
-					o.append(EOL);
-				}
+			boolean chunkFound = false;
+			while (chunkMatcher.find()) {
+				chunkFound = true;
+				String chunk = chunkMatcher.group();
+				o.write(chunk, 0, chunk.length());
+				o.append(EOL);
 			}
-			o.append(EOL);
+			if (!chunkFound) {
+				// TODO: Exception, if no whitespace can be found in the chunk
+				System.err.println("Unable to divide eps element into lines: " + element);
+			}
 		}
 		o.append("%%EOF");
 		o.flush();
