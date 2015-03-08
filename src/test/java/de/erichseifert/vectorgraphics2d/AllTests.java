@@ -43,7 +43,8 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	StrokeTest.class,
 	FontTest.class,
 	ImageTest.class,
-	ClippingTest.class
+	ClippingTest.class,
+	TransformTest.class
 })
 public class AllTests {
 }
