@@ -152,7 +152,10 @@ public class EPSDocument extends SizedDocument {
 				if (remainingChars > MAX_LINE_WIDTH) {
 					String maximumChunk = element.substring(i, i + MAX_LINE_WIDTH);
 					int whitespacePositionInChunk = maximumChunk.lastIndexOf(" ");
-					// TODO: Error, if no whitespace can be found in the chunk
+					if (whitespacePositionInChunk < 0) {
+						// TODO: Exception, if no whitespace can be found in the chunk
+						System.err.println("Unable to divide eps element into lines: " + element);
+					}
 					chunkSize = i + whitespacePositionInChunk;
 					assert(chunkSize <= MAX_LINE_WIDTH);
 				}
