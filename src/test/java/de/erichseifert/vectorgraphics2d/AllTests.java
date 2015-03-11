@@ -45,7 +45,8 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	ImageTest.class,
 	ClippingTest.class,
 	TransformTest.class,
-	PaintTest.class
+	PaintTest.class,
+	SwingExportTest.class
 })
 public class AllTests {
 }

@@ -117,6 +117,7 @@ public class TestBrowser extends JFrame {
 			testCases.add(new ImageTest());
 			testCases.add(new ClippingTest());
 			testCases.add(new PaintTest());
+			testCases.add(new SwingExportTest());
 			testCases.add(new TransformTest());
 		} catch (IOException e) {
 			e.printStackTrace();
