@@ -48,6 +48,7 @@ public class LineWrapOutputStream extends FilterOutputStream {
 	public void write(int b) throws IOException {
 		if (written == lineWidth) {
 			out.write(eolBytes);
+			written = 0;
 		}
 		out.write(b);
 		written++;
