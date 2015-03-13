@@ -40,7 +40,7 @@ public abstract class TestCase {
 		draw(pdfGraphics);
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D referenceGraphics = (Graphics2D) reference.getGraphics();
+		Graphics2D referenceGraphics = reference.createGraphics();
 		referenceGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		referenceGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		referenceGraphics.setBackground(new Color(1f, 1f, 1f, 0f));
@@ -112,7 +112,7 @@ public abstract class TestCase {
 				"-dAlignToPixels=0",
 				"-dEPSCrop",
 				"-dPSFitPage",
-				"-sDEVICE=png16m",
+				"-sDEVICE=pngalpha",
 				"-sOutputFile=" + pngOutputFile.toString(),
 				epsInputFile.toString()
 		});
@@ -145,7 +145,7 @@ public abstract class TestCase {
 				"-dAlignToPixels=0",
 				"-dPDFCrop",
 				"-dPSFitPage",
-				"-sDEVICE=png16m",
+				"-sDEVICE=pngalpha",
 				"-sOutputFile=" + pngOutputFile.toString(),
 				pdfInputFile.toString()
 		});
