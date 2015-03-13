@@ -25,7 +25,9 @@ public abstract class TestCase {
 	private final PageSize pageSize;
 	private final BufferedImage reference;
 	private final EPSGraphics2D epsGraphics;
+	private final PDFGraphics2D pdfGraphics;
 	private BufferedImage rasterizedEPS;
+	private BufferedImage rasterizedPDF;
 
 	public TestCase() throws IOException {
 		int width = 150;
@@ -34,6 +36,8 @@ public abstract class TestCase {
 
 		epsGraphics = new EPSGraphics2D(0, 0, width, height);
 		draw(epsGraphics);
+		pdfGraphics = new PDFGraphics2D(0, 0, width, height);
+		draw(pdfGraphics);
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D referenceGraphics = (Graphics2D) reference.getGraphics();
@@ -59,6 +63,15 @@ public abstract class TestCase {
 		assertEquals(0.0, difference, EPSILON);
 	}
 
+	@Test
+	public void testPDF() throws IOException, GhostscriptException {
+		BufferedImage actual = getRasterizedPDF();
+		assertEquals(reference.getWidth(), actual.getWidth());
+		assertEquals(reference.getHeight(), actual.getHeight());
+		double difference = TestUtils.getMeanSquareError(reference, actual);
+		assertEquals(0.0, difference, EPSILON);
+	}
+
 	public PageSize getPageSize() {
 		return pageSize;
 	}
@@ -69,6 +82,10 @@ public abstract class TestCase {
 
 	public InputStream getEPS() {
 		return new ByteArrayInputStream(epsGraphics.getBytes());
+	}
+
+	public InputStream getPDF() {
+		return new ByteArrayInputStream(pdfGraphics.getBytes());
 	}
 
 	public BufferedImage getRasterizedEPS() throws GhostscriptException, IOException {
@@ -102,5 +119,38 @@ public abstract class TestCase {
 		gs.exit();
 		rasterizedEPS = ImageIO.read(pngOutputFile);
 		return rasterizedEPS;
+	}
+
+	public BufferedImage getRasterizedPDF() throws GhostscriptException, IOException {
+		if (rasterizedPDF != null) {
+			return rasterizedPDF;
+		}
+
+		File pdfInputFile = File.createTempFile(getClass().getName() + ".testPDF", ".pdf");
+		pdfInputFile.deleteOnExit();
+		OutputStream pdfInput = new FileOutputStream(pdfInputFile);
+		pdfInput.write(pdfGraphics.getBytes());
+		pdfInput.close();
+
+		File pngOutputFile = File.createTempFile(getClass().getName() + ".testPDF", "png");
+		pngOutputFile.deleteOnExit();
+		Ghostscript gs = Ghostscript.getInstance();
+		gs.initialize(new String[] {
+				"-dBATCH",
+				"-dQUIET",
+				"-dNOPAUSE",
+				"-dSAFER",
+				String.format("-g%dx%d", Math.round(getPageSize().width), Math.round(getPageSize().height)),
+				"-dGraphicsAlphaBits=4",
+				"-dAlignToPixels=0",
+				"-dPDFCrop",
+				"-dPSFitPage",
+				"-sDEVICE=png16m",
+				"-sOutputFile=" + pngOutputFile.toString(),
+				pdfInputFile.toString()
+		});
+		gs.exit();
+		rasterizedPDF = ImageIO.read(pngOutputFile);
+		return rasterizedPDF;
 	}
 }
