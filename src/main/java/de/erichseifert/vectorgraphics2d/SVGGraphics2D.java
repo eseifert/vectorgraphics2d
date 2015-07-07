@@ -20,28 +20,7 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Image;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Path2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
-
 import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
-import de.erichseifert.vectorgraphics2d.util.DataUtils;
-import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
