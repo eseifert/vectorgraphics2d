@@ -42,6 +42,7 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	ShapesTest.class,
 	StrokeTest.class,
 	FontTest.class,
+	CharacterTest.class,
 	ImageTest.class,
 	ClippingTest.class,
 	TransformTest.class,
