@@ -142,9 +142,10 @@ public abstract class TestCase {
 				"-dSAFER",
 				String.format("-g%dx%d", Math.round(getPageSize().width), Math.round(getPageSize().height)),
 				"-dGraphicsAlphaBits=4",
+				// TODO: More robust settings for gs? DPI value is estimated.
+				"-r25",
 				"-dAlignToPixels=0",
-				"-dPDFCrop",
-				"-dPSFitPage",
+				"-dPDFFitPage",
 				"-sDEVICE=pngalpha",
 				"-sOutputFile=" + pngOutputFile.toString(),
 				pdfInputFile.toString()
