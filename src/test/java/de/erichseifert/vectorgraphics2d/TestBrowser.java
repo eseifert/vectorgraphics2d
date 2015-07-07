@@ -170,6 +170,7 @@ public class TestBrowser extends JFrame {
 			testCases.add(new StrokeTest());
 			testCases.add(new ShapesTest());
 			testCases.add(new FontTest());
+			testCases.add(new CharacterTest());
 			testCases.add(new EmptyFileTest());
 			testCases.add(new ImageTest());
 			testCases.add(new ClippingTest());
