@@ -32,9 +32,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -50,8 +53,59 @@ import org.ghost4j.GhostscriptException;
 
 public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
+	private final ImageComparisonPanel imageComparisonPanel;
 
-	private final JSplitPane imageComparisonPanel;
+	private static class ImageComparisonPanel extends Box {
+		private final JSplitPane splitPane;
+		private final Box leftPanel;
+		private final Box rightPanel;
+		// User set components
+		private JComponent leftComponent;
+		private JComponent rightComponent;
+
+		public ImageComparisonPanel() {
+			super(BoxLayout.PAGE_AXIS);
+			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+			splitPane.setResizeWeight(0.5);
+			add(splitPane);
+
+			leftPanel = new Box(BoxLayout.PAGE_AXIS);
+			leftPanel.add(new JLabel("Graphics2D"));
+			splitPane.setTopComponent(leftPanel);
+
+			rightPanel = new Box(BoxLayout.PAGE_AXIS);
+			rightPanel.add(new JLabel("EPS"));
+			splitPane.setBottomComponent(rightPanel);
+		}
+
+		public JComponent getLeftComponent() {
+			return leftComponent;
+		}
+
+		public void setLeftComponent(JComponent leftComponent) {
+			if (this.leftComponent != null) {
+				leftPanel.remove(this.leftComponent);
+			}
+			this.leftComponent = leftComponent;
+			leftPanel.add(leftComponent);
+			leftPanel.revalidate();
+			leftPanel.repaint();
+		}
+
+		public JComponent getRightComponent() {
+			return rightComponent;
+		}
+
+		public void setRightComponent(JComponent rightComponent) {
+			if (this.rightComponent != null) {
+				rightPanel.remove(this.rightComponent);
+			}
+			this.rightComponent = rightComponent;
+			rightPanel.add(rightComponent);
+			rightPanel.revalidate();
+			rightPanel.repaint();
+		}
+	}
 
 	private static class ImageDisplayPanel extends JPanel {
 		private final BufferedImage renderedImage;
@@ -150,17 +204,14 @@ public class TestBrowser extends JFrame {
 		});
 		getContentPane().add(testList, BorderLayout.WEST);
 
-		imageComparisonPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		imageComparisonPanel = new ImageComparisonPanel();
 		getContentPane().add(imageComparisonPanel, BorderLayout.CENTER);
 	}
 
 	public void setTestCase(TestCase test) throws IOException, GhostscriptException {
 		BufferedImage reference = test.getReference();
-		imageComparisonPanel.setTopComponent(new JLabel(new ImageIcon(reference)));
-		imageComparisonPanel.setBottomComponent(new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS()));
-		imageComparisonPanel.setDividerLocation(0.5);
-		imageComparisonPanel.revalidate();
-		imageComparisonPanel.repaint();
+		imageComparisonPanel.setLeftComponent(new JLabel(new ImageIcon(reference)));
+		imageComparisonPanel.setRightComponent(new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS()));
 	}
 
 	public static void main(String[] args) {
