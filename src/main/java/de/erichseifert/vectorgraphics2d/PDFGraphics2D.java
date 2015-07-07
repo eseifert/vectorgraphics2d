@@ -20,25 +20,7 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
-
-import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
-import de.erichseifert.vectorgraphics2d.util.DataUtils;
-import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
@@ -58,7 +40,7 @@ public class PDFGraphics2D extends ProcessingPipeline {
 	 */
 	public PDFGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
-		processor = new EPSProcessor();
+		processor = new PDFProcessor();
 	}
 
 	@Override
