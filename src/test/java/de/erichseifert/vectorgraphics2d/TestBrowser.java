@@ -120,6 +120,9 @@ public class TestBrowser extends JFrame {
 			add(imageLabel, BorderLayout.CENTER);
 
 			JButton saveToFileButton = new JButton("Save as...");
+			if (imageData == null) {
+				saveToFileButton.setEnabled(false);
+			}
 			saveToFileButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -210,7 +213,7 @@ public class TestBrowser extends JFrame {
 
 	public void setTestCase(TestCase test) throws IOException, GhostscriptException {
 		BufferedImage reference = test.getReference();
-		imageComparisonPanel.setLeftComponent(new JLabel(new ImageIcon(reference)));
+		imageComparisonPanel.setLeftComponent(new ImageDisplayPanel(reference, null));
 		imageComparisonPanel.setRightComponent(new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS()));
 	}
 
