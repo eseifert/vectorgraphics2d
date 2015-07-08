@@ -195,6 +195,9 @@ public class TestBrowser extends JFrame {
 			public void valueChanged(ListSelectionEvent e) {
 				if (!e.getValueIsAdjusting()) {
 					int index = testList.getSelectedIndex();
+					if (index < 0) {
+						return;
+					}
 					TestCase test = testCases.get(index);
 					try {
 						setTestCase(test);
