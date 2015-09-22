@@ -1,24 +1,36 @@
+/*
+ * VectorGraphics2D: Vector export for Java(R) Graphics2D
+ *
+ * (C) Copyright 2010-2015 Erich Seifert <dev[at]erichseifert.de>
+ *
+ * This file is part of VectorGraphics2D.
+ *
+ * VectorGraphics2D is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * VectorGraphics2D is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.erichseifert.vectorgraphics2d;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.imageio.ImageIO;
-
-import static org.junit.Assert.assertEquals;
 
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 import org.ghost4j.Ghostscript;
 import org.ghost4j.GhostscriptException;
 import org.junit.Test;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+
+import static org.junit.Assert.assertEquals;
 
 public abstract class TestCase {
 	private static final double EPSILON = 1;
