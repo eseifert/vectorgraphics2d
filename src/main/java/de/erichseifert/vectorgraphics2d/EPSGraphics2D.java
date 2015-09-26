@@ -21,25 +21,15 @@
 
 package de.erichseifert.vectorgraphics2d;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.Rectangle2D;
+import de.erichseifert.vectorgraphics2d.util.DataUtils;
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+
+import java.awt.*;
+import java.awt.geom.*;
 import java.awt.image.BufferedImage;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Map;
-
-import de.erichseifert.vectorgraphics2d.util.DataUtils;
-import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
@@ -213,6 +203,17 @@ public class EPSGraphics2D extends VectorGraphics2D {
 		if ((tx != 0.0) || (ty != 0.0)) {
 			writeln(tx, " ", ty, " translate");
 		}
+	}
+
+	@Override
+	public void transform(AffineTransform tx) {
+		if (getTransform().equals(tx)) {
+			return;
+		}
+		super.transform(tx);
+		double[] matrix = new double[6];
+		getTransform().getMatrix(matrix);
+		writeln("[", DataUtils.join(" ", matrix), "] concat");
 	}
 
 	@Override
