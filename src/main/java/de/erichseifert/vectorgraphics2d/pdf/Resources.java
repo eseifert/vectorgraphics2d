@@ -82,9 +82,11 @@ public class Resources extends PDFObject {
 		String resourceId = getResourceId(fonts, font, PREFIX_FONT, currentFontId);
 
 		String fontName = font.getPSName();
+		// TODO: Determine font encoding (e.g. MacRomanEncoding, MacExpertEncoding, WinAnsiEncoding)
+		String fontEncoding = "WinAnsiEncoding";
 		dictEntry.put(resourceId, DataUtils.map(
-			new String[] {"Type", "Subtype", "BaseFont"},
-			new Object[] {"Font", "TrueType", fontName}
+			new String[] {"Type", "Subtype", "Encoding", "BaseFont"},
+			new Object[] {"Font", "TrueType", fontEncoding, fontName}
 		));
 
 		return resourceId;

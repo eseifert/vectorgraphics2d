@@ -20,6 +20,9 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+
 import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
 
 /**
@@ -41,6 +44,10 @@ public class PDFGraphics2D extends ProcessingPipeline {
 	public PDFGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
 		processor = new PDFProcessor();
+
+		// TODO: Default graphics state does not need to be printed in the document
+		setColor(Color.BLACK);
+		setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, null, 0f));
 	}
 
 	@Override

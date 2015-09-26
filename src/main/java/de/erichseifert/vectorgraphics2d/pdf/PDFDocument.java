@@ -20,15 +20,12 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import de.erichseifert.vectorgraphics2d.GraphicsState;
-import de.erichseifert.vectorgraphics2d.SizedDocument;
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.Group;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.*;
-import de.erichseifert.vectorgraphics2d.util.*;
-import de.erichseifert.vectorgraphics2d.util.ImageDataStream.Interleaving;
-
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
@@ -36,8 +33,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import de.erichseifert.vectorgraphics2d.GraphicsState;
+import de.erichseifert.vectorgraphics2d.SizedDocument;
+import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.Group;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetBackgroundCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetClipCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetFontCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetHintCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetPaintCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
+import de.erichseifert.vectorgraphics2d.util.DataUtils;
+import de.erichseifert.vectorgraphics2d.util.FlateEncodeStream;
+import de.erichseifert.vectorgraphics2d.util.FormattingWriter;
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+import de.erichseifert.vectorgraphics2d.util.ImageDataStream;
+import de.erichseifert.vectorgraphics2d.util.ImageDataStream.Interleaving;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * @author Erich Seifert
