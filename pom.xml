@@ -101,6 +101,7 @@
                 <excludes>
                     <exclude>LICENSE.GPL</exclude>
                     <exclude>LICENSE.LGPL</exclude>
+                    <exclude>.*/**</exclude>
                     <exclude>bin/**</exclude>
                     <exclude>src/main/resources/**</exclude>
                     <exclude>src/test/resources/**</exclude>
