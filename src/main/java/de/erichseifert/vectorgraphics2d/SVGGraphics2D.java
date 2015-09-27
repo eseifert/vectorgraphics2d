@@ -68,10 +68,10 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	/**
 	 * Constructor that initializes a new {@code SVGGraphics2D} instance.
 	 * The document dimension must be specified as parameters.
-	 * @param x Left offset of document.
-	 * @param y Top offset of document.
-	 * @param width Width of document.
-	 * @param height Height of document.
+	 * @param x Left offset of document in millimeters.
+	 * @param y Top offset of document in millimeters.
+	 * @param width Width of document in millimeters.
+	 * @param height Height of document in millimeters.
 	 */
 	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);

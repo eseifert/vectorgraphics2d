@@ -849,6 +849,7 @@ public abstract class VectorGraphics2D extends Graphics2D {
 
 	/**
 	 * Returns a string of the footer to end a document.
+	 * @return the document footer
 	 */
 	protected abstract String getFooter();
 

@@ -185,7 +185,7 @@ public abstract class DataUtils {
 
 	/**
 	 * Returns a formatted string of the specified object.
-	 * @param number Object to convert to a string.
+	 * @param obj Object to convert to a string.
 	 * @return A formatted string.
 	 */
 	public static String format(Object obj) {

@@ -55,6 +55,10 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	/**
 	 * Constructor that initializes a new {@code EPSGraphics2D} instance.
 	 * The document dimension must be specified as parameters.
+	 * @param x Left offset of document in millimeters.
+	 * @param y Top offset of document in millimeters.
+	 * @param width Width of document in millimeters.
+	 * @param height Height of document in millimeters.
 	 */
 	public EPSGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
