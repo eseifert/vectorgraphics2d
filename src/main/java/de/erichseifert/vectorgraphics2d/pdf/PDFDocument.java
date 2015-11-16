@@ -552,7 +552,7 @@ public class PDFDocument extends SizedDocument {
 				out.append(serialize(strokeNew.getLineWidth()))
 					.append(" w").append(EOL);
 			}
-			if (strokeNew.getMiterLimit() != strokeDefault.getMiterLimit()) {
+			if (strokeNew.getLineJoin() == BasicStroke.JOIN_MITER && strokeNew.getMiterLimit() != strokeDefault.getMiterLimit()) {
 				out.append(serialize(strokeNew.getMiterLimit()))
 					.append(" M").append(EOL);
 			}
