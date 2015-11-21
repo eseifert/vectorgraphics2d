@@ -261,13 +261,14 @@
 
   <scm>
     <url>git@github.com:eseifert/vectorgraphics2d.git</url>
-    <connection>scm:git:ssh://erichseifert.de/vectorgraphics2d.git</connection>
-    <developerConnection>scm:git:ssh://git@erichseifert.de/vectorgraphics2d.git</developerConnection>
+    <connection>scm:git:git://github.com/eseifert/vectorgraphics2d.git</connection>
+    <developerConnection>scm:git:git@github.com:eseifert/vectorgraphics2d.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
-    <system>trac</system>
-    <url>http://trac.erichseifert.de/vectorgraphics2d/</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/eseifert/vectorgraphics2d/</url>
   </issueManagement>
 
   <distributionManagement>
