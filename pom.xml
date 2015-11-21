@@ -3,7 +3,7 @@
   <groupId>de.erichseifert.vectorgraphics2d</groupId>
   <artifactId>VectorGraphics2D</artifactId>
   <name>VectorGraphics2D Library</name>
-  <version>0.9.3-SNAPSHOT</version>
+  <version>0.9.3</version>
   <url>https://github.com/eseifert/vectorgraphics2d</url>
   <description>A library for adding vector export to Java(R) Graphics2D.</description>
   <inceptionYear>2010</inceptionYear>
@@ -263,7 +263,7 @@
     <url>git@github.com:eseifert/vectorgraphics2d.git</url>
     <connection>scm:git:git://github.com/eseifert/vectorgraphics2d.git</connection>
     <developerConnection>scm:git:git@github.com:eseifert/vectorgraphics2d.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>VectorGraphics2D-0.9.3</tag>
   </scm>
 
   <issueManagement>
