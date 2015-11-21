@@ -1,3 +1,14 @@
+VectorGraphics2D 0.9.3 (2015-11-21)
+===================================
+
+- Publish on MavenCentral
+
+VectorGraphics2D 0.9.2 (2015-09-15)
+===================================
+
+- Fixed a bug that caused missing transformations in EPS files when calling
+  ``EPSGraphics.transform(AffineTransform)``.
+
 VectorGraphics2D 0.9.1 (2013-05-31)
 ===================================
 
