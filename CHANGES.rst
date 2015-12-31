@@ -1,3 +1,8 @@
+VectorGraphics2D 0.9.4 (unreleased)
+===================================
+
+- Return valid graphics device configuration when calling getDeviceConfiguration() instead of null
+
 VectorGraphics2D 0.9.3 (2015-11-21)
 ===================================
 
