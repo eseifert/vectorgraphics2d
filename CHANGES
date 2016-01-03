@@ -3,6 +3,7 @@ VectorGraphics2D 0.10 (not yet released)
 
 - Switched from Subversion to git as version control system
 - Processing a stream of commands instead of directly mapping method calls
+- Return valid graphics device configuration when calling getDeviceConfiguration() instead of null
 
 VectorGraphics2D 0.9.1 (2013-05-31)
 ===================================
