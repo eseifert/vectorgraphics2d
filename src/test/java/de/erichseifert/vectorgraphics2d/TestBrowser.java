@@ -42,6 +42,7 @@ public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
 	private final ImageComparisonPanel imageComparisonPanel;
 	private final JComboBox<ImageFormat> imageFormatSelector;
+	private TestCase testCase;
 
 	private enum ImageFormat {
 		EPS("EPS"),
@@ -215,6 +216,7 @@ public class TestBrowser extends JFrame {
 						return;
 					}
 					TestCase test = testCases.get(index);
+					testCase = test;
 					try {
 						setTestCase(test);
 					} catch (IOException e1) {
@@ -240,17 +242,15 @@ public class TestBrowser extends JFrame {
 				ImageFormat format = (ImageFormat) itemEvent.getItem();
 				imageComparisonPanel.setImageFormat(format);
 
-				int testIndex = testList.getSelectedIndex();
-				if (testIndex < 0) {
-					return;
-				}
-				TestCase test = testCases.get(testIndex);
-				try {
-					setTestCase(test);
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (GhostscriptException e) {
-					e.printStackTrace();
+				TestCase test = getTestCase();
+				if (test != null) {
+					try {
+						setTestCase(test);
+					} catch (IOException e) {
+						e.printStackTrace();
+					} catch (GhostscriptException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
@@ -274,6 +274,10 @@ public class TestBrowser extends JFrame {
 				throw new IllegalArgumentException("Unknown image format: " + imageComparisonPanel.getImageFormat());
 		}
 		imageComparisonPanel.setRightComponent(imageDisplayPanel);
+	}
+
+	public TestCase getTestCase() {
+		return testCase;
 	}
 
 	public static void main(String[] args) {
