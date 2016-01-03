@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010-2015 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2016 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -34,6 +34,7 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	TestUtilsTest.class,
 	UtilTests.class,
 	IRTests.class,
+	VectorGraphics2DTest.class,
 	EPSTests.class,
 	PDFTests.class,
 	SVGTests.class,

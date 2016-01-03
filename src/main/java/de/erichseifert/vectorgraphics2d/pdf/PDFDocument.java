@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010-2015 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2016 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -552,7 +552,7 @@ public class PDFDocument extends SizedDocument {
 				out.append(serialize(strokeNew.getLineWidth()))
 					.append(" w").append(EOL);
 			}
-			if (strokeNew.getMiterLimit() != strokeDefault.getMiterLimit()) {
+			if (strokeNew.getLineJoin() == BasicStroke.JOIN_MITER && strokeNew.getMiterLimit() != strokeDefault.getMiterLimit()) {
 				out.append(serialize(strokeNew.getMiterLimit()))
 					.append(" M").append(EOL);
 			}

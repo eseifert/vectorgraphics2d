@@ -1,7 +1,7 @@
 /*
  * VectorGraphics2D: Vector export for Java(R) Graphics2D
  *
- * (C) Copyright 2010-2015 Erich Seifert <dev[at]erichseifert.de>
+ * (C) Copyright 2010-2016 Erich Seifert <dev[at]erichseifert.de>
  *
  * This file is part of VectorGraphics2D.
  *
@@ -28,6 +28,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Paint;
 import java.awt.Polygon;
@@ -95,7 +97,9 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	public VectorGraphics2D() {
 		commands = new CommandStream();
-		deviceConfig = null;
+		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
+		deviceConfig = graphicsDevice.getDefaultConfiguration();
 		fontRenderContext = new FontRenderContext(null, false, true);
 
 		state = new GraphicsState();

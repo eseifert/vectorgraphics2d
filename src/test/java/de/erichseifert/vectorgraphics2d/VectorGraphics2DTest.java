@@ -18,14 +18,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d.util;
+package de.erichseifert.vectorgraphics2d;
 
-import java.io.OutputStream;
-import java.util.zip.DeflaterOutputStream;
+import static org.junit.Assert.fail;
 
-public class FlateEncodeStream extends DeflaterOutputStream {
-	public FlateEncodeStream(OutputStream out) {
-		super(out);
+import java.awt.Color;
+import java.awt.Graphics2D;
+import org.junit.Test;
+
+import de.erichseifert.vectorgraphics2d.intermediate.Command;
+
+public class VectorGraphics2DTest {
+	@Test
+	public void testDisposeCommandEmitted() {
+		Graphics2D g = new VectorGraphics2D();
+		g.setColor(Color.RED);
+
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.setColor(Color.BLUE);
+		g2.dispose();
+
+		Iterable<Command<?>> commands = ((VectorGraphics2D) g).getCommands();
+		Command<?> lastCommand = null;
+		for (Command<?> command : commands) {
+			lastCommand = command;
+		}
+
+		//assertTrue(lastCommand instanceof DisposeCommand);
+		//assertEquals(Color.BLUE, ((DisposeCommand) lastCommand).getValue().getColor());
+		fail("Commands for create and dispose are not implemented.");
 	}
 }
-
