@@ -129,6 +129,8 @@
             <email>dev[at]erichseifert.de</email>
           </properties>
           <excludes>
+            <exclude>CHANGES</exclude>
+            <exclude>README.rst</exclude>
             <exclude>LICENSE.GPL</exclude>
             <exclude>LICENSE.LGPL</exclude>
             <exclude>bin/**</exclude>
