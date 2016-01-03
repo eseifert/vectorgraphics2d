@@ -41,7 +41,18 @@ public class TestBrowser extends JFrame {
 	private final ImageComparisonPanel imageComparisonPanel;
 
 	private enum ImageFormat {
-		EPS, PDF
+		EPS("EPS"),
+		PDF("PDF");
+
+		private final String name;
+
+		ImageFormat(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
 	}
 
 	private static class ImageComparisonPanel extends JPanel {
