@@ -20,19 +20,20 @@
  */
 package de.erichseifert.vectorgraphics2d.svg;
 
-import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.CommandStream;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
-import de.erichseifert.vectorgraphics2d.util.PageSize;
-import org.junit.Test;
+import static de.erichseifert.vectorgraphics2d.TestUtils.assertXMLEquals;
 
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import org.junit.Test;
 
-import static de.erichseifert.vectorgraphics2d.TestUtils.assertXMLEquals;
+import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class SVGProcessorTest {
 	private static final String EOL = "\n";
@@ -44,12 +45,12 @@ public class SVGProcessorTest {
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
 	private final SVGProcessor processor = new SVGProcessor();
-	private final CommandStream commands = new CommandStream();
+	private final List<Command<?>> commands = new LinkedList<Command<?>>();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {
 		for (Command<?> command : commands) {
-			this.commands.add(null, command);
+			this.commands.add(command);
 		}
 		Document processed = processor.process(this.commands, PAGE_SIZE);
 		processed.write(bytes);
