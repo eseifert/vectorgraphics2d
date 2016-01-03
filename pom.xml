@@ -127,6 +127,7 @@
                     <email>dev[at]erichseifert.de</email>
                 </properties>
                 <excludes>
+                    <exclude>CHANGES.rst</exclude>
                     <exclude>LICENSE.GPL</exclude>
                     <exclude>LICENSE.LGPL</exclude>
                     <exclude>.*/**</exclude>
