@@ -20,18 +20,19 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.CommandStream;
-import de.erichseifert.vectorgraphics2d.util.PageSize;
-import org.junit.Test;
+import static de.erichseifert.vectorgraphics2d.TestUtils.Template;
+import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
+import org.junit.Test;
 
-import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
-import static de.erichseifert.vectorgraphics2d.TestUtils.Template;
+import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class PDFProcessorTest {
 	private static final String EOL = "\n";
@@ -40,12 +41,12 @@ public class PDFProcessorTest {
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
 	private final PDFProcessor processor = new PDFProcessor();
-	private final CommandStream commands = new CommandStream();
+	private final List<Command<?>> commands = new LinkedList<Command<?>>();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {
 		for (Command<?> command : commands) {
-			this.commands.add(null, command);
+			this.commands.add(command);
 		}
 		Document processed = processor.process(this.commands, PAGE_SIZE);
 		processed.write(bytes);
