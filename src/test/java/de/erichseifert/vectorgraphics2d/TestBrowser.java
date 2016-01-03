@@ -71,6 +71,8 @@ public class TestBrowser extends JFrame {
 		public ImageComparisonPanel(ImageFormat imageFormat) {
 			super(BoxLayout.PAGE_AXIS);
 
+			this.imageFormat = imageFormat;
+
 			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 			splitPane.setResizeWeight(0.5);
 			add(splitPane);
