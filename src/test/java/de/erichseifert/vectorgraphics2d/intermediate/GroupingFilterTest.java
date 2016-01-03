@@ -27,13 +27,10 @@ import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.Iterator;
-
+import java.util.LinkedList;
+import java.util.List;
 import org.junit.Test;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.CommandStream;
-import de.erichseifert.vectorgraphics2d.intermediate.Filter;
-import de.erichseifert.vectorgraphics2d.intermediate.Group;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
@@ -43,24 +40,24 @@ import de.erichseifert.vectorgraphics2d.intermediate.filters.GroupingFilter;
 
 public class GroupingFilterTest {
 	@Test public void filtered() {
-		CommandStream resultStream = new CommandStream();
-		resultStream.add(null, new SetColorCommand(Color.BLACK));
-		resultStream.add(null, new SetStrokeCommand(new BasicStroke(1f)));
-		resultStream.add(null, new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 10.0, 11.0)));
-		resultStream.add(null, new SetTransformCommand(AffineTransform.getTranslateInstance(5.0, 5.0)));
-		resultStream.add(null, new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 5.0, 6.0)));
+		List<Command<?>> resultStream = new LinkedList<Command<?>>();
+		resultStream.add(new SetColorCommand(Color.BLACK));
+		resultStream.add(new SetStrokeCommand(new BasicStroke(1f)));
+		resultStream.add(new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 10.0, 11.0)));
+		resultStream.add(new SetTransformCommand(AffineTransform.getTranslateInstance(5.0, 5.0)));
+		resultStream.add(new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 5.0, 6.0)));
 
-		CommandStream expectedStream = new CommandStream();
+		List<Command<?>> expectedStream = new LinkedList<Command<?>>();
 		Iterator<Command<?>> resultCloneIterator = resultStream.iterator();
 		Group group1 = new Group();
 		group1.add(resultCloneIterator.next());
 		group1.add(resultCloneIterator.next());
-		expectedStream.add(null, group1);
-		expectedStream.add(null, resultCloneIterator.next());
+		expectedStream.add(group1);
+		expectedStream.add(resultCloneIterator.next());
 		Group group2 = new Group();
 		group2.add(resultCloneIterator.next());
-		expectedStream.add(null, group2);
-		expectedStream.add(null, resultCloneIterator.next());
+		expectedStream.add(group2);
+		expectedStream.add(resultCloneIterator.next());
 		Iterator<Command<?>> expectedIterator = expectedStream.iterator();
 
 		Filter resultIterator = new GroupingFilter(resultStream) {
