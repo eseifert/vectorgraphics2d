@@ -28,6 +28,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -68,6 +70,15 @@ public class TestBrowser extends JFrame {
 		public ImageComparisonPanel() {
 			super(new BorderLayout());
 			imageFormatSelector = new JComboBox<ImageFormat>(ImageFormat.values());
+			imageFormatSelector.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged(ItemEvent itemEvent) {
+					ImageFormat format = (ImageFormat) itemEvent.getItem();
+					JLabel imageFormatLabel = (JLabel) rightPanel.getComponent(0);
+					imageFormatLabel.setText(format.getName());
+					imageFormatLabel.repaint();
+				}
+			});
 			add(imageFormatSelector, BorderLayout.NORTH);
 
 			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
