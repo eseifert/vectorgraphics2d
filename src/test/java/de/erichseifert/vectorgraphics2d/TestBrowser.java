@@ -63,19 +63,24 @@ public class TestBrowser extends JFrame {
 		private final Box rightPanel;
 		private final JComboBox<ImageFormat> imageFormatSelector;
 
+		private ImageFormat imageFormat;
 		// User set components
 		private JComponent leftComponent;
 		private JComponent rightComponent;
 
 		public ImageComparisonPanel() {
 			super(new BorderLayout());
+			imageFormat = ImageFormat.EPS;
 			imageFormatSelector = new JComboBox<ImageFormat>(ImageFormat.values());
+			imageFormatSelector.setSelectedItem(imageFormat);
 			imageFormatSelector.addItemListener(new ItemListener() {
 				@Override
 				public void itemStateChanged(ItemEvent itemEvent) {
 					ImageFormat format = (ImageFormat) itemEvent.getItem();
+					imageFormat = format;
+
 					JLabel imageFormatLabel = (JLabel) rightPanel.getComponent(0);
-					imageFormatLabel.setText(format.getName());
+					imageFormatLabel.setText(imageFormat.getName());
 					imageFormatLabel.repaint();
 				}
 			});
@@ -90,7 +95,7 @@ public class TestBrowser extends JFrame {
 			splitPane.setTopComponent(leftPanel);
 
 			rightPanel = new Box(BoxLayout.PAGE_AXIS);
-			rightPanel.add(new JLabel("EPS"));
+			rightPanel.add(new JLabel(imageFormat.getName()));
 			splitPane.setBottomComponent(rightPanel);
 		}
 
