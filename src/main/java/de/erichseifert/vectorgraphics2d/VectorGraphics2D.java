@@ -41,7 +41,14 @@ import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.TextLayout;
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -49,11 +56,12 @@ import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.CommandStream;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;
@@ -83,7 +91,7 @@ import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	/** List of operations that were performed on this graphics object and its
 	 * derived objects. */
-	private final CommandStream commands;
+	private final List<Command<?>> commands;
 	/** Device configuration settings. */
 	private final GraphicsConfiguration deviceConfig;
 	/** Context settings used to render fonts. */
@@ -96,7 +104,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private Graphics2D _debug_validate_graphics;
 
 	public VectorGraphics2D() {
-		commands = new CommandStream();
+		commands = new LinkedList<Command<?>>();
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
 		deviceConfig = graphicsDevice.getDefaultConfiguration();
@@ -853,7 +861,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	private void emit(Command<?> command) {
-		commands.add(this, command);
+		commands.add(command);
 	}
 
 	protected Iterable<Command<?>> getCommands() {
