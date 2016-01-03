@@ -41,6 +41,7 @@ import java.util.List;
 public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
 	private final ImageComparisonPanel imageComparisonPanel;
+	private final JComboBox<ImageFormat> imageFormatSelector;
 
 	private enum ImageFormat {
 		EPS("EPS"),
@@ -57,38 +58,21 @@ public class TestBrowser extends JFrame {
 		}
 	}
 
-	private static class ImageComparisonPanel extends JPanel {
+	private static class ImageComparisonPanel extends Box {
 		private final JSplitPane splitPane;
 		private final Box leftPanel;
 		private final Box rightPanel;
-		private final JComboBox<ImageFormat> imageFormatSelector;
-
 		private ImageFormat imageFormat;
 		// User set components
 		private JComponent leftComponent;
 		private JComponent rightComponent;
 
-		public ImageComparisonPanel() {
-			super(new BorderLayout());
-			imageFormat = ImageFormat.EPS;
-			imageFormatSelector = new JComboBox<ImageFormat>(ImageFormat.values());
-			imageFormatSelector.setSelectedItem(imageFormat);
-			imageFormatSelector.addItemListener(new ItemListener() {
-				@Override
-				public void itemStateChanged(ItemEvent itemEvent) {
-					ImageFormat format = (ImageFormat) itemEvent.getItem();
-					imageFormat = format;
-
-					JLabel imageFormatLabel = (JLabel) rightPanel.getComponent(0);
-					imageFormatLabel.setText(imageFormat.getName());
-					imageFormatLabel.repaint();
-				}
-			});
-			add(imageFormatSelector, BorderLayout.NORTH);
+		public ImageComparisonPanel(ImageFormat imageFormat) {
+			super(BoxLayout.PAGE_AXIS);
 
 			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 			splitPane.setResizeWeight(0.5);
-			add(splitPane, BorderLayout.CENTER);
+			add(splitPane);
 
 			leftPanel = new Box(BoxLayout.PAGE_AXIS);
 			leftPanel.add(new JLabel("Graphics2D"));
@@ -129,6 +113,13 @@ public class TestBrowser extends JFrame {
 
 		public ImageFormat getImageFormat() {
 			return imageFormat;
+		}
+
+		public void setImageFormat(ImageFormat imageFormat) {
+			this.imageFormat = imageFormat;
+			JLabel imageFormatLabel = (JLabel) rightPanel.getComponent(0);
+			imageFormatLabel.setText(imageFormat.getName());
+			imageFormatLabel.repaint();
 		}
 	}
 
@@ -236,16 +227,43 @@ public class TestBrowser extends JFrame {
 		});
 		getContentPane().add(testList, BorderLayout.WEST);
 
-		imageComparisonPanel = new ImageComparisonPanel();
-		getContentPane().add(imageComparisonPanel, BorderLayout.CENTER);
+		JPanel configurableImageComparisonPanel = new JPanel(new BorderLayout());
+		getContentPane().add(configurableImageComparisonPanel, BorderLayout.CENTER);
+
+		ImageFormat startingImageFormat = ImageFormat.EPS;
+		imageFormatSelector = new JComboBox<ImageFormat>(ImageFormat.values());
+		configurableImageComparisonPanel.add(imageFormatSelector, BorderLayout.NORTH);
+		imageFormatSelector.setSelectedItem(startingImageFormat);
+		imageFormatSelector.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent itemEvent) {
+				ImageFormat format = (ImageFormat) itemEvent.getItem();
+				imageComparisonPanel.setImageFormat(format);
+
+				int testIndex = testList.getSelectedIndex();
+				if (testIndex < 0) {
+					return;
+				}
+				TestCase test = testCases.get(testIndex);
+				try {
+					setTestCase(test);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (GhostscriptException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		imageComparisonPanel = new ImageComparisonPanel(startingImageFormat);
+		configurableImageComparisonPanel.add(imageComparisonPanel, BorderLayout.CENTER);
 	}
 
 	public void setTestCase(TestCase test) throws IOException, GhostscriptException {
 		BufferedImage reference = test.getReference();
 		imageComparisonPanel.setLeftComponent(new ImageDisplayPanel(reference, null));
-		ImageFormat imageFormat = imageComparisonPanel.getImageFormat();
 		ImageDisplayPanel imageDisplayPanel;
-		switch (imageFormat) {
+		switch (imageComparisonPanel.getImageFormat()) {
 			case EPS:
 				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS());
 				break;
@@ -253,7 +271,7 @@ public class TestBrowser extends JFrame {
 				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedPDF(), test.getPDF());
 				break;
 			default:
-				throw new IllegalArgumentException("Unknown image format: " + imageFormat);
+				throw new IllegalArgumentException("Unknown image format: " + imageComparisonPanel.getImageFormat());
 		}
 		imageComparisonPanel.setRightComponent(imageDisplayPanel);
 	}
