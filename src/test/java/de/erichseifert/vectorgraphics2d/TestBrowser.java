@@ -20,8 +20,12 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
+import org.ghost4j.GhostscriptException;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -32,42 +36,32 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSplitPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.ghost4j.GhostscriptException;
-
 public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
 	private final ImageComparisonPanel imageComparisonPanel;
 
-	private static class ImageComparisonPanel extends Box {
+	private enum ImageFormat {
+		EPS, PDF
+	}
+
+	private static class ImageComparisonPanel extends JPanel {
 		private final JSplitPane splitPane;
 		private final Box leftPanel;
 		private final Box rightPanel;
+		private final JComboBox<ImageFormat> imageFormatSelector;
+
 		// User set components
 		private JComponent leftComponent;
 		private JComponent rightComponent;
 
 		public ImageComparisonPanel() {
-			super(BoxLayout.PAGE_AXIS);
+			super(new BorderLayout());
+			imageFormatSelector = new JComboBox<ImageFormat>(ImageFormat.values());
+			add(imageFormatSelector, BorderLayout.NORTH);
+
 			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 			splitPane.setResizeWeight(0.5);
-			add(splitPane);
+			add(splitPane, BorderLayout.CENTER);
 
 			leftPanel = new Box(BoxLayout.PAGE_AXIS);
 			leftPanel.add(new JLabel("Graphics2D"));
