@@ -126,6 +126,10 @@ public class TestBrowser extends JFrame {
 			rightPanel.revalidate();
 			rightPanel.repaint();
 		}
+
+		public ImageFormat getImageFormat() {
+			return imageFormat;
+		}
 	}
 
 	private static class ImageDisplayPanel extends JPanel {
@@ -239,7 +243,19 @@ public class TestBrowser extends JFrame {
 	public void setTestCase(TestCase test) throws IOException, GhostscriptException {
 		BufferedImage reference = test.getReference();
 		imageComparisonPanel.setLeftComponent(new ImageDisplayPanel(reference, null));
-		imageComparisonPanel.setRightComponent(new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS()));
+		ImageFormat imageFormat = imageComparisonPanel.getImageFormat();
+		ImageDisplayPanel imageDisplayPanel;
+		switch (imageFormat) {
+			case EPS:
+				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS());
+				break;
+			case PDF:
+				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedPDF(), test.getPDF());
+				break;
+			default:
+				throw new IllegalArgumentException("Unknown image format: " + imageFormat);
+		}
+		imageComparisonPanel.setRightComponent(imageDisplayPanel);
 	}
 
 	public static void main(String[] args) {
