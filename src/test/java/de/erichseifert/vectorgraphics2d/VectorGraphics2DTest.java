@@ -22,7 +22,6 @@ package de.erichseifert.vectorgraphics2d;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -30,6 +29,7 @@ import java.util.Iterator;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 
 public class VectorGraphics2DTest {
@@ -41,8 +41,7 @@ public class VectorGraphics2DTest {
 		assertTrue(commandIterator.hasNext());
 
 		Command<?> firstCommand = commandIterator.next();
-		//assertTrue(firstCommand instanceof CreateCommand);
-		fail("CreateCommand is not implemented.");
+		assertTrue(firstCommand instanceof CreateCommand);
 	}
 
 	@Test

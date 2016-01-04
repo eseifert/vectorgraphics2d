@@ -62,6 +62,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
@@ -106,6 +107,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	public VectorGraphics2D() {
 		commands = new LinkedList<Command<?>>();
+		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
 		deviceConfig = graphicsDevice.getDefaultConfiguration();
