@@ -23,6 +23,7 @@ package de.erichseifert.vectorgraphics2d.eps;
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class EPSProcessor implements Processor {
@@ -30,8 +31,9 @@ public class EPSProcessor implements Processor {
 		// TODO Apply rotate(theta,x,y) => translate-rotate-translate filter
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
+		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
 		EPSDocument doc = new EPSDocument(pageSize);
-		for (Command<?> command : commands) {
+		for (Command<?> command : paintedShapeAsImageFilter) {
 			doc.handle(command);
 		}
 		doc.close();
