@@ -21,6 +21,7 @@
 package de.erichseifert.vectorgraphics2d;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -42,6 +43,24 @@ public class VectorGraphics2DTest {
 
 		Command<?> firstCommand = commandIterator.next();
 		assertTrue(firstCommand instanceof CreateCommand);
+	}
+
+	@Test
+	public void testCreateEmitsCreateCommand() {
+		VectorGraphics2D g = new VectorGraphics2D();
+		Iterable<Command<?>> gCommands = g.getCommands();
+		Iterator<Command<?>> gCommandIterator = gCommands.iterator();
+		CreateCommand gCreateCommand = (CreateCommand) gCommandIterator.next();
+
+		VectorGraphics2D g2 = (VectorGraphics2D) g.create();
+		CreateCommand g2CreateCommand = null;
+		for (Command<?> g2Command : g2.getCommands()) {
+			if (g2Command instanceof CreateCommand) {
+				g2CreateCommand = (CreateCommand) g2Command;
+			}
+		}
+		assertNotEquals(gCreateCommand, g2CreateCommand);
+		assertEquals(g2, g2CreateCommand.getValue());
 	}
 
 	@Test
