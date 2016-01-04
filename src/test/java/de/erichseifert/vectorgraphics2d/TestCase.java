@@ -20,17 +20,21 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import javax.imageio.ImageIO;
+
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 import org.ghost4j.Ghostscript;
 import org.ghost4j.GhostscriptException;
-import org.junit.Test;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-
-import static org.junit.Assert.assertEquals;
 
 public abstract class TestCase {
 	private static final double EPSILON = 1;
@@ -65,24 +69,6 @@ public abstract class TestCase {
 	}
 
 	public abstract void draw(Graphics2D g);
-
-	@Test
-	public void testEPS() throws IOException, GhostscriptException {
-		BufferedImage actual = getRasterizedEPS();
-		assertEquals(reference.getWidth(), actual.getWidth());
-		assertEquals(reference.getHeight(), actual.getHeight());
-		double difference = TestUtils.getMeanSquareError(reference, actual);
-		assertEquals(0.0, difference, EPSILON);
-	}
-
-	@Test
-	public void testPDF() throws IOException, GhostscriptException {
-		BufferedImage actual = getRasterizedPDF();
-		assertEquals(reference.getWidth(), actual.getWidth());
-		assertEquals(reference.getHeight(), actual.getHeight());
-		double difference = TestUtils.getMeanSquareError(reference, actual);
-		assertEquals(0.0, difference, EPSILON);
-	}
 
 	public PageSize getPageSize() {
 		return pageSize;
