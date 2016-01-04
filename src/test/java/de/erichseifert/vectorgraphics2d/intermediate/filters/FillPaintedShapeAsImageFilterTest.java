@@ -42,7 +42,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.RotateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetPaintCommand;
 
-public class DrawPaintedShapeAsImageFilterTest {
+public class FillPaintedShapeAsImageFilterTest {
 	@Test
 	public void testFillShapeReplacedWithDrawImage() {
 		List<Command<?>> commands = new LinkedList<Command<?>>();
@@ -50,7 +50,7 @@ public class DrawPaintedShapeAsImageFilterTest {
 		commands.add(new RotateCommand(10.0, 4.0, 2.0, new AffineTransform()));
 		commands.add(new FillShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
 
-		DrawPaintedShapeAsImageFilter filter = new DrawPaintedShapeAsImageFilter(commands);
+		FillPaintedShapeAsImageFilter filter = new FillPaintedShapeAsImageFilter(commands);
 
 		assertThat(filter, hasItem(any(DrawImageCommand.class)));
 		assertThat(filter, not(hasItem(any(FillShapeCommand.class))));
@@ -62,7 +62,7 @@ public class DrawPaintedShapeAsImageFilterTest {
 		commands.add(new RotateCommand(10.0, 4.0, 2.0, new AffineTransform()));
 		commands.add(new FillShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
 
-		DrawPaintedShapeAsImageFilter filter = new DrawPaintedShapeAsImageFilter(commands);
+		FillPaintedShapeAsImageFilter filter = new FillPaintedShapeAsImageFilter(commands);
 
 		Iterator<Command<?>>  filterIterator = filter.iterator();
 		for (Command<?> command : commands) {

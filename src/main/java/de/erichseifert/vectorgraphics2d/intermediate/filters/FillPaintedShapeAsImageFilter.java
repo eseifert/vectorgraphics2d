@@ -24,9 +24,9 @@ import java.util.List;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
 
-public class DrawPaintedShapeAsImageFilter extends Filter {
+public class FillPaintedShapeAsImageFilter extends Filter {
 
-	public DrawPaintedShapeAsImageFilter(Iterable<Command<?>> stream) {
+	public FillPaintedShapeAsImageFilter(Iterable<Command<?>> stream) {
 		super(stream);
 	}
 
