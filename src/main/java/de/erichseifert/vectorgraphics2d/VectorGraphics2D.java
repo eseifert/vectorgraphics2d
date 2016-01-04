@@ -578,6 +578,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		VectorGraphics2D clone = null;
 		try {
 			clone = (VectorGraphics2D) this.clone();
+			emit(new CreateCommand(clone));
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
