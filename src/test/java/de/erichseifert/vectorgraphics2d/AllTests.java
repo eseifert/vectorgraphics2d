@@ -37,18 +37,7 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	VectorGraphics2DTest.class,
 	EPSTests.class,
 	PDFTests.class,
-	SVGTests.class,
-	EmptyFileTest.class,
-	ColorTest.class,
-	ShapesTest.class,
-	StrokeTest.class,
-	FontTest.class,
-	CharacterTest.class,
-	ImageTest.class,
-	ClippingTest.class,
-	TransformTest.class,
-	PaintTest.class,
-	SwingExportTest.class
+	SVGTests.class
 })
 public class AllTests {
 }
