@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d.intermediate;
+package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,12 +31,14 @@ import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
 
+import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.Filter;
+import de.erichseifert.vectorgraphics2d.intermediate.Group;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.StateCommand;
-import de.erichseifert.vectorgraphics2d.intermediate.filters.GroupingFilter;
 
 public class GroupingFilterTest {
 	@Test public void filtered() {

@@ -23,6 +23,8 @@ package de.erichseifert.vectorgraphics2d.intermediate;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
+import de.erichseifert.vectorgraphics2d.intermediate.filters.GroupingFilterTest;
+
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	FilterTest.class,
