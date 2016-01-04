@@ -18,18 +18,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d.intermediate;
+package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import de.erichseifert.vectorgraphics2d.intermediate.filters.FilterTests;
-
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	FilterTest.class,
-	FilterTests.class
+	GroupingFilterTest.class
 })
-public class IRTests {
+public class FilterTests {
 }
 
