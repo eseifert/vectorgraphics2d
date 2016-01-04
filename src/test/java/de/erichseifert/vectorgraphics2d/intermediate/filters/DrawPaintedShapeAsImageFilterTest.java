@@ -38,29 +38,29 @@ import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.RotateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetPaintCommand;
 
 public class DrawPaintedShapeAsImageFilterTest {
 	@Test
-	public void testDrawShapeReplacedWithDrawImage() {
+	public void testFillShapeReplacedWithDrawImage() {
 		List<Command<?>> commands = new LinkedList<Command<?>>();
 		commands.add(new SetPaintCommand(new GradientPaint(0.0f, 0.0f, Color.BLACK, 100.0f, 100.0f, Color.WHITE)));
 		commands.add(new RotateCommand(10.0, 4.0, 2.0, new AffineTransform()));
-		commands.add(new DrawShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
+		commands.add(new FillShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
 
 		DrawPaintedShapeAsImageFilter filter = new DrawPaintedShapeAsImageFilter(commands);
 
 		assertThat(filter, hasItem(any(DrawImageCommand.class)));
-		assertThat(filter, not(hasItem(any(DrawShapeCommand.class))));
+		assertThat(filter, not(hasItem(any(FillShapeCommand.class))));
 	}
 
 	@Test
-	public void testDrawShapeNotReplacedWithoutPaintCommand() {
+	public void testFillShapeNotReplacedWithoutPaintCommand() {
 		List<Command<?>> commands = new LinkedList<Command<?>>();
 		commands.add(new RotateCommand(10.0, 4.0, 2.0, new AffineTransform()));
-		commands.add(new DrawShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
+		commands.add(new FillShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
 
 		DrawPaintedShapeAsImageFilter filter = new DrawPaintedShapeAsImageFilter(commands);
 
