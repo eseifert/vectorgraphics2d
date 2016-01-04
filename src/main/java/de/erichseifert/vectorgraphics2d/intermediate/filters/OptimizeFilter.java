@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetHintCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.StateCommand;

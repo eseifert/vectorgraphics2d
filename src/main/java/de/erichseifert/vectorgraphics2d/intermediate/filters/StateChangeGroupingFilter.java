@@ -20,7 +20,7 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.StateCommand;
 
 

@@ -23,8 +23,6 @@ package de.erichseifert.vectorgraphics2d.intermediate.commands;
 import java.awt.Image;
 import java.util.Locale;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-
 public class DrawImageCommand extends Command<Image> {
 	private final int imageWidth;
 	private final int imageHeight;

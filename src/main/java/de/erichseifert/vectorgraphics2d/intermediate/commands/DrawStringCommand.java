@@ -22,8 +22,6 @@ package de.erichseifert.vectorgraphics2d.intermediate.commands;
 
 import java.util.Locale;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-
 
 public class DrawStringCommand extends Command<String> {
 	private final double x;

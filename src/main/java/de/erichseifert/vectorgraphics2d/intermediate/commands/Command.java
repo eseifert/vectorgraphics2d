@@ -18,19 +18,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d.intermediate;
+package de.erichseifert.vectorgraphics2d.intermediate.commands;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Locale;
 
-public class Group extends Command<List<Command<?>>> {
-	public Group() {
-		super(new LinkedList<Command<?>>());
+public abstract class Command<T> {
+	private final T value;
+
+	public Command(T value) {
+		this.value = value;
 	}
 
-	public void add(Command<?> command) {
-		List<Command<?>> group = getValue();
-		group.add(command);
+	public T getValue() {
+		return value;
+	}
+
+	@Override
+	public String toString() {
+		return String.format((Locale) null, "%s[value=%s]",
+			getClass().getName(), getValue());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null || !getClass().equals(obj.getClass())) {
+			return false;
+		}
+		Command<?> o = (Command<?>) obj;
+		return value == o.value || value.equals(o.value);
 	}
 }
 

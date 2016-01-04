@@ -30,7 +30,7 @@ import java.util.List;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
 import de.erichseifert.vectorgraphics2d.util.PageSize;

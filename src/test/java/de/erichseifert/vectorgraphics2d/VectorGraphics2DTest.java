@@ -29,7 +29,7 @@ import java.awt.Graphics2D;
 import java.util.Iterator;
 import org.junit.Test;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 

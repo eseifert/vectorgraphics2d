@@ -22,7 +22,6 @@ package de.erichseifert.vectorgraphics2d.intermediate.commands;
 
 import java.awt.Shape;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 public class DrawShapeCommand extends Command<Shape> {

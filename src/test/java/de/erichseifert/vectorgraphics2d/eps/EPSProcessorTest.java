@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class EPSProcessorTest {

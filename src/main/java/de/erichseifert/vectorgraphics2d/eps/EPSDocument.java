@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
 
 import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.SizedDocument;
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;

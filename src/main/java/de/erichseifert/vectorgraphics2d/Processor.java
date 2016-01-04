@@ -20,7 +20,7 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public interface Processor {

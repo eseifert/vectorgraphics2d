@@ -20,8 +20,6 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.commands;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-
 public abstract class StateCommand<T> extends Command<T> {
 	public StateCommand(T value) {
 		super(value);

@@ -20,6 +20,8 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate;
 
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+
 public interface CommandHandler {
 	void handle(Command<?> command);
 }

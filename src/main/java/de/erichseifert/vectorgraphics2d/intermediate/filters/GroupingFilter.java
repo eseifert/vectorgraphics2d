@@ -23,8 +23,8 @@ package de.erichseifert.vectorgraphics2d.intermediate.filters;
 import java.util.Arrays;
 import java.util.List;
 
-import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.Group;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 
 
 public abstract class GroupingFilter extends Filter {
