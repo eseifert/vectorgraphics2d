@@ -53,7 +53,7 @@ public class DrawPaintedShapeAsImageFilterTest {
 		DrawPaintedShapeAsImageFilter filter = new DrawPaintedShapeAsImageFilter(commands);
 
 		assertThat(filter, hasItem(any(DrawImageCommand.class)));
-		assertThat(filter, hasItem(not(any(DrawShapeCommand.class))));
+		assertThat(filter, not(hasItem(any(DrawShapeCommand.class))));
 	}
 
 	@Test
