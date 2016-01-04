@@ -23,12 +23,15 @@ package de.erichseifert.vectorgraphics2d.intermediate.filters;
 import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -51,6 +54,21 @@ public class DrawPaintedShapeAsImageFilterTest {
 
 		assertThat(filter, hasItem(any(DrawImageCommand.class)));
 		assertThat(filter, hasItem(not(any(DrawShapeCommand.class))));
+	}
+
+	@Test
+	public void testDrawShapeNotReplacedWithoutPaintCommand() {
+		List<Command<?>> commands = new LinkedList<Command<?>>();
+		commands.add(new RotateCommand(10.0, 4.0, 2.0, new AffineTransform()));
+		commands.add(new DrawShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
+
+		DrawPaintedShapeAsImageFilter filter = new DrawPaintedShapeAsImageFilter(commands);
+
+		Iterator<Command<?>>  filterIterator = filter.iterator();
+		for (Command<?> command : commands) {
+			assertEquals(command, filterIterator.next());
+		}
+		assertFalse(filterIterator.hasNext());
 	}
 }
 
