@@ -18,11 +18,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.visual;
 
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.io.IOException;
+
+import de.erichseifert.vectorgraphics2d.GraphicsState;
 
 public class FontTest extends TestCase {
 	private static final Font DEFAULT_FONT = GraphicsState.DEFAULT_FONT;

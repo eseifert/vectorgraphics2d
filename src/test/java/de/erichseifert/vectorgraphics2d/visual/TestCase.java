@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.visual;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
 
+import de.erichseifert.vectorgraphics2d.EPSGraphics2D;
+import de.erichseifert.vectorgraphics2d.PDFGraphics2D;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 import org.ghost4j.Ghostscript;
 import org.ghost4j.GhostscriptException;

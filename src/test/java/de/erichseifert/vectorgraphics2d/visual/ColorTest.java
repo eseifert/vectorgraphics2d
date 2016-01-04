@@ -18,39 +18,37 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.visual;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
-public class ClippingTest extends TestCase {
-	public ClippingTest() throws IOException {
+public class ColorTest extends TestCase {
+	public ColorTest() throws IOException {
 	}
 
 	@Override
 	public void draw(Graphics2D g) {
-		double w = getPageSize().width;
-		double h = getPageSize().height;
+		final float wPage = (float) getPageSize().width;
+		final float hPage = (float) getPageSize().height;
+		final float wTile = Math.min(wPage/15f, hPage/15f);
+		final float hTile = wTile;
 
-		AffineTransform txOrig = g.getTransform();
-		g.translate(w/2.0, h/2.0);
+		float w = wPage - wTile;
+		float h = hPage - hTile;
 
-		g.setClip(new Ellipse2D.Double(-0.6*w/2.0, -h/2.0, 0.6*w, h));
-		for (double x = -w/2.0; x < w/2.0; x += 4.0) {
-			g.draw(new Line2D.Double(x, -h/2.0, x, h/2.0));
+		for (float y = (hPage - h)/2f; y < h; y += hTile) {
+			float yRel = y/h;
+			for (float x = (wPage - w)/2f; x < w; x += wTile) {
+				float xRel = x/w;
+				Color c = Color.getHSBColor(yRel, 1f, 1f);
+				int alpha = 255 - (int) (xRel*255f);
+				g.setColor(new Color(c.getRed(), c.getGreen(), c.getBlue(), alpha));
+				g.fill(new Rectangle2D.Float(x, y, wTile, hTile));
+			}
 		}
-
-		g.rotate(Math.toRadians(-90.0));
-		g.clip(new Ellipse2D.Double(-0.6*w/2.0, -h/2.0, 0.6*w, h));
-		for (double x = -h/2.0; x < h/2.0; x += 4.0) {
-			g.draw(new Line2D.Double(x, -w/2.0, x, w/2.0));
-		}
-
-		g.setTransform(txOrig);
-		g.setClip(null);
-		g.draw(new Line2D.Double(0.0, 0.0, w, h));
 	}
+
 }

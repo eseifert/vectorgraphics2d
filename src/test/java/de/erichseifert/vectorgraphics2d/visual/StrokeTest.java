@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.visual;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
