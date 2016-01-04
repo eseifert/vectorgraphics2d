@@ -1,0 +1,15 @@
+apply plugin: "java"
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://repo.ghost4j.org/maven2/releases'
+    }
+}
+
+dependencies {
+    testCompile(group: "junit", name: "junit", version: "4.11")
+    testCompile(group: "org.ghost4j", name: "ghost4j", version: "0.5.1")
+}
