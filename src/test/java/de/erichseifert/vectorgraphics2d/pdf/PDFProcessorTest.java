@@ -102,6 +102,7 @@ public class PDFProcessorTest {
 			"/Fnt0 <<",
 			"/Type /Font",
 			"/Subtype /TrueType",
+			"/Encoding /WinAnsiEncoding",
 			Pattern.compile("/BaseFont /\\S+"),
 			">>",
 			">>",
