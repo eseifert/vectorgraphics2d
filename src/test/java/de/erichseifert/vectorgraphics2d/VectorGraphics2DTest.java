@@ -20,13 +20,15 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 
 public class VectorGraphics2DTest {
 	@Test
@@ -44,8 +46,7 @@ public class VectorGraphics2DTest {
 			lastCommand = command;
 		}
 
-		//assertTrue(lastCommand instanceof DisposeCommand);
-		//assertEquals(Color.BLUE, ((DisposeCommand) lastCommand).getValue().getColor());
-		fail("Commands for create and dispose are not implemented.");
+		assertTrue(lastCommand instanceof DisposeCommand);
+		assertEquals(Color.BLUE, ((DisposeCommand) lastCommand).getValue().getColor());
 	}
 }
