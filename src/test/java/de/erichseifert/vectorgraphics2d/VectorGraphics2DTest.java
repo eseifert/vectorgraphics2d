@@ -43,6 +43,7 @@ public class VectorGraphics2DTest {
 
 		Command<?> firstCommand = commandIterator.next();
 		assertTrue(firstCommand instanceof CreateCommand);
+		assertEquals(g, ((CreateCommand) firstCommand).getValue());
 	}
 
 	@Test
