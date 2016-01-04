@@ -22,15 +22,29 @@ package de.erichseifert.vectorgraphics2d;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.Iterator;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 
 public class VectorGraphics2DTest {
+	@Test
+	public void testEmptyVectorGraphics2DStartsWithCreateCommand() {
+		VectorGraphics2D g = new VectorGraphics2D();
+		Iterable<Command<?>> commands = g.getCommands();
+		Iterator<Command<?>> commandIterator = commands.iterator();
+		assertTrue(commandIterator.hasNext());
+
+		Command<?> firstCommand = commandIterator.next();
+		//assertTrue(firstCommand instanceof CreateCommand);
+		fail("CreateCommand is not implemented.");
+	}
+
 	@Test
 	public void testDisposeCommandEmitted() {
 		Graphics2D g = new VectorGraphics2D();
