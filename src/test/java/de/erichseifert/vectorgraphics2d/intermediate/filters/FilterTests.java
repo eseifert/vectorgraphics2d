@@ -25,6 +25,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	FilterTest.class,
 	GroupingFilterTest.class
 })
 public class FilterTests {

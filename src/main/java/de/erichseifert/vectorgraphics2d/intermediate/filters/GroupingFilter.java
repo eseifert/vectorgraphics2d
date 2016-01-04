@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.Filter;
 import de.erichseifert.vectorgraphics2d.intermediate.Group;
 
 

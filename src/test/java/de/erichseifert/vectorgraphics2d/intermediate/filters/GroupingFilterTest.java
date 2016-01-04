@@ -32,7 +32,6 @@ import java.util.List;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.Filter;
 import de.erichseifert.vectorgraphics2d.intermediate.Group;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
