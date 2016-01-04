@@ -26,7 +26,8 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	FilterTest.class,
-	GroupingFilterTest.class
+	GroupingFilterTest.class,
+	DrawPaintedShapeAsImageFilterTest.class
 })
 public class FilterTests {
 }
