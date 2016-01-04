@@ -23,13 +23,15 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class PDFProcessor implements Processor {
 
 	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
-		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(commands);
+		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
+		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
 		PDFDocument doc = new PDFDocument(pageSize);
 		for (Command<?> command : filtered) {
 			doc.handle(command);
