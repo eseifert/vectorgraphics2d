@@ -47,6 +47,8 @@ import java.util.regex.Pattern;
 import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.SizedDocument;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;
@@ -246,6 +248,10 @@ public class EPSDocument extends SizedDocument {
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
 			elements.add(getOutput(c.getValue()) + " fill");
+		} else if (command instanceof CreateCommand) {
+			elements.add("gsave");
+		} else if (command instanceof DisposeCommand) {
+			elements.add("grestore");
 		}
 	}
 
