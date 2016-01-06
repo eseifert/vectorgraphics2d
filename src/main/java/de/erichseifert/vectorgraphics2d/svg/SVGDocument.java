@@ -20,27 +20,19 @@
  */
 package de.erichseifert.vectorgraphics2d.svg;
 
-import de.erichseifert.vectorgraphics2d.GraphicsState;
-import de.erichseifert.vectorgraphics2d.SizedDocument;
-import de.erichseifert.vectorgraphics2d.VectorHints;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.*;
-import de.erichseifert.vectorgraphics2d.util.Base64EncodeStream;
-import de.erichseifert.vectorgraphics2d.util.DataUtils;
-import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
-import de.erichseifert.vectorgraphics2d.util.PageSize;
-import org.w3c.dom.*;
-
-import javax.imageio.ImageIO;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.Toolkit;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,6 +41,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.imageio.ImageIO;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import de.erichseifert.vectorgraphics2d.GraphicsState;
+import de.erichseifert.vectorgraphics2d.SizedDocument;
+import de.erichseifert.vectorgraphics2d.VectorHints;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetBackgroundCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetClipCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetCompositeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetFontCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetHintCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetPaintCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
+import de.erichseifert.vectorgraphics2d.util.Base64EncodeStream;
+import de.erichseifert.vectorgraphics2d.util.DataUtils;
+import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentType;
+import org.w3c.dom.Element;
 
 /**
  * TODO Implement composite support for SVG (filters?)
@@ -277,7 +308,10 @@ public class SVGDocument extends SizedDocument {
 				state.setTransform(c.getValue());
 			} else if (command instanceof AffineTransformCommand) {
 				AffineTransformCommand c = (AffineTransformCommand) command;
-				state.setTransform(c.getValue());
+				AffineTransform stateTransform = state.getTransform();
+				AffineTransform transformToBeApplied = c.getValue();
+				stateTransform.concatenate(transformToBeApplied);
+				state.setTransform(stateTransform);
 			} else if (command instanceof SetHintCommand) {
 				SetHintCommand c = (SetHintCommand) command;
 				state.getHints().put(c.getKey(), c.getValue());

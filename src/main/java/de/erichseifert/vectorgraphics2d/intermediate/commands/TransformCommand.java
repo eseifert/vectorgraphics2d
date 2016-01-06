@@ -26,7 +26,7 @@ public class TransformCommand extends AffineTransformCommand {
 	private final AffineTransform transform;
 
 	public TransformCommand(AffineTransform transform, AffineTransform result) {
-		super(result);
+		super(transform);
 		this.transform = new AffineTransform(transform);
 	}
 

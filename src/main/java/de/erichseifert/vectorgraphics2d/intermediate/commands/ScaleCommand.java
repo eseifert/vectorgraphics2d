@@ -28,7 +28,7 @@ public class ScaleCommand extends AffineTransformCommand {
 	private final double scaleY;
 
 	public ScaleCommand(double scaleX, double scaleY, AffineTransform result) {
-		super(result);
+		super(AffineTransform.getScaleInstance(scaleX, scaleY));
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 	}

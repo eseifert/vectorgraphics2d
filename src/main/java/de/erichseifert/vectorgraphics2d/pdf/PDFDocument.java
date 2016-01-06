@@ -429,7 +429,10 @@ public class PDFDocument extends SizedDocument {
 				state.setTransform(c.getValue());
 			} else if (command instanceof AffineTransformCommand) {
 				AffineTransformCommand c = (AffineTransformCommand) command;
-				state.setTransform(c.getValue());
+				AffineTransform stateTransform = state.getTransform();
+				AffineTransform transformToBeApplied = c.getValue();
+				stateTransform.concatenate(transformToBeApplied);
+				state.setTransform(stateTransform);
 			} else if (command instanceof SetClipCommand) {
 				SetClipCommand c = (SetClipCommand) command;
 				state.setClip(c.getValue());

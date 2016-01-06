@@ -23,8 +23,8 @@ package de.erichseifert.vectorgraphics2d.intermediate.commands;
 import java.awt.geom.AffineTransform;
 
 public abstract class AffineTransformCommand extends StateCommand<AffineTransform> {
-	public AffineTransformCommand(AffineTransform result) {
-		super(result);
+	public AffineTransformCommand(AffineTransform transform) {
+		super(transform);
 	}
 }
 

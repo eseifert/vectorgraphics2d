@@ -30,7 +30,7 @@ public class RotateCommand extends AffineTransformCommand {
 
 	public RotateCommand(double theta, double centerX, double centerY,
 			AffineTransform result) {
-		super(result);
+		super(AffineTransform.getRotateInstance(theta, centerX, centerY));
 		this.theta = theta;
 		this.centerX = centerX;
 		this.centerY = centerY;
