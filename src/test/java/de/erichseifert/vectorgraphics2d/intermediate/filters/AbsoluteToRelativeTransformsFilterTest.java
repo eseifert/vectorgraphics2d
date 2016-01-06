@@ -53,7 +53,18 @@ public class AbsoluteToRelativeTransformsFilterTest {
 				Matchers.<Command<?>>iterableWithSize(1),
 				not(hasItem(any(SetTransformCommand.class)))
 		));
-		filter = new AbsoluteToRelativeTransformsFilter(commands);
+	}
+
+	@Test
+	public void testAbsoluteAndRelativeTransformsIdentical() {
+		AffineTransform absoluteTransform = new AffineTransform();
+		absoluteTransform.rotate(42.0);
+		absoluteTransform.translate(4.0, 2.0);
+		List<Command<?>> commands = new LinkedList<Command<?>>();
+		commands.add(new SetTransformCommand(absoluteTransform));
+
+		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
+
 		AffineTransform relativeTransform = ((TransformCommand) filter.next()).getValue();
 		assertThat(relativeTransform, is(absoluteTransform));
 	}
