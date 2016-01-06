@@ -29,7 +29,6 @@ import static org.junit.Assert.assertThat;
 
 import java.awt.Color;
 import java.awt.GradientPaint;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,7 +46,7 @@ public class FillPaintedShapeAsImageFilterTest {
 	public void testFillShapeReplacedWithDrawImage() {
 		List<Command<?>> commands = new LinkedList<Command<?>>();
 		commands.add(new SetPaintCommand(new GradientPaint(0.0f, 0.0f, Color.BLACK, 100.0f, 100.0f, Color.WHITE)));
-		commands.add(new RotateCommand(10.0, 4.0, 2.0, new AffineTransform()));
+		commands.add(new RotateCommand(10.0, 4.0, 2.0));
 		commands.add(new FillShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
 
 		FillPaintedShapeAsImageFilter filter = new FillPaintedShapeAsImageFilter(commands);
@@ -59,7 +58,7 @@ public class FillPaintedShapeAsImageFilterTest {
 	@Test
 	public void testFillShapeNotReplacedWithoutPaintCommand() {
 		List<Command<?>> commands = new LinkedList<Command<?>>();
-		commands.add(new RotateCommand(10.0, 4.0, 2.0, new AffineTransform()));
+		commands.add(new RotateCommand(10.0, 4.0, 2.0));
 		commands.add(new FillShapeCommand(new Rectangle2D.Double(10.0, 10.0, 100.0, 100.0)));
 
 		FillPaintedShapeAsImageFilter filter = new FillPaintedShapeAsImageFilter(commands);

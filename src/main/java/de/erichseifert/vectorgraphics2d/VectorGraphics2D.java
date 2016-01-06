@@ -525,7 +525,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 			txNew.rotate(theta, x, y);
 		}
 
-		emit(new RotateCommand(theta, x, y, txNew));
+		emit(new RotateCommand(theta, x, y));
 		state.setTransform(txNew);
 
 		if (x == 0.0 && y == 0.0) {
