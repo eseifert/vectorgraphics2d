@@ -34,6 +34,7 @@ import org.junit.Test;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
 
 public class AbsoluteToRelativeTransformsFilterTest {
 	@Test
@@ -50,6 +51,29 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		assertThat(filter, hasItem(any(TransformCommand.class)));
 		AffineTransform relativeTransform = ((TransformCommand) filter.next()).getValue();
 		assertThat(relativeTransform, is(absoluteTransform));
+	}
+
+	@Test
+	public void testTranslateCorrect() {
+		AffineTransform absoluteTransform = new AffineTransform();
+		absoluteTransform.scale(2.0, 2.0);
+		absoluteTransform.translate(4.2, 4.2); // (8.4, 8.4)
+		List<Command<?>> commands = new LinkedList<Command<?>>();
+		commands.add(new TranslateCommand(4.0, 2.0));
+		commands.add(new SetTransformCommand(absoluteTransform));
+
+		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
+
+		TransformCommand transformCommand = null;
+		while (filter.hasNext()) {
+			Command<?> filteredCommand = filter.next();
+			if (filteredCommand instanceof TransformCommand) {
+				transformCommand = (TransformCommand) filteredCommand;
+			}
+		}
+		AffineTransform relativeTransform = transformCommand.getValue();
+		assertThat(relativeTransform.getTranslateX(), is(4.4));
+		assertThat(relativeTransform.getTranslateY(), is(6.4));
 	}
 }
 
