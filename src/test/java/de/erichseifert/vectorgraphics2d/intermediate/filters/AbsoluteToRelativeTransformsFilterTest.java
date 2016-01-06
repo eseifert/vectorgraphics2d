@@ -22,6 +22,7 @@ package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
 import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
@@ -37,16 +38,18 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 public class AbsoluteToRelativeTransformsFilterTest {
 	@Test
 	public void testSetTransformCommandReplaced() {
-		AffineTransform tx = new AffineTransform();
-		tx.rotate(42.0);
-		tx.translate(4.0, 2.0);
+		AffineTransform absoluteTransform = new AffineTransform();
+		absoluteTransform.rotate(42.0);
+		absoluteTransform.translate(4.0, 2.0);
 		List<Command<?>> commands = new LinkedList<Command<?>>();
-		commands.add(new SetTransformCommand(tx));
+		commands.add(new SetTransformCommand(absoluteTransform));
 
 		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
 
 		assertThat(filter, not(hasItem(any(SetTransformCommand.class))));
 		assertThat(filter, hasItem(any(TransformCommand.class)));
+		AffineTransform relativeTransform = ((TransformCommand) filter.next()).getValue();
+		assertThat(relativeTransform, is(absoluteTransform));
 	}
 }
 
