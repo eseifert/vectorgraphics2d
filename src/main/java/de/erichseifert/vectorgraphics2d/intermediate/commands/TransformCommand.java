@@ -25,7 +25,7 @@ import java.awt.geom.AffineTransform;
 public class TransformCommand extends AffineTransformCommand {
 	private final AffineTransform transform;
 
-	public TransformCommand(AffineTransform transform, AffineTransform result) {
+	public TransformCommand(AffineTransform transform) {
 		super(transform);
 		this.transform = new AffineTransform(transform);
 	}
