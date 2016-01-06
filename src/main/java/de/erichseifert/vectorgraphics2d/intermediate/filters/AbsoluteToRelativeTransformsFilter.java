@@ -20,33 +20,19 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
-import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-
-import java.awt.geom.AffineTransform;
-import java.util.LinkedList;
 import java.util.List;
-import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 
-public class AbsoluteToRelativeTransformsFilterTest {
-	@Test
-	public void testSetTransformCommandReplaced() {
-		AffineTransform tx = new AffineTransform();
-		tx.rotate(42.0);
-		tx.translate(4.0, 2.0);
-		List<Command<?>> commands = new LinkedList<Command<?>>();
-		commands.add(new SetTransformCommand(tx));
+public class AbsoluteToRelativeTransformsFilter extends Filter {
 
-		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
+	public AbsoluteToRelativeTransformsFilter(Iterable<Command<?>> stream) {
+		super(stream);
+	}
 
-		assertThat(filter, not(hasItem(any(SetTransformCommand.class))));
-		assertThat(filter, hasItem(any(TransformCommand.class)));
+	@Override
+	protected List<Command<?>> filter(Command<?> command) {
+		return null;
 	}
 }
 
