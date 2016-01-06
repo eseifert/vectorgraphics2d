@@ -544,7 +544,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		AffineTransform txNew = getTransform();
 		txNew.scale(sx, sy);
-		emit(new ScaleCommand(sx, sy, txNew));
+		emit(new ScaleCommand(sx, sy));
 		state.setTransform(txNew);
 
 		_debug_validate_graphics.scale(sx, sy);
