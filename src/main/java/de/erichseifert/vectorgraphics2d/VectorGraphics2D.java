@@ -500,7 +500,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		AffineTransform txNew = getTransform();
 		txNew.translate(tx, ty);
-		emit(new TranslateCommand(tx, ty, txNew));
+		emit(new TranslateCommand(tx, ty));
 		state.setTransform(txNew);
 
 		_debug_validate_graphics.translate(tx, ty);

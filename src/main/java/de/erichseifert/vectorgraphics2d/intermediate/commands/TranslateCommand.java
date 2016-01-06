@@ -27,7 +27,7 @@ public class TranslateCommand extends AffineTransformCommand {
 	private final double deltaX;
 	private final double deltaY;
 
-	public TranslateCommand(double x, double y, AffineTransform result) {
+	public TranslateCommand(double x, double y) {
 		super(AffineTransform.getTranslateInstance(x, y));
 		this.deltaX = x;
 		this.deltaY = y;
