@@ -38,16 +38,19 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.SizedDocument;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetBackgroundCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetClipCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
@@ -98,7 +101,7 @@ public class PDFDocument extends SizedDocument {
 	private Resources resources;
 	private final Map<Integer, PDFObject> images;
 
-	private final GraphicsState state;
+	private final Stack<GraphicsState> states;
 	private boolean transformed;
 
 	private boolean compressed;
@@ -106,7 +109,8 @@ public class PDFDocument extends SizedDocument {
 	public PDFDocument(PageSize pageSize) {
 		super(pageSize);
 
-		state = new GraphicsState();
+		states = new Stack<GraphicsState>();
+		states.push(new GraphicsState());
 
 		objects = new LinkedList<PDFObject>();
 		objectIdCounter = 1;
@@ -114,6 +118,10 @@ public class PDFDocument extends SizedDocument {
 		images = new HashMap<Integer, PDFObject>();
 
 		initPage();
+	}
+
+	private GraphicsState getCurrentState() {
+		return states.peek();
 	}
 
 	private void initPage() {
@@ -162,7 +170,7 @@ public class PDFDocument extends SizedDocument {
 		try {
 			contentsPayload.write(DataUtils.join("", new Object[] {
 				"q", EOL,
-				getOutput(state.getColor()), EOL,
+				getOutput(getCurrentState().getColor()), EOL,
 				MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", height, " cm", EOL
 			}).getBytes(CHARSET));
 		} catch (IOException e) {
@@ -180,7 +188,7 @@ public class PDFDocument extends SizedDocument {
 		page.dict.put("Resources", resources);
 
 		// Create initial font
-		Font font = state.getFont();
+		Font font = getCurrentState().getFont();
 		String fontResourceId = resources.getId(font);
 		float fontSize = font.getSize2D();
 		StringBuilder out = new StringBuilder();
@@ -371,7 +379,7 @@ public class PDFDocument extends SizedDocument {
 		if (command instanceof Group) {
 			Group c = (Group) command;
 			applyStateCommands(c.getValue());
-			s = getOutput(state, resources, !transformed);
+			s = getOutput(getCurrentState(), resources, !transformed);
 			transformed = true;
 		} else if (command instanceof DrawShapeCommand) {
 			DrawShapeCommand c = (DrawShapeCommand) command;
@@ -408,34 +416,42 @@ public class PDFDocument extends SizedDocument {
 		for (Command<?> command : commands) {
 			if (command instanceof SetHintCommand) {
 				SetHintCommand c = (SetHintCommand) command;
-				state.getHints().put(c.getKey(), c.getValue());
+				getCurrentState().getHints().put(c.getKey(), c.getValue());
 			} else if (command instanceof SetBackgroundCommand) {
 				SetBackgroundCommand c = (SetBackgroundCommand) command;
-				state.setBackground(c.getValue());
+				getCurrentState().setBackground(c.getValue());
 			} else if (command instanceof SetColorCommand) {
 				SetColorCommand c = (SetColorCommand) command;
-				state.setColor(c.getValue());
+				getCurrentState().setColor(c.getValue());
 			} else if (command instanceof SetPaintCommand) {
 				SetPaintCommand c = (SetPaintCommand) command;
-				state.setPaint(c.getValue());
+				getCurrentState().setPaint(c.getValue());
 			} else if (command instanceof SetStrokeCommand) {
 				SetStrokeCommand c = (SetStrokeCommand) command;
-				state.setStroke(c.getValue());
+				getCurrentState().setStroke(c.getValue());
 			} else if (command instanceof SetFontCommand) {
 				SetFontCommand c = (SetFontCommand) command;
-				state.setFont(c.getValue());
+				getCurrentState().setFont(c.getValue());
 			} else if (command instanceof SetTransformCommand) {
 				SetTransformCommand c = (SetTransformCommand) command;
-				state.setTransform(c.getValue());
+				getCurrentState().setTransform(c.getValue());
 			} else if (command instanceof AffineTransformCommand) {
 				AffineTransformCommand c = (AffineTransformCommand) command;
-				AffineTransform stateTransform = state.getTransform();
+				AffineTransform stateTransform = getCurrentState().getTransform();
 				AffineTransform transformToBeApplied = c.getValue();
 				stateTransform.concatenate(transformToBeApplied);
-				state.setTransform(stateTransform);
+				getCurrentState().setTransform(stateTransform);
 			} else if (command instanceof SetClipCommand) {
 				SetClipCommand c = (SetClipCommand) command;
-				state.setClip(c.getValue());
+				getCurrentState().setClip(c.getValue());
+			} else if (command instanceof CreateCommand) {
+				try {
+					states.push((GraphicsState) getCurrentState().clone());
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+			} else if (command instanceof DisposeCommand) {
+				states.pop();
 			}
 		}
 	}
