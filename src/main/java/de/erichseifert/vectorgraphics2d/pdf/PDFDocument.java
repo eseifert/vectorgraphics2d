@@ -433,8 +433,7 @@ public class PDFDocument extends SizedDocument {
 				SetFontCommand c = (SetFontCommand) command;
 				getCurrentState().setFont(c.getValue());
 			} else if (command instanceof SetTransformCommand) {
-				SetTransformCommand c = (SetTransformCommand) command;
-				getCurrentState().setTransform(c.getValue());
+				throw new UnsupportedOperationException("The PDF format has no means of setting the transformation matrix.");
 			} else if (command instanceof AffineTransformCommand) {
 				AffineTransformCommand c = (AffineTransformCommand) command;
 				AffineTransform stateTransform = getCurrentState().getTransform();
