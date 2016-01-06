@@ -27,7 +27,7 @@ public class ShearCommand extends AffineTransformCommand {
 	private final double shearX;
 	private final double shearY;
 
-	public ShearCommand(double shearX, double shearY, AffineTransform result) {
+	public ShearCommand(double shearX, double shearY) {
 		super(AffineTransform.getShearInstance(shearX, shearY));
 		this.shearX = shearX;
 		this.shearY = shearY;

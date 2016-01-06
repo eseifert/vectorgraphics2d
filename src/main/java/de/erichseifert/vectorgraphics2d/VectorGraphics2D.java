@@ -467,7 +467,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		AffineTransform txNew = getTransform();
 		txNew.shear(shx, shy);
-		emit(new ShearCommand(shx, shy, txNew));
+		emit(new ShearCommand(shx, shy));
 		state.setTransform(txNew);
 
 		_debug_validate_graphics.shear(shx, shy);
