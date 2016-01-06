@@ -28,7 +28,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.awt.geom.AffineTransform;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
@@ -46,13 +47,14 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.rotate(42.0);
 		absoluteTransform.translate(4.0, 2.0);
-		List<Command<?>> commands = new LinkedList<Command<?>>();
-		commands.add(new SetTransformCommand(absoluteTransform));
+		List<Command<?>> commands = wrapCommands(
+			new SetTransformCommand(absoluteTransform)
+		);
 
 		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
 
 		assertThat(filter, allOf(
-				Matchers.<Command<?>>iterableWithSize(1),
+				Matchers.<Command<?>>iterableWithSize(3),
 				not(hasItem(any(SetTransformCommand.class)))
 		));
 	}
@@ -62,11 +64,13 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.rotate(42.0);
 		absoluteTransform.translate(4.0, 2.0);
-		List<Command<?>> commands = new LinkedList<Command<?>>();
-		commands.add(new SetTransformCommand(absoluteTransform));
+		List<Command<?>> commands = wrapCommands(
+			new SetTransformCommand(absoluteTransform)
+		);
 
 		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
 
+		filter.next();
 		AffineTransform relativeTransform = ((TransformCommand) filter.next()).getValue();
 		assertThat(relativeTransform, is(absoluteTransform));
 	}
@@ -76,9 +80,10 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.scale(2.0, 2.0);
 		absoluteTransform.translate(4.2, 4.2); // (8.4, 8.4)
-		List<Command<?>> commands = new LinkedList<Command<?>>();
-		commands.add(new TranslateCommand(4.0, 2.0));
-		commands.add(new SetTransformCommand(absoluteTransform));
+		List<Command<?>> commands = wrapCommands(
+			new TranslateCommand(4.0, 2.0),
+			new SetTransformCommand(absoluteTransform)
+		);
 
 		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
 
@@ -99,11 +104,12 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.rotate(42.0);
 		absoluteTransform.translate(4.0, 2.0);
-		List<Command<?>> commands = new LinkedList<Command<?>>();
-		commands.add(new CreateCommand(null));
-		commands.add(new TransformCommand(absoluteTransform));
-		commands.add(new DisposeCommand(null));
-		commands.add(new SetTransformCommand(absoluteTransform));
+		List<Command<?>> commands = wrapCommands(
+			new CreateCommand(null),
+			new TransformCommand(absoluteTransform),
+			new DisposeCommand(null),
+			new SetTransformCommand(absoluteTransform)
+		);
 
 		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
 		TransformCommand lastTransformCommand = null;
@@ -113,6 +119,14 @@ public class AbsoluteToRelativeTransformsFilterTest {
 			}
 		}
 		assertThat(lastTransformCommand.getValue(), is(absoluteTransform));
+	}
+
+	private List<Command<?>> wrapCommands(Command<?>... commands) {
+		List<Command<?>> commandList = new ArrayList<Command<?>>(commands.length + 2);
+		commandList.add(new CreateCommand(null));
+		commandList.addAll(Arrays.asList(commands));
+		commandList.add(new DisposeCommand(null));
+		return commandList;
 	}
 }
 
