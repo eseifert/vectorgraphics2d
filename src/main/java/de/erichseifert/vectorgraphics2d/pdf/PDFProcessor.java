@@ -23,6 +23,7 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.AbsoluteToRelativeTransformsFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
@@ -30,7 +31,8 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
 public class PDFProcessor implements Processor {
 
 	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
-		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
+		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
+		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
 		PDFDocument doc = new PDFDocument(pageSize);
 		for (Command<?> command : filtered) {
