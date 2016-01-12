@@ -23,12 +23,14 @@ package de.erichseifert.vectorgraphics2d.svg;
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class SVGProcessor implements Processor {
 	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
-		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(commands);
+		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(commands);
+		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(shapesAsImages);
 		SVGDocument doc = new SVGDocument(pageSize);
 		for (Command<?> command : filtered) {
 			doc.handle(command);
@@ -37,4 +39,3 @@ public class SVGProcessor implements Processor {
 		return doc;
 	}
 }
-
