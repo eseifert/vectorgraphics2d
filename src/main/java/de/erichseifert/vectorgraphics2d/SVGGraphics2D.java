@@ -20,6 +20,8 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import java.awt.Color;
+
 import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 
 /**
@@ -42,6 +44,9 @@ public class SVGGraphics2D extends ProcessingPipeline {
 	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
 		processor = new SVGProcessor();
+
+		// Make graphics state match default state of Graphics2D
+		setColor(Color.BLACK);
 	}
 
 	@Override
