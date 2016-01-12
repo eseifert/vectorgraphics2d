@@ -56,7 +56,7 @@ import org.ghost4j.GhostscriptException;
 public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
 	private final ImageComparisonPanel imageComparisonPanel;
-	private final JComboBox<ImageFormat> imageFormatSelector;
+	private final JComboBox imageFormatSelector;
 	private TestCase testCase;
 
 	private enum ImageFormat {
@@ -250,7 +250,7 @@ public class TestBrowser extends JFrame {
 		getContentPane().add(configurableImageComparisonPanel, BorderLayout.CENTER);
 
 		ImageFormat startingImageFormat = ImageFormat.EPS;
-		imageFormatSelector = new JComboBox<ImageFormat>(ImageFormat.values());
+		imageFormatSelector = new JComboBox(ImageFormat.values());
 		configurableImageComparisonPanel.add(imageFormatSelector, BorderLayout.NORTH);
 		imageFormatSelector.setSelectedItem(startingImageFormat);
 		imageFormatSelector.addItemListener(new ItemListener() {
