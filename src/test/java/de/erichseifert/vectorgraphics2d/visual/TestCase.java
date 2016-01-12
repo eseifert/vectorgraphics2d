@@ -34,7 +34,12 @@ import javax.imageio.ImageIO;
 
 import de.erichseifert.vectorgraphics2d.EPSGraphics2D;
 import de.erichseifert.vectorgraphics2d.PDFGraphics2D;
+import de.erichseifert.vectorgraphics2d.SVGGraphics2D;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
+import org.apache.batik.transcoder.TranscoderException;
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
 import org.ghost4j.Ghostscript;
 import org.ghost4j.GhostscriptException;
 
@@ -44,8 +49,10 @@ public abstract class TestCase {
 	private final BufferedImage reference;
 	private final EPSGraphics2D epsGraphics;
 	private final PDFGraphics2D pdfGraphics;
+	private final SVGGraphics2D svgGraphics;
 	private BufferedImage rasterizedEPS;
 	private BufferedImage rasterizedPDF;
+	private BufferedImage rasterizedSVG;
 
 	public TestCase() throws IOException {
 		int width = 150;
@@ -56,6 +63,8 @@ public abstract class TestCase {
 		draw(epsGraphics);
 		pdfGraphics = new PDFGraphics2D(0, 0, width, height);
 		draw(pdfGraphics);
+		svgGraphics = new SVGGraphics2D(0, 0, width, height);
+		draw(svgGraphics);
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D referenceGraphics = reference.createGraphics();
@@ -86,6 +95,10 @@ public abstract class TestCase {
 
 	public InputStream getPDF() {
 		return new ByteArrayInputStream(pdfGraphics.getBytes());
+	}
+
+	public InputStream getSVG() {
+		return new ByteArrayInputStream(svgGraphics.getBytes());
 	}
 
 	public BufferedImage getRasterizedEPS() throws GhostscriptException, IOException {
@@ -153,5 +166,30 @@ public abstract class TestCase {
 		gs.exit();
 		rasterizedPDF = ImageIO.read(pngOutputFile);
 		return rasterizedPDF;
+	}
+
+	public BufferedImage getRasterizedSVG() throws TranscoderException {
+		if (rasterizedSVG != null) {
+			return rasterizedSVG;
+		}
+
+		rasterizedSVG = new BufferedImage(
+				(int) Math.round(getPageSize().width), (int) Math.round(getPageSize().height),
+				BufferedImage.TYPE_INT_ARGB);
+
+		ImageTranscoder transcoder = new ImageTranscoder() {
+			@Override
+			public BufferedImage createImage(int width, int height) {
+				return rasterizedSVG;
+			}
+
+			@Override
+			public void writeImage(BufferedImage bufferedImage, TranscoderOutput transcoderOutput) throws TranscoderException {
+			}
+		};
+
+		transcoder.transcode(new TranscoderInput(getSVG()), null);
+
+		return rasterizedSVG;
 	}
 }

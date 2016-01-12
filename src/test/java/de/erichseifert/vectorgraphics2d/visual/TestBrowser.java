@@ -51,6 +51,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.batik.transcoder.TranscoderException;
 import org.ghost4j.GhostscriptException;
 
 public class TestBrowser extends JFrame {
@@ -61,7 +62,8 @@ public class TestBrowser extends JFrame {
 
 	private enum ImageFormat {
 		EPS("EPS"),
-		PDF("PDF");
+		PDF("PDF"),
+		SVG("SVG");
 
 		private final String name;
 
@@ -240,6 +242,8 @@ public class TestBrowser extends JFrame {
 						e1.printStackTrace();
 					} catch (GhostscriptException e1) {
 						e1.printStackTrace();
+					} catch (TranscoderException e1) {
+						e1.printStackTrace();
 					}
 				}
 			}
@@ -267,6 +271,8 @@ public class TestBrowser extends JFrame {
 						e.printStackTrace();
 					} catch (GhostscriptException e) {
 						e.printStackTrace();
+					} catch (TranscoderException e) {
+						e.printStackTrace();
 					}
 				}
 			}
@@ -276,7 +282,7 @@ public class TestBrowser extends JFrame {
 		configurableImageComparisonPanel.add(imageComparisonPanel, BorderLayout.CENTER);
 	}
 
-	public void setTestCase(TestCase test) throws IOException, GhostscriptException {
+	public void setTestCase(TestCase test) throws IOException, GhostscriptException, TranscoderException {
 		BufferedImage reference = test.getReference();
 		imageComparisonPanel.setLeftComponent(new ImageDisplayPanel(reference, null));
 		ImageDisplayPanel imageDisplayPanel;
@@ -286,6 +292,9 @@ public class TestBrowser extends JFrame {
 				break;
 			case PDF:
 				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedPDF(), test.getPDF());
+				break;
+			case SVG:
+				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedSVG(), test.getSVG());
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown image format: " + imageComparisonPanel.getImageFormat());
