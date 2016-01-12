@@ -267,6 +267,13 @@
         <scope>test</scope>
         <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-transcoder</artifactId>
+      <version>1.8</version>
+      <scope>test</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 
   <scm>
