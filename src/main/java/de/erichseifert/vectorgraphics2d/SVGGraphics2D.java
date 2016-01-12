@@ -20,7 +20,7 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
+import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
@@ -41,7 +41,7 @@ public class SVGGraphics2D extends ProcessingPipeline {
 	 */
 	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
-		processor = new EPSProcessor();
+		processor = new SVGProcessor();
 	}
 
 	@Override
