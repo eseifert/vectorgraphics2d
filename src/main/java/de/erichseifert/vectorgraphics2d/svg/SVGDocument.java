@@ -59,6 +59,8 @@ import de.erichseifert.vectorgraphics2d.SizedDocument;
 import de.erichseifert.vectorgraphics2d.VectorHints;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawStringCommand;
@@ -327,6 +329,14 @@ public class SVGDocument extends SizedDocument {
 			} else if (command instanceof SetHintCommand) {
 				SetHintCommand c = (SetHintCommand) command;
 				state.getHints().put(c.getKey(), c.getValue());
+			} else if (command instanceof CreateCommand) {
+				try {
+					states.push((GraphicsState) getCurrentState().clone());
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+			} else if (command instanceof DisposeCommand) {
+				states.pop();
 			}
 		}
 	}
