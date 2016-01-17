@@ -265,6 +265,12 @@
       <version>1.6-1</version>
       <scope>test</scope>
       <optional>true</optional>
+      <exclusions>
+        <exclusion>
+          <artifactId>fop</artifactId>
+          <groupId>fop</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
