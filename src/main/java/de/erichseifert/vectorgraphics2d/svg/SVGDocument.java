@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Stack;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -101,7 +102,7 @@ public class SVGDocument extends SizedDocument {
 			Toolkit.getDefaultToolkit().getScreenResolution()/25.4;
 	private static final String CHARSET = "UTF-8";
 
-	private final GraphicsState state;
+	private final Stack<GraphicsState> states;
 
 	private final Document doc;
 	private final Element root;
@@ -126,7 +127,8 @@ public class SVGDocument extends SizedDocument {
 	public SVGDocument(PageSize pageSize) {
 		super(pageSize);
 
-		state = new GraphicsState();
+		states = new Stack<GraphicsState>();
+		states.push(new GraphicsState());
 		clippingPathElements = new HashMap<Integer, Element>();
 
 		// Prepare DOM
@@ -154,6 +156,10 @@ public class SVGDocument extends SizedDocument {
 		initRoot();
 
 		group = root;
+	}
+
+	private GraphicsState getCurrentState() {
+		return states.peek();
 	}
 
 	private void initRoot() {
@@ -207,14 +213,14 @@ public class SVGDocument extends SizedDocument {
 		group = doc.createElement("g");
 		groupAdded = false;
 
-		Shape clip = state.getClip();
+		Shape clip = getCurrentState().getClip();
 		if (clip != GraphicsState.DEFAULT_CLIP) {
 			Element clipElem = getClipElement(clip);
 			String ref = "url(#" + clipElem.getAttribute("id") + ")";
 			group.setAttribute("clip-path", ref);
 		}
 
-		AffineTransform tx = state.getTransform();
+		AffineTransform tx = getCurrentState().getTransform();
 		if (!GraphicsState.DEFAULT_TRANSFORM.equals(tx)) {
 			group.setAttribute("transform", getOutput(tx));
 		}
@@ -275,7 +281,7 @@ public class SVGDocument extends SizedDocument {
 		} else if (command instanceof DrawStringCommand) {
 			DrawStringCommand c = (DrawStringCommand) command;
 			Element e = getElement(c.getValue(), c.getX(), c.getY());
-			e.setAttribute("style", getStyle(state.getFont()));
+			e.setAttribute("style", getStyle(getCurrentState().getFont()));
 			addToGroup(e);
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
@@ -287,6 +293,7 @@ public class SVGDocument extends SizedDocument {
 
 	private void applyStateCommands(List<Command<?>> commands) {
 		for (Command<?> command : commands) {
+			GraphicsState state = getCurrentState();
 			if (command instanceof SetBackgroundCommand) {
 				SetBackgroundCommand c = (SetBackgroundCommand) command;
 				state.setBackground(c.getValue());
@@ -338,7 +345,7 @@ public class SVGDocument extends SizedDocument {
 	private String getStyle(boolean filled) {
 		StringBuilder style = new StringBuilder();
 
-		Color color = state.getColor();
+		Color color = getCurrentState().getColor();
 		String colorOutput = getOutput(color);
 		double opacity = color.getAlpha()/255.0;
 
@@ -356,7 +363,7 @@ public class SVGDocument extends SizedDocument {
 			if (color.getAlpha() < 255) {
 				appendStyle(style, "stroke-opacity", opacity);
 			}
-			Stroke stroke = state.getStroke();
+			Stroke stroke = getCurrentState().getStroke();
 			if (stroke instanceof BasicStroke) {
 				BasicStroke bs = (BasicStroke) stroke;
 				if (bs.getLineWidth() != 1f) {
@@ -554,7 +561,7 @@ public class SVGDocument extends SizedDocument {
 		elem.setAttribute("y", DataUtils.format(y));
 		elem.setAttribute("width", DataUtils.format(width));
 		elem.setAttribute("height", DataUtils.format(height));
-		boolean lossyAllowed = state.getHints().get(VectorHints.KEY_EXPORT) ==
+		boolean lossyAllowed = getCurrentState().getHints().get(VectorHints.KEY_EXPORT) ==
 				VectorHints.VALUE_EXPORT_SIZE;
 		elem.setAttribute("xlink:href", getOutput(image, lossyAllowed));
 		return elem;
