@@ -571,6 +571,7 @@ public class SVGDocument extends SizedDocument {
 		elem.setAttribute("y", DataUtils.format(y));
 		elem.setAttribute("width", DataUtils.format(width));
 		elem.setAttribute("height", DataUtils.format(height));
+		elem.setAttribute("preserveAspectRatio", "none");
 		boolean lossyAllowed = getCurrentState().getHints().get(VectorHints.KEY_EXPORT) ==
 				VectorHints.VALUE_EXPORT_SIZE;
 		elem.setAttribute("xlink:href", getOutput(image, lossyAllowed));
