@@ -26,3 +26,25 @@ Features
 Currently, most operations are supported, i.e. VectorGraphics2D is able to handle clipping gradients, or compression.
 Some features are still missing, like text encodings, embedded fonts, or metadata support.
 Although its early stage VectorGraphics2D is already used successly in several projects to export vector graphics.
+
+
+Include in your sbt project:
+----------------------------
+
+.. code:: scala
+
+    resolvers += "jitpack" at "https://jitpack.io"
+
+    libraryDependencies += "com.github.eseifert" % "vectorgraphics2d" % "0.9.2"
+    
+Include in your maven project:
+---------------------------
+
+.. code:: xml
+
+	<dependency>
+	    <groupId>com.github.eseifert</groupId>
+	    <artifactId>vectorgraphics2d</artifactId>
+	    <version>0.9.2</version>
+	</dependency>
+
