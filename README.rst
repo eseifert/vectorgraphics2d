@@ -47,4 +47,9 @@ Include in your maven project:
 	    <artifactId>vectorgraphics2d</artifactId>
 	    <version>0.9.2</version>
 	</dependency>
-
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
