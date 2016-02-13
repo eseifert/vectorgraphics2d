@@ -51,8 +51,10 @@ license {
 
     def currentYear = new GregorianCalendar().get(Calendar.YEAR);
     ext.year = "${inceptionYear}-${currentYear}"
-    ext.owner = "Erich Seifert"
-    ext.email = "dev[at]erichseifert.de"
+    ext.owner1 = "Erich Seifert"
+    ext.email1 = "dev[at]erichseifert.de"
+    ext.owner2 = "Michael Seifert"
+    ext.email2 = "mseifert[at]error-reports.org"
 }
 
 task shrink(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
