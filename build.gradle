@@ -59,6 +59,7 @@ license {
 
 task shrink(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     description = 'Uses ProGuard to reduce the code size of this project.'
+    group = 'Build'
     // Configure ProGuard
     configuration("${projectDir}/src/etc/proguard.conf")
     target(targetCompatibility.toString())
