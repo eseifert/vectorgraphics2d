@@ -6,7 +6,16 @@ group = 'de.erichseifert.vectorgraphics2d'
 version = getVersionString()
 description = 'A library for adding vector export to Java(R) Graphics2D.'
 
-ext.inceptionYear = 2010
+ext {
+    inceptionYear = 2010
+
+    // Determine the location of rt.jar (required for ProGuard)
+    if (System.getProperty("os.name").startsWith("Mac")) {
+        runtimeJar = "${System.getProperty("java.home")}/bundle/Classes/classes.jar"
+    } else {
+        runtimeJar = "${System.getProperty("java.home")}/lib/rt.jar"
+    }
+}
 
 repositories {
     mavenCentral()
@@ -18,6 +27,30 @@ dependencies {
     testCompile(group: "org.ghost4j", name: "ghost4j", version: "1.0.0")
     testCompile(group: "batik", name: "batik-transcoder", version: "1.6-1") {
         exclude(group: 'fop', module: 'fop')
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath(group: 'net.sf.proguard', name: 'proguard-gradle', version: '5.2.+')
+    }
+}
+task shrink(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
+    description = 'Uses ProGuard to reduce the code size of this project.'
+    // Configure ProGuard
+    configuration("${projectDir}/src/etc/proguard.conf")
+    target(targetCompatibility.toString())
+    injars(jar.archivePath)
+    outjars("${libsDir}/shrunk/${jar.archiveName}")
+    libraryjars(runtimeJar)
+    libraryjars(configurations.runtime)
+
+    doLast {
+        // Use the shrunk jar for all further processing
+        jar.destinationDir = new File("${libsDir}/shrunk/")
     }
 }
 
