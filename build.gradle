@@ -4,6 +4,7 @@ targetCompatibility = 1.6
 
 group = 'de.erichseifert.vectorgraphics2d'
 version = getVersionString()
+description = 'A library for adding vector export to Java(R) Graphics2D.'
 
 ext.inceptionYear = 2010
 
