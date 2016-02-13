@@ -80,6 +80,13 @@ task sourceJar(type: Jar) {
     classifier 'sources'
 }
 
+task javadocJar(type: Jar) {
+    description = 'Assembles a jar archive containing the API doc.'
+    group = 'Build'
+    from javadoc
+    classifier 'javadoc'
+}
+
 apply plugin: 'maven-publish'
 publishing {
     publications {
