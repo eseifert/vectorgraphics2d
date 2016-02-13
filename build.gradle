@@ -2,6 +2,8 @@ apply plugin: "java"
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
+ext.inceptionYear = 2010
+
 repositories {
     mavenCentral()
 }
@@ -12,5 +14,28 @@ dependencies {
     testCompile(group: "org.ghost4j", name: "ghost4j", version: "1.0.0")
     testCompile(group: "batik", name: "batik-transcoder", version: "1.6-1") {
         exclude(group: 'fop', module: 'fop')
+    }
+}
+
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+        vectorgraphics2d(MavenPublication) {
+            from components.java
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('inceptionYear', inceptionYear)
+                def licenses = root.appendNode('licenses')
+                def license = licenses.appendNode('license')
+                license.appendNode('name', 'GNU Library or Lesser General Public License (LGPL)')
+                license.appendNode('url', 'http://www.gnu.org/licenses/lgpl.txt')
+                def scm = root.appendNode('scm')
+                scm.appendNode('connection', 'scm:git:git://github.com/eseifert/vectorgraphics2d.git')
+                scm.appendNode('developerConnection', 'scm:git:git@github.com:eseifert/vectorgraphics2d.git')
+                def issueManagement = root.appendNode('issueManagement')
+                issueManagement.appendNode('system', 'GitHub Issues')
+                issueManagement.appendNode('url', 'https://github.com/eseifert/vectorgraphics2d/')
+            }
+        }
     }
 }
