@@ -73,6 +73,13 @@ task shrink(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     }
 }
 
+task sourceJar(type: Jar) {
+    description = 'Assembles a jar archive containing the source code of the main classes.'
+    group = 'Build'
+    from sourceSets.main.allJava
+    classifier 'sources'
+}
+
 apply plugin: 'maven-publish'
 publishing {
     publications {
