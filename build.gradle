@@ -67,11 +67,6 @@ task shrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     outjars("${libsDir}/shrunk/${jar.archiveName}")
     libraryjars(runtimeJar)
     libraryjars(configurations.runtime)
-
-    doLast {
-        // Use the shrunk jar for all further processing
-        jar.destinationDir = new File("${libsDir}/shrunk/")
-    }
 }
 
 task sourceJar(type: Jar) {
