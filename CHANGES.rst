@@ -1,9 +1,9 @@
 VectorGraphics2D 0.10 (unreleased)
 ==================================
 
-- Switched from Subversion to git as version control system
 - Processing a stream of commands instead of directly mapping method calls
 - Return valid graphics device configuration when calling getDeviceConfiguration() instead of null
+- Switch from Maven to Gradle for build management
 
 VectorGraphics2D 0.9.4 (unreleased)
 ===================================
@@ -20,6 +20,7 @@ VectorGraphics2D 0.9.2 (2015-09-15)
 
 - Fixed a bug that caused missing transformations in EPS files when calling
   ``EPSGraphics.transform(AffineTransform)``.
+- Switched from Subversion to git as version control system
 
 VectorGraphics2D 0.9.1 (2013-05-31)
 ===================================
