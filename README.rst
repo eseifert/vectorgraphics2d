@@ -7,9 +7,9 @@ Currently, there's support for the following vector file formats:
 
 - Encapsulated PostScript® (EPS)
 - Scalable Vector Graphics (SVG)
-- Portable Document Format (PDF) 
+- Portable Document Format (PDF)
 
-Additional formats can be easily added. 
+Additional formats can be easily added.
 
 
 Features
@@ -21,7 +21,7 @@ Features
 - Arbitrary clipping paths can be defined
 - Output of bitmap images
 - Easily extensible
-- Small footprint (JAR is about 30 kilobytes) 
+- Small footprint (JAR is about 30 kilobytes)
 
 Currently, most operations are supported, i.e. VectorGraphics2D is able to handle clipping gradients, or compression.
 Some features are still missing, like text encodings, embedded fonts, or metadata support.
@@ -36,7 +36,7 @@ Include in your sbt project:
     resolvers += "jitpack" at "https://jitpack.io"
 
     libraryDependencies += "com.github.eseifert" % "vectorgraphics2d" % "0.9.2"
-    
+
 Include in your maven project:
 ---------------------------
 
@@ -45,11 +45,5 @@ Include in your maven project:
 	<dependency>
 	    <groupId>com.github.eseifert</groupId>
 	    <artifactId>vectorgraphics2d</artifactId>
-	    <version>0.9.2</version>
+	    <version>0.9.3</version>
 	</dependency>
-	<repositories>
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
-	</repositories>
