@@ -2,13 +2,15 @@ VectorGraphics2D 0.10 (unreleased)
 ==================================
 
 - Processing a stream of commands instead of directly mapping method calls
-- Return valid graphics device configuration when calling getDeviceConfiguration() instead of null
+- Return valid graphics device configuration when calling
+  ``getDeviceConfiguration()`` instead of ``null``
 - Switch from Maven to Gradle for build management
 
 VectorGraphics2D 0.9.4 (unreleased)
 ===================================
 
-- Return valid graphics device configuration when calling getDeviceConfiguration() instead of null
+- Return valid graphics device configuration when calling
+  ``getDeviceConfiguration()`` instead of ``null``
 
 VectorGraphics2D 0.9.3 (2015-11-21)
 ===================================
