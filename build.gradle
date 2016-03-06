@@ -112,7 +112,11 @@ publishing {
         }
     }
 }
-tasks.findAll({ task -> task.name.startsWith('publish')}).each { publishTask -> publishTask.dependsOn(shrinkJar) }
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('publish')) {
+        task.dependsOn(shrinkJar)
+    }
+}
 
 /*
  * This method must not be named getVersion, because it would
