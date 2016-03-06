@@ -57,7 +57,7 @@ license {
     ext.email2 = "mseifert[at]error-reports.org"
 }
 
-task shrink(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
+task shrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     description = 'Uses ProGuard to reduce the code size of this project.'
     group = 'Build'
     // Configure ProGuard
@@ -92,7 +92,7 @@ apply plugin: 'maven-publish'
 publishing {
     publications {
         vectorgraphics2d(MavenPublication) {
-            from components.java
+            artifact shrinkJar.getOutJarFileCollection()[0]
             artifact sourceJar
             artifact javadocJar
             pom.withXml {
@@ -112,6 +112,7 @@ publishing {
         }
     }
 }
+tasks.findAll({ task -> task.name.startsWith('publish')}).each { publishTask -> publishTask.dependsOn(shrinkJar) }
 
 /*
  * This method must not be named getVersion, because it would
