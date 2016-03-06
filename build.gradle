@@ -92,7 +92,7 @@ apply plugin: 'maven-publish'
 publishing {
     publications {
         vectorgraphics2d(MavenPublication) {
-            artifact shrinkJar.getOutJarFileCollection()[0]
+            artifact shrinkJar.getOutJarFileCollection().getSingleFile()
             artifact sourceJar
             artifact javadocJar
             pom.withXml {
