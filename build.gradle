@@ -88,48 +88,68 @@ task javadocJar(type: Jar) {
     classifier 'javadoc'
 }
 
-apply plugin: 'maven-publish'
-publishing {
-    publications {
-        vectorgraphics2d(MavenPublication) {
-            artifact shrinkJar.getOutJarFileCollection().getSingleFile()
-            artifact sourceJar
-            artifact javadocJar
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('name', rootProject.name)
-                root.appendNode('description', description)
-                root.appendNode('url', website)
-                root.appendNode('inceptionYear', inceptionYear)
-                def developers = root.appendNode('developers')
-                def developer1 = developers.appendNode('developer')
-                developer1.appendNode('id', id1)
-                developer1.appendNode('name', owner1)
-                developer1.appendNode('email', email1)
-                def developer2 = developers.appendNode('developer')
-                developer2.appendNode('id', id2)
-                developer2.appendNode('name', owner2)
-                developer2.appendNode('email', email2)
-                def licenses = root.appendNode('licenses')
-                def license = licenses.appendNode('license')
-                license.appendNode('name', 'GNU Library or Lesser General Public License (LGPL)')
-                license.appendNode('url', 'http://www.gnu.org/licenses/lgpl.txt')
-                def scm = root.appendNode('scm')
-                scm.appendNode('connection', 'scm:git:git://github.com/eseifert/vectorgraphics2d.git')
-                scm.appendNode('developerConnection', 'scm:git:git@github.com:eseifert/vectorgraphics2d.git')
-                scm.appendNode('url', website)
-                def issueManagement = root.appendNode('issueManagement')
-                issueManagement.appendNode('system', 'GitHub Issues')
-                issueManagement.appendNode('url', website)
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+artifacts {
+    archives shrinkJar.getOutJarFileCollection().getSingleFile(), sourceJar, javadocJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name rootProject.name
+                packaging 'jar'
+                description project.description
+                url website
+                inceptionYear inceptionYear
+                licenses {
+                    license {
+                        name 'GNU Library or Lesser General Public License (LGPL)'
+                        url 'http://www.gnu.org/licenses/lgpl.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id id1
+                        name owner1
+                        email email1
+                    }
+                    developer {
+                        id id2
+                        name owner2
+                        email email2
+                    }
+                }
+                scm {
+                    connection 'scm:git:git://github.com/eseifert/vectorgraphics2d.git'
+                    developerConnection 'scm:git:git@github.com:eseifert/vectorgraphics2d.git'
+                    url website
+                }
+                issueManagement {
+                    system 'GitHub Issues'
+                    url website
+                }
             }
         }
     }
 }
-tasks.whenTaskAdded { task ->
-    if (task.name.startsWith('publish')) {
-        task.dependsOn(shrinkJar)
-    }
-}
+signArchives.dependsOn(shrinkJar)
 
 /*
  * This method must not be named getVersion, because it would
