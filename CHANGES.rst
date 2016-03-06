@@ -1,5 +1,5 @@
-VectorGraphics2D 0.10
-=====================
+VectorGraphics2D 0.10 (2016-03-06)
+==================================
 
 - Processing a stream of commands instead of directly mapping method calls
 - Return valid graphics device configuration when calling
