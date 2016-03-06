@@ -36,7 +36,7 @@ Include in your Maven project
 	<dependency>
 	    <groupId>de.erichseifert.vectorgraphics2d</groupId>
 	    <artifactId>VectorGraphics2D</artifactId>
-	    <version>0.9.3</version>
+	    <version>0.10</version>
 	</dependency>
 
 
@@ -45,4 +45,4 @@ Include in your sbt project
 
 .. code:: scala
 
-    libraryDependencies += "de.erichseifert.vectorgraphics2d" % "VectorGraphics2D" % "0.9.3"
+    libraryDependencies += "de.erichseifert.vectorgraphics2d" % "VectorGraphics2D" % "0.10"
