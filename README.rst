@@ -18,7 +18,7 @@ Features
 ========
 
 - Support for EPS, PDF, and SVG formats
-- Rendering of all geometric shapes provided by the ``java.awt.Graphics2D```` interface
+- Rendering of all geometric shapes provided by the ``java.awt.Graphics2D`` interface
 - Shapes and text can be made transparent (except in EPS)
 - Arbitrary clipping paths can be defined
 - Output of bitmap images
