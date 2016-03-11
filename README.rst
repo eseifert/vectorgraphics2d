@@ -1,5 +1,5 @@
 VectorGraphics2D
-================
+################
 
 VectorGraphics2D provides implementations of Java's ``Graphics2D`` interface and
 exports the graphics in various vector file formats.
@@ -13,7 +13,7 @@ Additional formats can be easily added.
 
 
 Features
---------
+========
 
 - Support for EPS, PDF, and SVG formats
 - Rendering of all geometric shapes provided by the java.awt.Graphics2D interface
@@ -27,9 +27,16 @@ Currently, most operations are supported, i.e. VectorGraphics2D is able to handl
 Some features are still missing, like text encodings, embedded fonts, or metadata support.
 Although its early stage VectorGraphics2D is already used successfully in several projects to export vector graphics.
 
+Usage
+=====
 
-Include in your Maven project
------------------------------
+Without build management system
+-------------------------------
+
+You can just add ``VectorGraphics2D-0.10.jar`` to the classpath of your project.
+
+Using VectorGraphics2D with Maven
+---------------------------------
 
 .. code:: xml
 
@@ -39,9 +46,17 @@ Include in your Maven project
 	    <version>0.10</version>
 	</dependency>
 
+Using GRAL with Gradle
+----------------------
 
-Include in your sbt project
----------------------------
+.. code:: groovy
+
+    dependencies {
+        compile group: 'de.erichseifert.vectorgraphics2d', name: 'VectorGraphics2D', version: '0.10'
+    }
+
+Using VectorGraphics2D with sbt
+-------------------------------
 
 .. code:: scala
 
