@@ -46,8 +46,8 @@ Using VectorGraphics2D with Maven
 	    <version>0.10</version>
 	</dependency>
 
-Using GRAL with Gradle
-----------------------
+Using VectorGraphics2D with Gradle
+----------------------------------
 
 .. code:: groovy
 
