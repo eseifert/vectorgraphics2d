@@ -1,4 +1,4 @@
-.. image:: https://eseifert.github.io/logos/VectorGraphics2D.png
+.. image:: https://eseifert.github.io/vectorgraphics2d/logo.png
 
 VectorGraphics2D
 ################
