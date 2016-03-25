@@ -1,5 +1,8 @@
 .. image:: https://eseifert.github.io/vectorgraphics2d/logo.png
 
+.. image:: https://travis-ci.org/eseifert/vectorgraphics2d.svg?branch=master
+    :target: https://travis-ci.org/eseifert/vectorgraphics2d
+
 VectorGraphics2D
 ################
 
