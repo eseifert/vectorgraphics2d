@@ -27,7 +27,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -101,8 +100,8 @@ public class SVGDocument extends SizedDocument {
 	private static final String PREFIX_CLIP = "clip";
 
 	// TODO Resolution settings
-	private static final double PX_PER_MM =
-			Toolkit.getDefaultToolkit().getScreenResolution()/25.4;
+	private static final double DPI = 72.0;
+	private static final double PX_PER_MM = DPI/25.4;
 	private static final String CHARSET = "UTF-8";
 
 	private final Stack<GraphicsState> states;
