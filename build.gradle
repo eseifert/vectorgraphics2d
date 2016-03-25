@@ -42,11 +42,11 @@ dependencies {
 buildscript {
     repositories {
         mavenCentral()
-        maven { url 'https://plugins.gradle.org/m2/' }
+        jcenter()
     }
     dependencies {
-        classpath(group: 'net.sf.proguard', name: 'proguard-gradle', version: '5.2.+')
-        classpath(group: 'gradle.plugin.nl.javadude.gradle.plugins', name: 'license-gradle-plugin', version: '0.12.1')
+        classpath 'net.sf.proguard:proguard-gradle:5.2.+'
+        classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.+'
     }
 }
 
