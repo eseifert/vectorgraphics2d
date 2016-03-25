@@ -92,12 +92,11 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 artifacts {
-    required { hasProperty('signing.keyId') && gradle.taskGraph.hasTask('uploadArchives') }
     archives shrinkJar.getOutJarFileCollection().getSingleFile(), sourceJar, javadocJar
 }
 
 signing {
-
+    required { hasProperty('signing.keyId') && gradle.taskGraph.hasTask('uploadArchives') }
     sign configurations.archives
 }
 
