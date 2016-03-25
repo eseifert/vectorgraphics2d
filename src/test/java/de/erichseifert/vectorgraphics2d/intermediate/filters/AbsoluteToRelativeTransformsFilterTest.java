@@ -40,6 +40,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
 public class AbsoluteToRelativeTransformsFilterTest {
@@ -54,10 +55,10 @@ public class AbsoluteToRelativeTransformsFilterTest {
 
 		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
 
-		assertThat(filter, allOf(
-				Matchers.<Command<?>>iterableWithSize(3),
-				not(hasItem(any(SetTransformCommand.class)))
-		));
+		Matcher<Iterable<Command<?>>> elem = Matchers.iterableWithSize(3);
+		Matcher<Iterable<? super SetTransformCommand>> matches = not(hasItem(any(SetTransformCommand.class)));
+
+		assertThat(filter, allOf(elem, matches));
 	}
 
 	@Test
