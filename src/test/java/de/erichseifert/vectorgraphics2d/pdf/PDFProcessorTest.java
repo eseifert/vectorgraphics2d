@@ -56,7 +56,7 @@ public class PDFProcessorTest {
 
 	@Test public void envelopeForEmptyDocument() throws IOException {
 		String result = process();
-		Template actual = new Template(result.split(EOL));
+		Template actual = new Template((Object[]) result.split(EOL));
 		Template expected = new Template(
 			HEADER,
 			"1 0 obj",

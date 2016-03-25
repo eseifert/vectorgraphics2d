@@ -82,7 +82,7 @@ public class EPSProcessorTest {
 
 	@Test public void envelopeForEmptyDocument() throws IOException {
 		String result = process();
-		Template actual = new Template(result.split(EOL));
+		Template actual = new Template((Object[]) result.split(EOL));
 		Template expected = new Template(HEADER);
 		assertTemplateEquals(expected, actual);
 	}
