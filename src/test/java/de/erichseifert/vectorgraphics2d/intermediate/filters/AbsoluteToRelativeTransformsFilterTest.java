@@ -55,10 +55,10 @@ public class AbsoluteToRelativeTransformsFilterTest {
 
 		AbsoluteToRelativeTransformsFilter filter = new AbsoluteToRelativeTransformsFilter(commands);
 
-		Matcher<Iterable<Command<?>>> elem = Matchers.iterableWithSize(3);
+		Matcher<Iterable<? extends Command<?>>> elems = Matchers.iterableWithSize(3);
 		Matcher<Iterable<? super SetTransformCommand>> matches = not(hasItem(any(SetTransformCommand.class)));
 
-		assertThat(filter, allOf(elem, matches));
+		assertThat(filter, allOf(elems, (Matcher<Iterable<? extends Command<?>>>) matches));
 	}
 
 	@Test
