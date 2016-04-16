@@ -262,9 +262,9 @@ public class EPSDocument extends SizedDocument {
 		// TODO Handle transparency
 		if (c.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
 			float[] components = c.getComponents(null);
-			return String.valueOf(components[0]) + " " + String.valueOf(components[1]) + " " + String.valueOf(components[2]) + " " + String.valueOf(components[3]) + " cmyk";
+			return components[0] + " " + components[1] + " " + components[2] + " " + components[3] + " cmyk";
 		} else {
-			return String.valueOf(c.getRed()/255.0) + " " + c.getGreen()/255.0 + " " + c.getBlue()/255.0 + " rgb";
+			return c.getRed()/255.0 + " " + c.getGreen()/255.0 + " " + c.getBlue()/255.0 + " rgb";
 		}
 	}
 
