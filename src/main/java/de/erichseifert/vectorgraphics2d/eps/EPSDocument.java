@@ -258,13 +258,13 @@ public class EPSDocument extends SizedDocument {
 		}
 	}
 
-	private static String getOutput(Color c) {
+	private static String getOutput(Color color) {
 		// TODO Handle transparency
-		if (c.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
-			float[] components = c.getComponents(null);
-			return components[0] + " " + components[1] + " " + components[2] + " " + components[3] + " cmyk";
+		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
+			float[] cmyk = color.getComponents(null);
+			return cmyk[0] + " " + cmyk[1] + " " + cmyk[2] + " " + cmyk[3] + " cmyk";
 		} else {
-			return c.getRed()/255.0 + " " + c.getGreen()/255.0 + " " + c.getBlue()/255.0 + " rgb";
+			return color.getRed()/255.0 + " " + color.getGreen()/255.0 + " " + color.getBlue()/255.0 + " rgb";
 		}
 	}
 
