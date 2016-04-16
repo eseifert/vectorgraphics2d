@@ -42,6 +42,7 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -262,9 +263,11 @@ public class EPSDocument extends SizedDocument {
 		// TODO Handle transparency
 		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
 			float[] cmyk = color.getComponents(null);
-			return cmyk[0] + " " + cmyk[1] + " " + cmyk[2] + " " + cmyk[3] + " cmyk";
+			return String.format((Locale) null, "%f %f %f %f cmyk",
+					cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
 		} else {
-			return color.getRed()/255.0 + " " + color.getGreen()/255.0 + " " + color.getBlue()/255.0 + " rgb";
+			return String.format((Locale) null, "%f %f %f rgb",
+					color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
 		}
 	}
 
