@@ -27,6 +27,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -432,8 +433,16 @@ public class SVGDocument extends SizedDocument {
 	}
 
 	private static String getOutput(Color color) {
-		return String.format((Locale) null, "rgb(%d,%d,%d)",
-				color.getRed(), color.getGreen(), color.getBlue());
+		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
+			float[] cmyk = color.getComponents(null);
+			return String.format((Locale) null,
+					"rgb(%d,%d,%d) icc-color(Generic-CMYK-profile,%f,%f,%f,%f)",
+					color.getRed(), color.getGreen(), color.getBlue(),
+					cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
+		} else {
+			return String.format((Locale) null, "rgb(%d,%d,%d)",
+					color.getRed(), color.getGreen(), color.getBlue());
+		}
 	}
 
 	private static String getOutput(Shape shape) {
