@@ -27,6 +27,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
@@ -456,13 +457,25 @@ public class PDFDocument extends SizedDocument {
 		}
 	}
 
-	private static String getOutput(Color c) {
+	private static String getOutput(Color color) {
 		StringBuilder out = new StringBuilder();
-		String r = serialize(c.getRed()/255.0);
-		String g = serialize(c.getGreen()/255.0);
-		String b = serialize(c.getBlue()/255.0);
-		out.append(r).append(" ").append(g).append(" ").append(b).append(" rg ")
-			.append(r).append(" ").append(g).append(" ").append(b).append(" RG");
+		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
+			float[] cmyk = color.getComponents(null);
+			out.append(serialize(cmyk[0])).append(" ")
+				.append(serialize(cmyk[1])).append(" ")
+				.append(serialize(cmyk[2])).append(" ")
+				.append(serialize(cmyk[3])).append(" k ")
+				.append(serialize(cmyk[0])).append(" ")
+				.append(serialize(cmyk[1])).append(" ")
+				.append(serialize(cmyk[2])).append(" ")
+				.append(serialize(cmyk[3])).append(" K");
+		} else {
+			String r = serialize(color.getRed()/255.0);
+			String g = serialize(color.getGreen()/255.0);
+			String b = serialize(color.getBlue()/255.0);
+			out.append(r).append(" ").append(g).append(" ").append(b).append(" rg ")
+				.append(r).append(" ").append(g).append(" ").append(b).append(" RG");
+		}
 		return out.toString();
 	}
 
