@@ -458,25 +458,21 @@ public class PDFDocument extends SizedDocument {
 	}
 
 	private static String getOutput(Color color) {
-		StringBuilder out = new StringBuilder();
 		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
 			float[] cmyk = color.getComponents(null);
-			out.append(serialize(cmyk[0])).append(" ")
-				.append(serialize(cmyk[1])).append(" ")
-				.append(serialize(cmyk[2])).append(" ")
-				.append(serialize(cmyk[3])).append(" k ")
-				.append(serialize(cmyk[0])).append(" ")
-				.append(serialize(cmyk[1])).append(" ")
-				.append(serialize(cmyk[2])).append(" ")
-				.append(serialize(cmyk[3])).append(" K");
+			String c = serialize(cmyk[0]);
+			String m = serialize(cmyk[1]);
+			String y = serialize(cmyk[2]);
+			String k = serialize(cmyk[3]);
+			return c + " " + m + " " + y + " " + k + " k " +
+					c + " " + m + " " + y + " " + k + " K";
 		} else {
 			String r = serialize(color.getRed()/255.0);
 			String g = serialize(color.getGreen()/255.0);
 			String b = serialize(color.getBlue()/255.0);
-			out.append(r).append(" ").append(g).append(" ").append(b).append(" rg ")
-				.append(r).append(" ").append(g).append(" ").append(b).append(" RG");
+			return r + " " + g + " " + b + " rg " +
+					r + " " + g + " " + b + " RG";
 		}
-		return out.toString();
 	}
 
 	private static String getOutput(Shape s) {
