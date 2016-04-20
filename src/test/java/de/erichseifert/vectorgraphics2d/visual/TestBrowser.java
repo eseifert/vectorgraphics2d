@@ -204,6 +204,7 @@ public class TestBrowser extends JFrame {
 		testCases = new ArrayList<TestCase>();
 		try {
 			testCases.add(new ColorTest());
+			testCases.add(new CmykColorTest());
 			testCases.add(new StrokeTest());
 			testCases.add(new ShapesTest());
 			testCases.add(new FontTest());
