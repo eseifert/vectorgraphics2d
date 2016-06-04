@@ -31,7 +31,7 @@ import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
  * in the <i>Portable Document Format</i> (PDF).
  */
 public class PDFGraphics2D extends ProcessingPipeline {
-	private final Processor processor;
+	private final PDFProcessor processor;
 
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
@@ -43,8 +43,22 @@ public class PDFGraphics2D extends ProcessingPipeline {
 	 * @param height Height.
 	 */
 	public PDFGraphics2D(double x, double y, double width, double height) {
+		this(x, y, width, height, false);
+	}
+
+	/**
+	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
+	 * commands to PDF data. The document dimensions must be specified as
+	 * parameters.
+	 * @param x Left offset.
+	 * @param y Top offset
+	 * @param width Width.
+	 * @param height Height.
+	 * @param compressed Compression enabled.
+	 */
+	public PDFGraphics2D(double x, double y, double width, double height, boolean compressed) {
 		super(x, y, width, height);
-		processor = new PDFProcessor();
+		processor = new PDFProcessor(compressed);
 
 		// TODO: Default graphics state does not need to be printed in the document
 		setColor(Color.BLACK);
@@ -54,5 +68,13 @@ public class PDFGraphics2D extends ProcessingPipeline {
 	@Override
 	protected Processor getProcessor() {
 		return processor;
+	}
+
+	/**
+	 * Returns whether the current PDF document is compressed.
+	 * @return {@code true} if the document is compressed, {@code false} otherwise.
+	 */
+	public boolean isCompressed() {
+		return processor.isCompressed();
 	}
 }

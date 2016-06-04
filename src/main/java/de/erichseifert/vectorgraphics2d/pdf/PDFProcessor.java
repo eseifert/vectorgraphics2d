@@ -30,17 +30,34 @@ import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGrouping
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class PDFProcessor implements Processor {
+	private final boolean compressed;
+
+	/**
+	 * Initializes a PDFProcessor with the specified compression.
+	 * @param compressed {@code true}, if compression is enabled, {@code false} otherwise.
+	 */
+	public PDFProcessor(boolean compressed) {
+		this.compressed = compressed;
+	}
 
 	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
 		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
-		PDFDocument doc = new PDFDocument(pageSize);
+		PDFDocument doc = new PDFDocument(pageSize, isCompressed());
 		for (Command<?> command : filtered) {
 			doc.handle(command);
 		}
 		doc.close();
 		return doc;
+	}
+
+	/**
+	 * Returns whether the current PDF document is compressed.
+	 * @return {@code true} if the document is compressed, {@code false} otherwise.
+	 */
+	public boolean isCompressed() {
+		return this.compressed;
 	}
 }
 

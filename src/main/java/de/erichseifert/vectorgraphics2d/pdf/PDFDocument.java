@@ -106,10 +106,12 @@ public class PDFDocument extends SizedDocument {
 	private final Stack<GraphicsState> states;
 	private boolean transformed;
 
-	private boolean compressed;
+	private final boolean compressed;
 
-	public PDFDocument(PageSize pageSize) {
+	public PDFDocument(PageSize pageSize, boolean compressed) {
 		super(pageSize);
+
+		this.compressed = compressed;
 
 		states = new Stack<GraphicsState>();
 		states.push(new GraphicsState());
@@ -668,8 +670,8 @@ public class PDFDocument extends SizedDocument {
 		super.close();
 	}
 
-	public void setCompressed(boolean compressed) {
-		this.compressed = compressed;
+	public boolean isCompressed() {
+		return this.compressed;
 	}
 }
 
