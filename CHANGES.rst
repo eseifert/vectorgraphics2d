@@ -1,3 +1,10 @@
+VectorGraphics2D 0.11 (2016-06-04)
+==================================
+
+- Allow headless build
+- Added support for CMYK color space
+- Added optional compression to PDFGraphics2D
+
 VectorGraphics2D 0.10 (2016-03-06)
 ==================================
 

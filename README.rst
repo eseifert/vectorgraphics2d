@@ -38,7 +38,7 @@ Usage
 Without build management system
 -------------------------------
 
-You can just add ``VectorGraphics2D-0.10.jar`` to the classpath of your project.
+You can just add ``VectorGraphics2D-0.11.jar`` to the classpath of your project.
 
 Using VectorGraphics2D with Maven
 ---------------------------------
@@ -48,7 +48,7 @@ Using VectorGraphics2D with Maven
 	<dependency>
 	    <groupId>de.erichseifert.vectorgraphics2d</groupId>
 	    <artifactId>VectorGraphics2D</artifactId>
-	    <version>0.10</version>
+	    <version>0.11</version>
 	</dependency>
 
 Using VectorGraphics2D with Gradle
@@ -57,7 +57,7 @@ Using VectorGraphics2D with Gradle
 .. code:: groovy
 
     dependencies {
-        compile group: 'de.erichseifert.vectorgraphics2d', name: 'VectorGraphics2D', version: '0.10'
+        compile group: 'de.erichseifert.vectorgraphics2d', name: 'VectorGraphics2D', version: '0.11'
     }
 
 Using VectorGraphics2D with sbt
@@ -65,4 +65,4 @@ Using VectorGraphics2D with sbt
 
 .. code:: scala
 
-    libraryDependencies += "de.erichseifert.vectorgraphics2d" % "VectorGraphics2D" % "0.10"
+    libraryDependencies += "de.erichseifert.vectorgraphics2d" % "VectorGraphics2D" % "0.11"
