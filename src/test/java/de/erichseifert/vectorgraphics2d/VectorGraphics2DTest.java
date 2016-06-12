@@ -112,4 +112,14 @@ public class VectorGraphics2DTest {
 
 		assertThat(vg2d.getClip(), is(nullValue()));
 	}
+
+	@Test
+	public void testSetBackgroundSetsBackgroundColor() {
+		VectorGraphics2D vg2d = new VectorGraphics2D();
+		Color backgroundColor = Color.DARK_GRAY;
+
+		vg2d.setBackground(backgroundColor);
+
+		assertThat(vg2d.getBackground(), is(backgroundColor));
+	}
 }
