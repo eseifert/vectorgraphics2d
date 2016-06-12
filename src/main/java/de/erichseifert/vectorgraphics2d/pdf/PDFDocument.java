@@ -273,7 +273,7 @@ public class PDFDocument extends SizedDocument {
 		return imageObject;
 	}
 
-	public void write(OutputStream out) throws IOException {
+	public void writeTo(OutputStream out) throws IOException {
 		FormattingWriter o = new FormattingWriter(out, CHARSET, EOL);
 
 		o.writeln(HEADER);

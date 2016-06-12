@@ -21,11 +21,11 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import de.erichseifert.vectorgraphics2d.util.PageSize;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * Base class for convenience implementations of {@code VectorGraphics2D}.
@@ -52,7 +52,7 @@ public abstract class ProcessingPipeline extends VectorGraphics2D {
 
 	public void writeTo(OutputStream out) throws IOException {
 		Document doc = getProcessor().process(getCommands(), getPageSize());
-		doc.write(out);
+		doc.writeTo(out);
 	}
 
 	public byte[] getBytes() {

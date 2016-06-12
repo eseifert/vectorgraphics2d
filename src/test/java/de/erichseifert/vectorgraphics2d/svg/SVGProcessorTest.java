@@ -54,7 +54,7 @@ public class SVGProcessorTest {
 			this.commands.add(command);
 		}
 		Document processed = processor.process(this.commands, PAGE_SIZE);
-		processed.write(bytes);
+		processed.writeTo(bytes);
 		return bytes.toString("UTF-8");
 	}
 

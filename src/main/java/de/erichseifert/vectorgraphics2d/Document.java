@@ -27,7 +27,7 @@ import java.io.OutputStream;
 import de.erichseifert.vectorgraphics2d.intermediate.CommandHandler;
 
 public interface Document extends CommandHandler {
-	void write(OutputStream out) throws IOException;
+	void writeTo(OutputStream out) throws IOException;
 	void close();
 }
 

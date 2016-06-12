@@ -181,7 +181,7 @@ public class SVGDocument extends SizedDocument {
 		root.setAttribute("viewBox", DataUtils.join(" ", new double[] {x, y, width, height}));
 	}
 
-	public void write(OutputStream out) throws IOException {
+	public void writeTo(OutputStream out) throws IOException {
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		try {
 			Transformer transformer = transformerFactory.newTransformer();
@@ -205,7 +205,7 @@ public class SVGDocument extends SizedDocument {
 	public String toString() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
-			write(out);
+			writeTo(out);
 			return out.toString(CHARSET);
 		} catch (IOException e) {
 			return "";

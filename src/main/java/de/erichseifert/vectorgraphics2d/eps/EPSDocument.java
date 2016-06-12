@@ -144,7 +144,7 @@ public class EPSDocument extends SizedDocument {
 		));
 	}
 
-	public void write(OutputStream out) throws IOException {
+	public void writeTo(OutputStream out) throws IOException {
 		OutputStreamWriter o = new OutputStreamWriter(out, CHARSET);
 		for (String element : elements) {
 			if (element == null) {
