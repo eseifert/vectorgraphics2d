@@ -149,20 +149,11 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	@Override
 	public void clip(Shape s) {
-		_debug_validate_graphics.clip(s);
-		Shape clipOld = getClip();
-
 		Shape clip = getClip();
 		if ((clip != null) && (s != null)) {
 			s = intersectShapes(clip, s);
 		}
 		setClip(s);
-
-		Shape clipNew = getClip();
-		if ((clipNew == null || _debug_validate_graphics.getClip() == null) && clipNew != _debug_validate_graphics.getClip())
-			System.err.println("clip() validation failed: clip("+clipOld+", "+s+") => "+clipNew+" != "+_debug_validate_graphics.getClip());
-		if (clipNew != null && !GraphicsUtils.equals(clipNew, _debug_validate_graphics.getClip()))
-			System.err.println("clip() validation failed: clip("+clipOld+", "+s+") => "+clipNew+" != "+_debug_validate_graphics.getClip());
 	}
 
 	private static Shape intersectShapes(Shape s1, Shape s2) {
