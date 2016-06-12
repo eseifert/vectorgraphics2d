@@ -194,8 +194,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 			return;
 		}
 		emit(new DrawShapeCommand(s));
-
-		_debug_validate_graphics.draw(s);
 	}
 
 	@Override
@@ -273,8 +271,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 			fill(s);
 		} else {
 			emit(new DrawStringCommand(str, x, y));
-
-			_debug_validate_graphics.drawString(str, x, y);
 		}
 
 	}
@@ -302,8 +298,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 			return;
 		}
 		emit(new FillShapeCommand(s));
-
-		_debug_validate_graphics.fill(s);
 	}
 
 	@Override
