@@ -19,62 +19,40 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with VectorGraphics2D.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.erichseifert.vectorgraphics2d;
+package de.erichseifert.vectorgraphics2d.svg;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 
-import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
+import de.erichseifert.vectorgraphics2d.ProcessingPipeline;
+import de.erichseifert.vectorgraphics2d.Processor;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
- * in the <i>Portable Document Format</i> (PDF).
+ * in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
-public class PDFGraphics2D extends ProcessingPipeline {
-	private final PDFProcessor processor;
+@SuppressWarnings("restriction")
+public class SVGGraphics2D extends ProcessingPipeline {
+	private final Processor processor;
 
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
-	 * commands to PDF data. The document dimensions must be specified as
+	 * commands to SVG data. The document dimensions must be specified as
 	 * parameters.
 	 * @param x Left offset.
 	 * @param y Top offset
 	 * @param width Width.
 	 * @param height Height.
 	 */
-	public PDFGraphics2D(double x, double y, double width, double height) {
-		this(x, y, width, height, false);
-	}
-
-	/**
-	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
-	 * commands to PDF data. The document dimensions must be specified as
-	 * parameters.
-	 * @param x Left offset.
-	 * @param y Top offset
-	 * @param width Width.
-	 * @param height Height.
-	 * @param compressed Compression enabled.
-	 */
-	public PDFGraphics2D(double x, double y, double width, double height, boolean compressed) {
+	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
-		processor = new PDFProcessor(compressed);
+		processor = new SVGProcessor();
 
-		// TODO: Default graphics state does not need to be printed in the document
+		// Make graphics state match default state of Graphics2D
 		setColor(Color.BLACK);
-		setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, null, 0f));
 	}
 
 	@Override
 	protected Processor getProcessor() {
 		return processor;
-	}
-
-	/**
-	 * Returns whether the current PDF document is compressed.
-	 * @return {@code true} if the document is compressed, {@code false} otherwise.
-	 */
-	public boolean isCompressed() {
-		return processor.isCompressed();
 	}
 }

@@ -33,9 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
 
-import de.erichseifert.vectorgraphics2d.EPSGraphics2D;
-import de.erichseifert.vectorgraphics2d.PDFGraphics2D;
-import de.erichseifert.vectorgraphics2d.SVGGraphics2D;
+import de.erichseifert.vectorgraphics2d.eps.EPSGraphics2D;
+import de.erichseifert.vectorgraphics2d.pdf.PDFGraphics2D;
+import de.erichseifert.vectorgraphics2d.svg.SVGGraphics2D;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
