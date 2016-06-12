@@ -85,13 +85,14 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.ShearCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * Base for classes that want to implement vector export.
  * @author Erich Seifert
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
-public abstract class VectorGraphics2D extends Graphics2D implements Cloneable, Processor {
+public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 	/** List of operations that were performed on this graphics object and its
 	 * derived objects. */
 	private final List<Command<?>> commands;
@@ -796,8 +797,6 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable, 
 		return disposed;
 	}
 
-	protected Processor getProcessor() {
-		return this;
-	}
+	protected abstract Document process(Iterable<Command<?>> commands, PageSize pageSize);
 }
 

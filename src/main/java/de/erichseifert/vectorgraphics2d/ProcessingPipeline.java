@@ -49,7 +49,7 @@ public abstract class ProcessingPipeline extends VectorGraphics2D {
 	}
 
 	public void writeTo(OutputStream out) throws IOException {
-		Document doc = getProcessor().process(getCommands(), getPageSize());
+		Document doc = process(getCommands(), getPageSize());
 		doc.writeTo(out);
 	}
 
