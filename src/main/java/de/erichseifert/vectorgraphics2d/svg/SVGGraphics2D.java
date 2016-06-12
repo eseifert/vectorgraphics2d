@@ -23,17 +23,20 @@ package de.erichseifert.vectorgraphics2d.svg;
 
 import java.awt.Color;
 
+import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.ProcessingPipeline;
 import de.erichseifert.vectorgraphics2d.Processor;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
 @SuppressWarnings("restriction")
-public class SVGGraphics2D extends ProcessingPipeline {
-	private final Processor processor;
-
+public class SVGGraphics2D extends ProcessingPipeline implements Processor {
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
 	 * commands to SVG data. The document dimensions must be specified as
@@ -45,14 +48,24 @@ public class SVGGraphics2D extends ProcessingPipeline {
 	 */
 	public SVGGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
-		processor = new SVGProcessor();
-
 		// Make graphics state match default state of Graphics2D
 		setColor(Color.BLACK);
 	}
 
 	@Override
 	protected Processor getProcessor() {
-		return processor;
+		return this;
+	}
+
+	@Override
+	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(commands);
+		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(shapesAsImages);
+		SVGDocument doc = new SVGDocument(pageSize);
+		for (Command<?> command : filtered) {
+			doc.handle(command);
+		}
+		doc.close();
+		return doc;
 	}
 }
