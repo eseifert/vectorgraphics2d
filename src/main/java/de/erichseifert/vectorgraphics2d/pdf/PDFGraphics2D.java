@@ -43,27 +43,21 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
 	 * commands to PDF data. The document dimensions must be specified as
 	 * parameters.
-	 * @param x Left offset.
-	 * @param y Top offset
-	 * @param width Width.
-	 * @param height Height.
+	 * @param pageSize Document size.
 	 */
-	public PDFGraphics2D(double x, double y, double width, double height) {
-		this(x, y, width, height, false);
+	public PDFGraphics2D(PageSize pageSize) {
+		this(pageSize, false);
 	}
 
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
 	 * commands to PDF data. The document dimensions must be specified as
 	 * parameters.
-	 * @param x Left offset.
-	 * @param y Top offset
-	 * @param width Width.
-	 * @param height Height.
+	 * @param pageSize Document size.
 	 * @param compressed Compression enabled.
 	 */
-	public PDFGraphics2D(double x, double y, double width, double height, boolean compressed) {
-		super(x, y, width, height);
+	public PDFGraphics2D(PageSize pageSize, boolean compressed) {
+		super(pageSize);
 		this.compressed = compressed;
 
 		// TODO: Default graphics state does not need to be printed in the document

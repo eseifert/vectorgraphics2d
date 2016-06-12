@@ -40,13 +40,10 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
 	 * commands to SVG data. The document dimensions must be specified as
 	 * parameters.
-	 * @param x Left offset.
-	 * @param y Top offset
-	 * @param width Width.
-	 * @param height Height.
+	 * @param pageSize Document size.
 	 */
-	public SVGGraphics2D(double x, double y, double width, double height) {
-		super(x, y, width, height);
+	public SVGGraphics2D(PageSize pageSize) {
+		super(pageSize);
 		// Make graphics state match default state of Graphics2D
 		setColor(Color.BLACK);
 	}

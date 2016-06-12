@@ -60,11 +60,11 @@ public abstract class TestCase {
 		int height = 150;
 		pageSize = new PageSize(0.0, 0.0, width, height);
 
-		epsGraphics = new EPSGraphics2D(0, 0, width, height);
+		epsGraphics = new EPSGraphics2D(pageSize);
 		draw(epsGraphics);
-		pdfGraphics = new PDFGraphics2D(0, 0, width, height);
+		pdfGraphics = new PDFGraphics2D(pageSize);
 		draw(pdfGraphics);
-		svgGraphics = new SVGGraphics2D(0, 0, width, height);
+		svgGraphics = new SVGGraphics2D(pageSize);
 		draw(svgGraphics);
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

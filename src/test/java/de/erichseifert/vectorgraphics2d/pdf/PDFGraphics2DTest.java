@@ -41,7 +41,7 @@ public class PDFGraphics2DTest {
 	private static final String FOOTER = "%%EOF";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final PDFGraphics2D processor = new PDFGraphics2D(PAGE_SIZE.getX(), PAGE_SIZE.getY(), PAGE_SIZE.getWidth(), PAGE_SIZE.getHeight(), false);
+	private final PDFGraphics2D processor = new PDFGraphics2D(PAGE_SIZE, false);
 	private final List<Command<?>> commands = new LinkedList<Command<?>>();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 

@@ -109,8 +109,8 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	private GraphicsState state;
 
-	public VectorGraphics2D(double x, double y, double width, double height) {
-		pageSize = new PageSize(x, y, width, height);
+	public VectorGraphics2D(PageSize pageSize) {
+		this.pageSize = pageSize;
 		commands = new LinkedList<Command<?>>();
 		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
