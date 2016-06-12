@@ -104,8 +104,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	private GraphicsState state;
 
-	private Graphics2D _debug_validate_graphics;
-
 	public VectorGraphics2D() {
 		commands = new LinkedList<Command<?>>();
 		emit(new CreateCommand(this));
@@ -120,10 +118,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		fontRenderContext = new FontRenderContext(null, false, true);
 
 		state = new GraphicsState();
-
-		BufferedImage _debug_validate_bimg = new BufferedImage(200, 250, BufferedImage.TYPE_INT_ARGB);
-		_debug_validate_graphics = (Graphics2D) _debug_validate_bimg.getGraphics();
-		_debug_validate_graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	}
 
 	@Override
@@ -346,10 +340,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		hitShape = state.transformShape(hitShape);
 		boolean hit = hitShape.intersects(rect);
-
-		boolean _debug_hit = _debug_validate_graphics.hit(rect, s, onStroke);
-		if (hit != _debug_hit) System.err.println("setClip() validation failed");
-
 		return hit;
 	}
 
@@ -360,9 +350,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetBackgroundCommand(color));
 		state.setBackground(color);
-
-		_debug_validate_graphics.setBackground(color);
-		if (!getBackground().equals(_debug_validate_graphics.getBackground())) System.err.println("setBackground() validation failed");
 	}
 
 	@Override
@@ -375,9 +362,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetCompositeCommand(comp));
 		state.setComposite(comp);
-
-		_debug_validate_graphics.setComposite(comp);
-		if (!getComposite().equals(_debug_validate_graphics.getComposite())) System.err.println("setComposite() validation failed");
 	}
 
 	@Override
@@ -394,9 +378,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetPaintCommand(paint));
 		state.setPaint(paint);
-
-		_debug_validate_graphics.setPaint(paint);
-		if (!getPaint().equals(_debug_validate_graphics.getPaint())) System.err.println("setPaint() validation failed");
 	}
 
 	@Override
@@ -429,9 +410,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetStrokeCommand(s));
 		state.setStroke(s);
-
-		_debug_validate_graphics.setStroke(s);
-		if (!getStroke().equals(_debug_validate_graphics.getStroke())) System.err.println("setStroke() validation failed");
 	}
 
 	@Override
@@ -446,9 +424,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetTransformCommand(tx));
 		state.setTransform(tx);
-
-		_debug_validate_graphics.setTransform(tx);
-		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("setTransform() validation failed");
 	}
 
 	@Override
@@ -460,9 +435,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		txNew.shear(shx, shy);
 		emit(new ShearCommand(shx, shy));
 		state.setTransform(txNew);
-
-		_debug_validate_graphics.shear(shx, shy);
-		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("shear() validation failed");
 	}
 
 	@Override
@@ -474,9 +446,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		txNew.concatenate(tx);
 		emit(new TransformCommand(tx));
 		state.setTransform(txNew);
-
-		_debug_validate_graphics.transform(tx);
-		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("transform() validation failed");
 	}
 
 	@Override
@@ -493,9 +462,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		txNew.translate(tx, ty);
 		emit(new TranslateCommand(tx, ty));
 		state.setTransform(txNew);
-
-		_debug_validate_graphics.translate(tx, ty);
-		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("translate() validation failed");
 	}
 
 	@Override
@@ -518,14 +484,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 		emit(new RotateCommand(theta, x, y));
 		state.setTransform(txNew);
-
-		if (x == 0.0 && y == 0.0) {
-			_debug_validate_graphics.rotate(theta);
-			if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("rotate(theta) validation failed");
-		} else {
-			_debug_validate_graphics.rotate(theta, x, y);
-			if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("rotate(theta,x,y) validation failed");
-		}
 	}
 
 	@Override
@@ -537,9 +495,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		txNew.scale(sx, sy);
 		emit(new ScaleCommand(sx, sy));
 		state.setTransform(txNew);
-
-		_debug_validate_graphics.scale(sx, sy);
-		if (!getTransform().equals(_debug_validate_graphics.getTransform())) System.err.println("scale() validation failed");
 	}
 
 	@Override
@@ -573,11 +528,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
-
-		if (clone != null) {
-			clone._debug_validate_graphics = (Graphics2D) _debug_validate_graphics.create();
-		}
-
 		return clone;
 	}
 
@@ -590,8 +540,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		emit(new DisposeCommand(this));
 
 		disposed = true;
-
-		_debug_validate_graphics.dispose();
 	}
 
 	@Override
@@ -640,9 +588,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 
 		emit(new DrawImageCommand(img, imageWidth, imageHeight, x, y, width, height));
-
-		_debug_validate_graphics.drawImage(img, x, y, width, height, bgcolor, observer);
-
 		return true;
 	}
 
@@ -795,14 +740,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetClipCommand(clip));
 		state.setClip(clip);
-
-		_debug_validate_graphics.setClip(clip);
-		if (getClip() == null) {
-			if (_debug_validate_graphics.getClip() != null)
-				System.err.printf("setClip() validation failed: clip=null, validation=%s\n", _debug_validate_graphics.getClip());
-		} else if (!GraphicsUtils.equals(getClip(), _debug_validate_graphics.getClip())) {
-			System.err.printf("setClip() validation failed: clip=%s, validation=%s\n", getClip(), _debug_validate_graphics.getClip());
-		}
 	}
 
 	@Override
@@ -818,9 +755,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		emit(new SetColorCommand(c));
 		state.setColor(c);
 		state.setPaint(c);
-
-		_debug_validate_graphics.setColor(c);
-		if (!getColor().equals(_debug_validate_graphics.getColor())) System.err.println("setColor() validation failed");
 	}
 
 	@Override
@@ -830,16 +764,11 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetFontCommand(font));
 		state.setFont(font);
-
-		_debug_validate_graphics.setFont(font);
-		if (!getFont().equals(_debug_validate_graphics.getFont())) System.err.println("setFont() validation failed");
 	}
 
 	@Override
 	public void setPaintMode() {
 		setComposite(AlphaComposite.SrcOver);
-
-		_debug_validate_graphics.setPaintMode();
 	}
 
 	public Color getXORMode() {
@@ -853,8 +782,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		emit(new SetXORModeCommand(c1));
 		state.setXorMode(c1);
-
-		_debug_validate_graphics.setXORMode(c1);
 	}
 
 	private void emit(Command<?> command) {
