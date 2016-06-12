@@ -24,15 +24,18 @@ package de.erichseifert.vectorgraphics2d.eps;
 import java.awt.BasicStroke;
 import java.awt.Color;
 
+import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.ProcessingPipeline;
 import de.erichseifert.vectorgraphics2d.Processor;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Encapsulated PostScript®</i> (EPS) format.
  */
-public class EPSGraphics2D extends ProcessingPipeline {
-	private final Processor processor;
+public class EPSGraphics2D extends ProcessingPipeline implements Processor {
 
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
@@ -45,7 +48,6 @@ public class EPSGraphics2D extends ProcessingPipeline {
 	 */
 	public EPSGraphics2D(double x, double y, double width, double height) {
 		super(x, y, width, height);
-		processor = new EPSProcessor();
 		/*
 		 * The following are the default settings for the graphics state in an EPS file.
 		 * Although they currently appear in the document output, they do not have to be set explicitly.
@@ -57,6 +59,20 @@ public class EPSGraphics2D extends ProcessingPipeline {
 
 	@Override
 	protected Processor getProcessor() {
-		return processor;
+		return this;
+	}
+
+	@Override
+	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+		// TODO Apply rotate(theta,x,y) => translate-rotate-translate filter
+		// TODO Apply image transparency => image mask filter
+		// TODO Apply optimization filter
+		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
+		EPSDocument doc = new EPSDocument(pageSize);
+		for (Command<?> command : paintedShapeAsImageFilter) {
+			doc.handle(command);
+		}
+		doc.close();
+		return doc;
 	}
 }

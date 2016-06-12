@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	EPSProcessorTest.class
+	EPSGraphics2DTest.class
 })
 public class EPSTests {
 }

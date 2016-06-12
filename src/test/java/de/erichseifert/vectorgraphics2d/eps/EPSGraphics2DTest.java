@@ -35,7 +35,7 @@ import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
-public class EPSProcessorTest {
+public class EPSGraphics2DTest {
 	private static final String EOL = "\n";
 	private static final Object[] HEADER = {
 		"%!PS-Adobe-3.0 EPSF-3.0",
@@ -68,7 +68,7 @@ public class EPSProcessorTest {
 	};
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final EPSProcessor processor = new EPSProcessor();
+	private final EPSGraphics2D epsGraphics = new EPSGraphics2D(PAGE_SIZE.x, PAGE_SIZE.y, PAGE_SIZE.width, PAGE_SIZE.height);
 	private final List<Command<?>> commands = new LinkedList<Command<?>>();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
@@ -76,7 +76,7 @@ public class EPSProcessorTest {
 		for (Command<?> command : commands) {
 			this.commands.add(command);
 		}
-		Document processed = processor.process(this.commands, PAGE_SIZE);
+		Document processed = epsGraphics.process(this.commands, PAGE_SIZE);
 		processed.writeTo(bytes);
 		return bytes.toString("ISO-8859-1");
 	}
