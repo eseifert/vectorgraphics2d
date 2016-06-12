@@ -49,7 +49,7 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+	protected Document process(Iterable<Command<?>> commands, PageSize pageSize) {
 		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(commands);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(shapesAsImages);
 		SVGDocument doc = new SVGDocument(pageSize);

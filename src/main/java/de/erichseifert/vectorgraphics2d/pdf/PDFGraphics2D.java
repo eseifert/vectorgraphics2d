@@ -74,7 +74,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+	protected Document process(Iterable<Command<?>> commands, PageSize pageSize) {
 		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);

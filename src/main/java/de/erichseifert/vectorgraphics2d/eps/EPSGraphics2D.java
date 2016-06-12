@@ -54,7 +54,7 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+	protected Document process(Iterable<Command<?>> commands, PageSize pageSize) {
 		// TODO Apply rotate(theta,x,y) => translate-rotate-translate filter
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
