@@ -25,7 +25,6 @@ import java.awt.Color;
 
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.ProcessingPipeline;
-import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
@@ -36,7 +35,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
 @SuppressWarnings("restriction")
-public class SVGGraphics2D extends ProcessingPipeline implements Processor {
+public class SVGGraphics2D extends ProcessingPipeline {
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
 	 * commands to SVG data. The document dimensions must be specified as
@@ -50,11 +49,6 @@ public class SVGGraphics2D extends ProcessingPipeline implements Processor {
 		super(x, y, width, height);
 		// Make graphics state match default state of Graphics2D
 		setColor(Color.BLACK);
-	}
-
-	@Override
-	protected Processor getProcessor() {
-		return this;
 	}
 
 	@Override

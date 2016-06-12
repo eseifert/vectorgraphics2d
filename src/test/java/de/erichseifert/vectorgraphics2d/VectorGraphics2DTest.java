@@ -38,9 +38,14 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public class VectorGraphics2DTest {
 	private static class DummyVectorGraphics2D extends VectorGraphics2D {
+		@Override
+		public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+			return null;
+		}
 	}
 
 	@Test
