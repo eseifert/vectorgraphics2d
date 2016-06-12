@@ -91,7 +91,7 @@ import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
  * @author Erich Seifert
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
-public class VectorGraphics2D extends Graphics2D implements Cloneable {
+public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 	/** List of operations that were performed on this graphics object and its
 	 * derived objects. */
 	private final List<Command<?>> commands;

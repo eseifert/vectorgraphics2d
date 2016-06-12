@@ -40,9 +40,12 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 public class VectorGraphics2DTest {
+	private static class DummyVectorGraphics2D extends VectorGraphics2D {
+	}
+
 	@Test
 	public void testEmptyVectorGraphics2DStartsWithCreateCommand() {
-		VectorGraphics2D g = new VectorGraphics2D();
+		VectorGraphics2D g = new DummyVectorGraphics2D();
 		Iterable<Command<?>> commands = g.getCommands();
 		Iterator<Command<?>> commandIterator = commands.iterator();
 		assertTrue(commandIterator.hasNext());
@@ -54,7 +57,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testCreateEmitsCreateCommand() {
-		VectorGraphics2D g = new VectorGraphics2D();
+		VectorGraphics2D g = new DummyVectorGraphics2D();
 		Iterable<Command<?>> gCommands = g.getCommands();
 		Iterator<Command<?>> gCommandIterator = gCommands.iterator();
 		CreateCommand gCreateCommand = (CreateCommand) gCommandIterator.next();
@@ -72,7 +75,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testDisposeCommandEmitted() {
-		Graphics2D g = new VectorGraphics2D();
+		Graphics2D g = new DummyVectorGraphics2D();
 		g.setColor(Color.RED);
 
 		Graphics2D g2 = (Graphics2D) g.create();
@@ -91,7 +94,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testClipIntersectsClipRectangle() {
-		VectorGraphics2D vg2d = new VectorGraphics2D();
+		VectorGraphics2D vg2d = new DummyVectorGraphics2D();
 		Rectangle2D currentClipShape = new Rectangle2D.Double(5, 10, 20, 30);
 		vg2d.setClip(currentClipShape);
 		Rectangle2D newClipShape = new Rectangle2D.Double(10, 20, 30, 40);
@@ -104,7 +107,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testClipClearsClippingShapeWhenNullIsPassed() {
-		VectorGraphics2D vg2d = new VectorGraphics2D();
+		VectorGraphics2D vg2d = new DummyVectorGraphics2D();
 		Rectangle2D clipShape = new Rectangle2D.Double(5, 10, 20, 30);
 		vg2d.setClip(clipShape);
 
@@ -115,7 +118,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testSetBackgroundSetsBackgroundColor() {
-		VectorGraphics2D vg2d = new VectorGraphics2D();
+		VectorGraphics2D vg2d = new DummyVectorGraphics2D();
 		Color backgroundColor = Color.DARK_GRAY;
 
 		vg2d.setBackground(backgroundColor);
