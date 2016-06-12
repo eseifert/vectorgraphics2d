@@ -56,6 +56,9 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,6 +96,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
 public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
+	private final PageSize pageSize;
 	/** List of operations that were performed on this graphics object and its
 	 * derived objects. */
 	private final List<Command<?>> commands;
@@ -105,7 +109,8 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	private GraphicsState state;
 
-	public VectorGraphics2D() {
+	public VectorGraphics2D(double x, double y, double width, double height) {
+		pageSize = new PageSize(x, y, width, height);
 		commands = new LinkedList<Command<?>>();
 		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -798,5 +803,30 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	protected abstract Document process(Iterable<Command<?>> commands, PageSize pageSize);
+
+	public PageSize getPageSize() {
+		return pageSize;
+	}
+
+	public void writeTo(OutputStream out) throws IOException {
+		Document doc = process(getCommands(), getPageSize());
+		doc.writeTo(out);
+	}
+
+	public byte[] getBytes() {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			writeTo(out);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return out.toByteArray();
+	}
 }
 

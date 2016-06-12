@@ -25,7 +25,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.ProcessingPipeline;
+import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.AbsoluteToRelativeTransformsFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
@@ -36,7 +36,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Portable Document Format</i> (PDF).
  */
-public class PDFGraphics2D extends ProcessingPipeline {
+public class PDFGraphics2D extends VectorGraphics2D {
 	private final boolean compressed;
 
 	/**

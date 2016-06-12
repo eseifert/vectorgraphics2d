@@ -25,7 +25,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.ProcessingPipeline;
+import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
@@ -34,7 +34,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Encapsulated PostScript®</i> (EPS) format.
  */
-public class EPSGraphics2D extends ProcessingPipeline {
+public class EPSGraphics2D extends VectorGraphics2D {
 
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
