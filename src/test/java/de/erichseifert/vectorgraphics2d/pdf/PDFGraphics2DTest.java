@@ -35,13 +35,13 @@ import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
-public class PDFProcessorTest {
+public class PDFGraphics2DTest {
 	private static final String EOL = "\n";
 	private static final String HEADER = "%PDF-1.4";
 	private static final String FOOTER = "%%EOF";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final PDFProcessor processor = new PDFProcessor(false);
+	private final PDFGraphics2D processor = new PDFGraphics2D(PAGE_SIZE.x, PAGE_SIZE.y, PAGE_SIZE.width, PAGE_SIZE.height, false);
 	private final List<Command<?>> commands = new LinkedList<Command<?>>();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 

@@ -24,15 +24,21 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import java.awt.BasicStroke;
 import java.awt.Color;
 
+import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.ProcessingPipeline;
 import de.erichseifert.vectorgraphics2d.Processor;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.AbsoluteToRelativeTransformsFilter;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
+import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Portable Document Format</i> (PDF).
  */
-public class PDFGraphics2D extends ProcessingPipeline {
-	private final PDFProcessor processor;
+public class PDFGraphics2D extends ProcessingPipeline implements Processor {
+	private final boolean compressed;
 
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
@@ -59,7 +65,7 @@ public class PDFGraphics2D extends ProcessingPipeline {
 	 */
 	public PDFGraphics2D(double x, double y, double width, double height, boolean compressed) {
 		super(x, y, width, height);
-		processor = new PDFProcessor(compressed);
+		this.compressed = compressed;
 
 		// TODO: Default graphics state does not need to be printed in the document
 		setColor(Color.BLACK);
@@ -68,7 +74,7 @@ public class PDFGraphics2D extends ProcessingPipeline {
 
 	@Override
 	protected Processor getProcessor() {
-		return processor;
+		return this;
 	}
 
 	/**
@@ -76,6 +82,19 @@ public class PDFGraphics2D extends ProcessingPipeline {
 	 * @return {@code true} if the document is compressed, {@code false} otherwise.
 	 */
 	public boolean isCompressed() {
-		return processor.isCompressed();
+		return compressed;
+	}
+
+	@Override
+	public Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
+		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
+		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
+		PDFDocument doc = new PDFDocument(pageSize, isCompressed());
+		for (Command<?> command : filtered) {
+			doc.handle(command);
+		}
+		doc.close();
+		return doc;
 	}
 }
