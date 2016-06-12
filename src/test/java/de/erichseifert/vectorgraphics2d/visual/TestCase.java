@@ -121,7 +121,7 @@ public abstract class TestCase {
 				"-dQUIET",
 				"-dNOPAUSE",
 				"-dSAFER",
-				String.format("-g%dx%d", Math.round(getPageSize().width), Math.round(getPageSize().height)),
+				String.format("-g%dx%d", Math.round(getPageSize().getWidth()), Math.round(getPageSize().getHeight())),
 				"-dGraphicsAlphaBits=4",
 				"-dAlignToPixels=0",
 				"-dEPSCrop",
@@ -154,7 +154,7 @@ public abstract class TestCase {
 				"-dQUIET",
 				"-dNOPAUSE",
 				"-dSAFER",
-				String.format("-g%dx%d", Math.round(getPageSize().width), Math.round(getPageSize().height)),
+				String.format("-g%dx%d", Math.round(getPageSize().getWidth()), Math.round(getPageSize().getHeight())),
 				"-dGraphicsAlphaBits=4",
 				// TODO: More robust settings for gs? DPI value is estimated.
 				"-r25",
@@ -175,7 +175,7 @@ public abstract class TestCase {
 		}
 
 		rasterizedSVG = new BufferedImage(
-				(int) Math.round(getPageSize().width), (int) Math.round(getPageSize().height),
+				(int) Math.round(getPageSize().getWidth()), (int) Math.round(getPageSize().getHeight()),
 				BufferedImage.TYPE_INT_ARGB);
 
 		ImageTranscoder transcoder = new ImageTranscoder() {

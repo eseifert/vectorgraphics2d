@@ -35,7 +35,7 @@ public class TransformTest extends TestCase {
 	public void draw(Graphics2D g) {
 		final int rowCount = 2;
 		final int colCount = 4;
-		double wTile = getPageSize().width/colCount;
+		double wTile = getPageSize().getWidth()/colCount;
 		double hTile = wTile;
 
 		g.translate(0.5*wTile, 0.5*hTile);

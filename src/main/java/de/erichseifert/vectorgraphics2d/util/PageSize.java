@@ -34,10 +34,10 @@ public class PageSize {
 	public static final PageSize TABLOID = new PageSize(11.0*MM_PER_INCH, 17.0*MM_PER_INCH);
 	public static final PageSize LEDGER = TABLOID.getLandscape();
 
-	public final double x;
-	public final double y;
-	public final double width;
-	public final double height;
+	private final double x;
+	private final double y;
+	private final double width;
+	private final double height;
 
 	public PageSize(double x, double y, double width, double height) {
 		this.x = x;
@@ -66,6 +66,22 @@ public class PageSize {
 			return this;
 		}
 		return new PageSize(x, y, height, width);
+	}
+
+	public double getX() {
+		return x;
+	}
+
+	public double getY() {
+		return y;
+	}
+
+	public double getWidth() {
+		return width;
+	}
+
+	public double getHeight() {
+		return height;
 	}
 }
 

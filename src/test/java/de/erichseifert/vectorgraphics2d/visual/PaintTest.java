@@ -38,8 +38,8 @@ public class PaintTest extends TestCase {
 		final int steps = 25;
 		final int cols = 5;
 		final int rows = steps/cols;
-		final double tileWidth = getPageSize().width/cols;
-		final double tileHeight = getPageSize().height/rows;
+		final double tileWidth = getPageSize().getWidth()/cols;
+		final double tileHeight = getPageSize().getHeight()/rows;
 		g.translate(tileWidth/2, tileHeight/2);
 
 		final double rectWidth = tileWidth*0.8;

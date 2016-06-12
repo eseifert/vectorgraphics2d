@@ -148,10 +148,10 @@ public class PDFDocument extends SizedDocument {
 		catalog.dict.put("Pages", pages);
 
 		// Page
-		double x = getPageSize().x*MM_IN_UNITS;
-		double y = getPageSize().y*MM_IN_UNITS;
-		double width = getPageSize().width*MM_IN_UNITS;
-		double height = getPageSize().height*MM_IN_UNITS;
+		double x = getPageSize().getX()*MM_IN_UNITS;
+		double y = getPageSize().getY()*MM_IN_UNITS;
+		double width = getPageSize().getWidth()*MM_IN_UNITS;
+		double height = getPageSize().getHeight()*MM_IN_UNITS;
 		dict = DataUtils.map(
 			new String[] {"Type", "Parent", "MediaBox"},
 			new Object[] {"Page", pages, new double[] {x, y, width, height}}

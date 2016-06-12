@@ -33,8 +33,8 @@ public class ClippingTest extends TestCase {
 
 	@Override
 	public void draw(Graphics2D g) {
-		double w = getPageSize().width;
-		double h = getPageSize().height;
+		double w = getPageSize().getWidth();
+		double h = getPageSize().getHeight();
 
 		AffineTransform txOrig = g.getTransform();
 		g.translate(w/2.0, h/2.0);

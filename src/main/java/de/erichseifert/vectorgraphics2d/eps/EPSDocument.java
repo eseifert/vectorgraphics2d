@@ -111,10 +111,10 @@ public class EPSDocument extends SizedDocument {
 	}
 
 	private void addHeader() {
-		double x=getPageSize().x*UNITS_PER_MM,
-			y=getPageSize().y*UNITS_PER_MM,
-			width=getPageSize().width*UNITS_PER_MM,
-			height=getPageSize().height*UNITS_PER_MM;
+		double x=getPageSize().getX()*UNITS_PER_MM,
+			y=getPageSize().getY()*UNITS_PER_MM,
+			width=getPageSize().getWidth()*UNITS_PER_MM,
+			height=getPageSize().getHeight()*UNITS_PER_MM;
 		elements.addAll(Arrays.asList(
 			"%!PS-Adobe-3.0 EPSF-3.0",
 			"%%BoundingBox: " + ((int) Math.floor(x)) + " " + ((int) Math.floor(y)) + " " + ((int) Math.ceil(x + width)) + " " + ((int) Math.ceil(y + height)),

@@ -166,10 +166,10 @@ public class SVGDocument extends SizedDocument {
 	}
 
 	private void initRoot() {
-		double x = getPageSize().x;
-		double y = getPageSize().y;
-		double width = getPageSize().width;
-		double height = getPageSize().height;
+		double x = getPageSize().getX();
+		double y = getPageSize().getY();
+		double width = getPageSize().getWidth();
+		double height = getPageSize().getHeight();
 
 		// Add svg element
 		root.setAttribute("xmlns:" + XLINK_NAMESPACE, XLINK_NAMESPACE_URI);

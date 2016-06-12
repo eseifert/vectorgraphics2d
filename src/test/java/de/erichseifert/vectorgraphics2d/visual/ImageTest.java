@@ -44,10 +44,10 @@ public class ImageTest extends TestCase {
 		);
 		gImage.fill(new Rectangle2D.Double(0.0, 0.0, 4.0, 3.0));
 
-		g.drawImage(image, 0, 0, (int) getPageSize().width, (int) (0.5*getPageSize().height), null);
+		g.drawImage(image, 0, 0, (int) getPageSize().getWidth(), (int) (0.5*getPageSize().getHeight()), null);
 
 		g.rotate(-10.0/180.0*Math.PI, 2.0, 1.5);
-		g.drawImage(image, (int) (0.1*getPageSize().width), (int) (0.6*getPageSize().height),
-				(int) (0.33*getPageSize().width), (int) (0.33*getPageSize().height), null);
+		g.drawImage(image, (int) (0.1*getPageSize().getWidth()), (int) (0.6*getPageSize().getHeight()),
+				(int) (0.33*getPageSize().getWidth()), (int) (0.33*getPageSize().getHeight()), null);
 	}
 }

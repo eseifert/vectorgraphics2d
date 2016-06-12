@@ -68,7 +68,7 @@ public class EPSGraphics2DTest {
 	};
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final EPSGraphics2D epsGraphics = new EPSGraphics2D(PAGE_SIZE.x, PAGE_SIZE.y, PAGE_SIZE.width, PAGE_SIZE.height);
+	private final EPSGraphics2D epsGraphics = new EPSGraphics2D(PAGE_SIZE.getX(), PAGE_SIZE.getY(), PAGE_SIZE.getWidth(), PAGE_SIZE.getHeight());
 	private final List<Command<?>> commands = new LinkedList<Command<?>>();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 

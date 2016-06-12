@@ -37,10 +37,10 @@ public class FontTest extends TestCase {
 	public void draw(Graphics2D g) {
 		final int tileCountH = 4;
 		final int tileCountV = 8;
-		final double wTile = getPageSize().width/tileCountH;
-		final double hTile = getPageSize().height/tileCountV;
-		final double xOrigin = (getPageSize().width - tileCountH*wTile)/2.0;
-		final double yOrigin = (getPageSize().height - tileCountV*hTile)/2.0;
+		final double wTile = getPageSize().getWidth()/tileCountH;
+		final double hTile = getPageSize().getHeight()/tileCountV;
+		final double xOrigin = (getPageSize().getWidth() - tileCountH*wTile)/2.0;
+		final double yOrigin = (getPageSize().getHeight() - tileCountV*hTile)/2.0;
 		double x = xOrigin;
 		double y = yOrigin;
 
