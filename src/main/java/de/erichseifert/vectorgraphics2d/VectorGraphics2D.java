@@ -117,6 +117,7 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 			if (pageSize == null) {
 				throw new NullPointerException("Page size cannot be null.");
 			}
+			throw new IllegalArgumentException("Unknown vector graphics format: " + format);
 		}
 	}
 

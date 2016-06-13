@@ -150,4 +150,12 @@ public class VectorGraphics2DTest {
 
 		new VectorGraphics2D.Builder(format, pageSize);
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testThrowsIllegalArgumentExceptionWhenFormatIsUnkown() {
+		String format = "UnknownFormat";
+		PageSize pageSize = PageSize.A4;
+
+		new VectorGraphics2D.Builder(format, pageSize);
+	}
 }
