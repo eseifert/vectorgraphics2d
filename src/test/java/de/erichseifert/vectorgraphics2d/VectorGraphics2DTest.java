@@ -142,4 +142,12 @@ public class VectorGraphics2DTest {
 
 		new VectorGraphics2D.Builder(format, pageSize);
 	}
+
+	@Test(expected = NullPointerException.class)
+	public void testThrowsNullPointerExceptionWhenFormatIsNull() {
+		String format = null;
+		PageSize pageSize = PageSize.A4;
+
+		new VectorGraphics2D.Builder(format, pageSize);
+	}
 }
