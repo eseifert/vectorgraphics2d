@@ -813,6 +813,13 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		doc.writeTo(out);
 	}
 
+	/**
+	 * Returns the resulting document as byte array.
+	 * This method is deprecated and will be removed in a future release. Please use
+	 * {@link #writeTo(OutputStream)} instead.
+	 * @return Byte array of the drawn document.
+	 */
+	@Deprecated
 	public byte[] getBytes() {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		try {
