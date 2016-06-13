@@ -28,11 +28,10 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
  */
 public interface Processor {
 	/**
-	 * Constructs a {@code Document} from the specified commands.
-	 * @param commands Commands to be processed.
+	 * Constructs a {@code Document} from the commands that have been added.
 	 * @return {@code Document} representation of the commands.
 	 */
-	Document process(Iterable<Command<?>> commands);
+	Document getDocument();
 
 	void add(Command<?> command);
 

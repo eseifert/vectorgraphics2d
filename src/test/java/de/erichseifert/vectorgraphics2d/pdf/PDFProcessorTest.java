@@ -26,8 +26,6 @@ import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Pattern;
 import org.junit.Test;
 
@@ -41,15 +39,14 @@ public class PDFProcessorTest {
 	private static final String FOOTER = "%%EOF";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final PDFProcessor processor = new PDFProcessor(PAGE_SIZE, false);
-	private final List<Command<?>> commands = new LinkedList<Command<?>>();
+	private final PDFProcessor pdfProcessor = new PDFProcessor(PAGE_SIZE, false);
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {
 		for (Command<?> command : commands) {
-			this.commands.add(command);
+			pdfProcessor.add(command);
 		}
-		Document processed = processor.process(this.commands);
+		Document processed = pdfProcessor.getDocument();
 		processed.writeTo(bytes);
 		return bytes.toString("ISO-8859-1");
 	}

@@ -58,7 +58,7 @@ public class VectorGraphics2DTest {
 		}
 
 		@Override
-		public Document process(Iterable<Command<?>> commands) {
+		public Document getDocument() {
 			return null;
 		}
 

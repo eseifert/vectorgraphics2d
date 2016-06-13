@@ -26,8 +26,6 @@ import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Pattern;
 import org.junit.Test;
 
@@ -68,15 +66,14 @@ public class EPSProcessorTest {
 	};
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final EPSProcessor epsGraphics = new EPSProcessor(PAGE_SIZE);
-	private final List<Command<?>> commands = new LinkedList<Command<?>>();
+	private final EPSProcessor epsProcessor = new EPSProcessor(PAGE_SIZE);
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {
 		for (Command<?> command : commands) {
-			this.commands.add(command);
+			epsProcessor.add(command);
 		}
-		Document processed = epsGraphics.process(this.commands);
+		Document processed = epsProcessor.getDocument();
 		processed.writeTo(bytes);
 		return bytes.toString("ISO-8859-1");
 	}

@@ -67,8 +67,8 @@ public class PDFProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	public Document process(Iterable<Command<?>> commands) {
-		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
+	public Document getDocument() {
+		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(getCommands());
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
 		PDFDocument doc = new PDFDocument(getPageSize(), isCompressed());

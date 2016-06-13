@@ -45,8 +45,8 @@ public class SVGProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	public Document process(Iterable<Command<?>> commands) {
-		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(commands);
+	public Document getDocument() {
+		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(getCommands());
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(shapesAsImages);
 		SVGDocument doc = new SVGDocument(getPageSize());
 		for (Command<?> command : filtered) {

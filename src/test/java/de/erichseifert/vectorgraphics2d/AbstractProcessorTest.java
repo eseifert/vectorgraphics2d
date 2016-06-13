@@ -38,7 +38,7 @@ public class AbstractProcessorTest {
 		}
 
 		@Override
-		public Document process(Iterable<Command<?>> commands) {
+		public Document getDocument() {
 			return null;
 		}
 	}

@@ -26,8 +26,6 @@ import static de.erichseifert.vectorgraphics2d.TestUtils.assertXMLEquals;
 import java.awt.geom.Rectangle2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.Document;
@@ -45,15 +43,14 @@ public class SVGProcessorTest {
 	private static final String FOOTER = "</svg>";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final SVGProcessor svgGraphics = new SVGProcessor(PAGE_SIZE);
-	private final List<Command<?>> commands = new LinkedList<Command<?>>();
+	private final SVGProcessor svgProcessor = new SVGProcessor(PAGE_SIZE);
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {
 		for (Command<?> command : commands) {
-			this.commands.add(command);
+			svgProcessor.add(command);
 		}
-		Document processed = svgGraphics.process(this.commands);
+		Document processed = svgProcessor.getDocument();
 		processed.writeTo(bytes);
 		return bytes.toString("UTF-8");
 	}
