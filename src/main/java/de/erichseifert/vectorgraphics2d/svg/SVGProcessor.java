@@ -21,8 +21,8 @@
  */
 package de.erichseifert.vectorgraphics2d.svg;
 
+import de.erichseifert.vectorgraphics2d.AbstractProcessor;
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
@@ -33,8 +33,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
 @SuppressWarnings("restriction")
-public class SVGProcessor implements Processor {
-	private final PageSize pageSize;
+public class SVGProcessor extends AbstractProcessor {
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
 	 * commands to SVG data. The document dimensions must be specified as
@@ -42,14 +41,14 @@ public class SVGProcessor implements Processor {
 	 * @param pageSize Document size.
 	 */
 	public SVGProcessor(PageSize pageSize) {
-		this.pageSize = pageSize;
+		super(pageSize);
 	}
 
 	@Override
 	public Document process(Iterable<Command<?>> commands) {
 		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(commands);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(shapesAsImages);
-		SVGDocument doc = new SVGDocument(pageSize);
+		SVGDocument doc = new SVGDocument(getPageSize());
 		for (Command<?> command : filtered) {
 			doc.handle(command);
 		}

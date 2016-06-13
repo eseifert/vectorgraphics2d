@@ -21,8 +21,8 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
+import de.erichseifert.vectorgraphics2d.AbstractProcessor;
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.AbsoluteToRelativeTransformsFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
@@ -33,8 +33,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Portable Document Format</i> (PDF).
  */
-public class PDFProcessor implements Processor {
-	private final PageSize pageSize;
+public class PDFProcessor extends AbstractProcessor {
 	private final boolean compressed;
 
 	/**
@@ -55,7 +54,7 @@ public class PDFProcessor implements Processor {
 	 * @param compressed Compression enabled.
 	 */
 	public PDFProcessor(PageSize pageSize, boolean compressed) {
-		this.pageSize = pageSize;
+		super(pageSize);
 		this.compressed = compressed;
 	}
 
@@ -72,7 +71,7 @@ public class PDFProcessor implements Processor {
 		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
-		PDFDocument doc = new PDFDocument(pageSize, isCompressed());
+		PDFDocument doc = new PDFDocument(getPageSize(), isCompressed());
 		for (Command<?> command : filtered) {
 			doc.handle(command);
 		}
