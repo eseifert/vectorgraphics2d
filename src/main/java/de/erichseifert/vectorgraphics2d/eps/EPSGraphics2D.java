@@ -21,9 +21,6 @@
  */
 package de.erichseifert.vectorgraphics2d.eps;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
@@ -44,13 +41,6 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 */
 	public EPSGraphics2D(PageSize pageSize) {
 		super(pageSize);
-		/*
-		 * The following are the default settings for the graphics state in an EPS file.
-		 * Although they currently appear in the document output, they do not have to be set explicitly.
-		 */
-		// TODO: Default graphics state does not need to be printed in the document
-		setColor(Color.BLACK);
-		setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, null, 0f));
 	}
 
 	@Override

@@ -22,6 +22,7 @@
 package de.erichseifert.vectorgraphics2d;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Font;
@@ -199,6 +200,12 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		fontRenderContext = new FontRenderContext(null, false, true);
 
 		state = new GraphicsState();
+
+		// Ensure that document state matches default state of Graphics2D
+		// TODO: Default graphics state does not need to be printed in the document.
+		// Use filters in the appropriate documents
+		setColor(Color.BLACK); // Required for EPS, PDF, and SVG
+		setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, null, 0f)); // EPS and PDF
 	}
 
 	@Override

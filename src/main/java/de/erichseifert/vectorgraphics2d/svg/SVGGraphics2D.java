@@ -21,8 +21,6 @@
  */
 package de.erichseifert.vectorgraphics2d.svg;
 
-import java.awt.Color;
-
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
@@ -44,8 +42,6 @@ public class SVGGraphics2D extends VectorGraphics2D {
 	 */
 	public SVGGraphics2D(PageSize pageSize) {
 		super(pageSize);
-		// Make graphics state match default state of Graphics2D
-		setColor(Color.BLACK);
 	}
 
 	@Override

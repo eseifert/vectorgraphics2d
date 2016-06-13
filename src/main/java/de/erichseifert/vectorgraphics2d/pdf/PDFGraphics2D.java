@@ -21,9 +21,6 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
@@ -59,10 +56,6 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	public PDFGraphics2D(PageSize pageSize, boolean compressed) {
 		super(pageSize);
 		this.compressed = compressed;
-
-		// TODO: Default graphics state does not need to be printed in the document
-		setColor(Color.BLACK);
-		setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, null, 0f));
 	}
 
 	/**
