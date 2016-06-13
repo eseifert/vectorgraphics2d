@@ -103,7 +103,6 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  */
 public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private final Processor processor;
-	private final PageSize pageSize;
 	/** List of operations that were performed on this graphics object and its
 	 * derived objects. */
 	private final List<Command<?>> commands;
@@ -172,7 +171,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 			if (compressed && (format.equals("eps") || format.equals("svg"))) {
 				throw new IllegalStateException("Unable to produce compressed output for format \"" + format + "\"");
 			}
-			VectorGraphics2D vg2d = new VectorGraphics2D(processor, pageSize);
+			VectorGraphics2D vg2d = new VectorGraphics2D(processor);
 			return vg2d;
 		}
 
@@ -187,9 +186,8 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 	}
 
-	public VectorGraphics2D(Processor processor, PageSize pageSize) {
+	public VectorGraphics2D(Processor processor) {
 		this.processor = processor;
-		this.pageSize = pageSize;
 		commands = new LinkedList<Command<?>>();
 		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -885,10 +883,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	protected boolean isDisposed() {
 		return disposed;
-	}
-
-	public PageSize getPageSize() {
-		return pageSize;
 	}
 
 	public void writeTo(OutputStream out) throws IOException {
