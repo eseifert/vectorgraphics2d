@@ -32,8 +32,14 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import org.junit.Test;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
 
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
@@ -41,6 +47,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
+@RunWith(Theories.class)
 public class VectorGraphics2DTest {
 	private static class DummyVectorGraphics2D extends VectorGraphics2D {
 		public DummyVectorGraphics2D() {
@@ -160,13 +167,25 @@ public class VectorGraphics2DTest {
 		new VectorGraphics2D.Builder(format, pageSize);
 	}
 
-	@Test
-	public void testInitializesBuilderWhenFormatIsKnown() {
-		String format = "pdf";
+	@DataPoints
+	public static List<String> KNOWN_FORMATS = Arrays.asList("eps", "pdf", "svg");
+
+	@Theory
+	public void testInitializesBuilderWhenFormatIsKnown(String format) {
 		PageSize pageSize = PageSize.A4;
 
 		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize);
 
 		assertNotNull(builder);
+	}
+
+	@Theory
+	public void testBuildReturnsVG2DObjectThatIsNotNull(String format) {
+		PageSize pageSize = PageSize.A4;
+		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize);
+
+		VectorGraphics2D vg2d = builder.build();
+
+		assertNotNull(vg2d);
 	}
 }

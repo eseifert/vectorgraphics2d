@@ -67,6 +67,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import de.erichseifert.vectorgraphics2d.eps.EPSGraphics2D;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
@@ -89,6 +90,8 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.SetXORModeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.ShearCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
+import de.erichseifert.vectorgraphics2d.pdf.PDFGraphics2D;
+import de.erichseifert.vectorgraphics2d.svg.SVGGraphics2D;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
@@ -119,6 +122,8 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 			supportedFormats.add("pdf");
 			supportedFormats.add("svg");
 		}
+		private final String format;
+		private final PageSize pageSize;
 
 		public Builder(String format, PageSize pageSize) {
 			if (format == null) {
@@ -130,6 +135,21 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 			if (!supportedFormats.contains(format)) {
 				throw new IllegalArgumentException("Unknown vector graphics format: " + format);
 			}
+
+			this.format = format;
+			this.pageSize = pageSize;
+		}
+
+		public VectorGraphics2D build() {
+			VectorGraphics2D vg2d = null;
+			if (format.equals("eps")) {
+				vg2d = new EPSGraphics2D(pageSize);
+			} else if (format.equals("pdf")) {
+				vg2d = new PDFGraphics2D(pageSize);
+			} else if (format.equals("svg")) {
+				vg2d = new SVGGraphics2D(pageSize);
+			}
+			return vg2d;
 		}
 	}
 
