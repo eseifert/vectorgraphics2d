@@ -21,21 +21,35 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
+import org.junit.experimental.theories.Theories;
+import org.junit.runner.RunWith;
+
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 
-/**
- * Translates {@link Command} objects into a {@link Document}.
- */
-public interface Processor {
-	/**
-	 * Constructs a {@code Document} from the specified commands.
-	 * @param commands Commands to be processed.
-	 * @return {@code Document} representation of the commands.
-	 */
-	Document process(Iterable<Command<?>> commands);
+@RunWith(Theories.class)
+public class AbstractProcessorTest {
+	private static class DummyAbstractProcessor extends AbstractProcessor {
+		public DummyAbstractProcessor() {
+			super(null);
+		}
 
-	void add(Command<?> command);
+		@Override
+		public Document process(Iterable<Command<?>> commands) {
+			return null;
+		}
+	}
 
-	Iterable<Command<?>> getCommands();
+	@Test
+	public void testProcessorContainsAddedCommand() {
+		AbstractProcessor processor = new DummyAbstractProcessor();
+		Command<?> command = new Command<Object>(null) {};
+
+		processor.add(command);
+
+		assertThat(processor.getCommands(), hasItem(command));
+	}
 }
-

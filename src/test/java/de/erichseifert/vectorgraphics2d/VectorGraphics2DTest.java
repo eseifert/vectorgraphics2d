@@ -34,6 +34,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -49,16 +50,39 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 @RunWith(Theories.class)
 public class VectorGraphics2DTest {
+	private static class MockProcessor implements Processor {
+		private final List<Command<?>> commands;
+
+		public MockProcessor() {
+			commands = new LinkedList<Command<?>>();
+		}
+
+		@Override
+		public Document process(Iterable<Command<?>> commands) {
+			return null;
+		}
+
+		@Override
+		public void add(Command<?> command) {
+			commands.add(command);
+		}
+
+		@Override
+		public Iterable<Command<?>> getCommands() {
+			return commands;
+		}
+	}
+
 	private static class DummyVectorGraphics2D extends VectorGraphics2D {
 		public DummyVectorGraphics2D() {
-			super(null);
+			super(new MockProcessor());
 		}
 	}
 
 	@Test
-	public void testEmptyVectorGraphics2DStartsWithCreateCommand() {
+	public void testVectorGraphics2DEmitsCreateCommand() {
 		VectorGraphics2D g = new DummyVectorGraphics2D();
-		Iterable<Command<?>> commands = g.getCommands();
+		Iterable<Command<?>> commands = g.getProcessor().getCommands();
 		Iterator<Command<?>> commandIterator = commands.iterator();
 		assertTrue(commandIterator.hasNext());
 
@@ -70,13 +94,13 @@ public class VectorGraphics2DTest {
 	@Test
 	public void testCreateEmitsCreateCommand() {
 		VectorGraphics2D g = new DummyVectorGraphics2D();
-		Iterable<Command<?>> gCommands = g.getCommands();
+		Iterable<Command<?>> gCommands = g.getProcessor().getCommands();
 		Iterator<Command<?>> gCommandIterator = gCommands.iterator();
 		CreateCommand gCreateCommand = (CreateCommand) gCommandIterator.next();
 
 		VectorGraphics2D g2 = (VectorGraphics2D) g.create();
 		CreateCommand g2CreateCommand = null;
-		for (Command<?> g2Command : g2.getCommands()) {
+		for (Command<?> g2Command : g2.getProcessor().getCommands()) {
 			if (g2Command instanceof CreateCommand) {
 				g2CreateCommand = (CreateCommand) g2Command;
 			}
@@ -94,7 +118,7 @@ public class VectorGraphics2DTest {
 		g2.setColor(Color.BLUE);
 		g2.dispose();
 
-		Iterable<Command<?>> commands = ((VectorGraphics2D) g).getCommands();
+		Iterable<Command<?>> commands = ((VectorGraphics2D) g).getProcessor().getCommands();
 		Command<?> lastCommand = null;
 		for (Command<?> command : commands) {
 			lastCommand = command;

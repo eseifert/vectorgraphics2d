@@ -21,16 +21,33 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public abstract class AbstractProcessor implements Processor {
 	private final PageSize pageSize;
+	private final List<Command<?>> commands;
 
 	public AbstractProcessor(PageSize pageSize) {
 		this.pageSize = pageSize;
+		commands = new LinkedList<Command<?>>();
 	}
 
 	public PageSize getPageSize() {
 		return pageSize;
+	}
+
+	@Override
+	public void add(Command<?> command) {
+		commands.add(command);
+	}
+
+	@Override
+	public Iterable<Command<?>> getCommands() {
+		return Collections.unmodifiableList(commands);
 	}
 }

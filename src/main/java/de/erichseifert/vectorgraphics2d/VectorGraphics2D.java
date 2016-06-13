@@ -62,8 +62,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -103,9 +101,6 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  */
 public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private final Processor processor;
-	/** List of operations that were performed on this graphics object and its
-	 * derived objects. */
-	private final List<Command<?>> commands;
 	/** Device configuration settings. */
 	private final GraphicsConfiguration deviceConfig;
 	/** Context settings used to render fonts. */
@@ -188,7 +183,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	public VectorGraphics2D(Processor processor) {
 		this.processor = processor;
-		commands = new LinkedList<Command<?>>();
 		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = null;
@@ -874,11 +868,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	private void emit(Command<?> command) {
-		commands.add(command);
-	}
-
-	protected Iterable<Command<?>> getCommands() {
-		return commands;
+		getProcessor().add(command);
 	}
 
 	protected boolean isDisposed() {
@@ -886,8 +876,12 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	public void writeTo(OutputStream out) throws IOException {
-		Document doc = processor.process(getCommands());
+		Document doc = getProcessor().process(getProcessor().getCommands());
 		doc.writeTo(out);
+	}
+
+	protected Processor getProcessor() {
+		return processor;
 	}
 
 	/**
