@@ -188,4 +188,22 @@ public class VectorGraphics2DTest {
 
 		assertNotNull(vg2d);
 	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testBuildThrowsIllegalStateExceptionWhenCompressionIsEnabledForEPS() {
+		String format = "eps";
+		PageSize pageSize = PageSize.A4;
+		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize).compressed(true);
+
+		builder.build();
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testBuildThrowsIllegalStateExceptionWhenCompressionIsEnabledForSVG() {
+		String format = "svg";
+		PageSize pageSize = PageSize.A4;
+		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize).compressed(true);
+
+		builder.build();
+	}
 }

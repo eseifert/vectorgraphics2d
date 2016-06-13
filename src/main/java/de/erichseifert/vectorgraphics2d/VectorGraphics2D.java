@@ -124,6 +124,7 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 		private final String format;
 		private final PageSize pageSize;
+		private boolean compressed;
 
 		public Builder(String format, PageSize pageSize) {
 			if (format == null) {
@@ -140,16 +141,34 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 			this.pageSize = pageSize;
 		}
 
+		/**
+		 * Initializes a {@code {@link VectorGraphics2D} object using the current builder configuration.
+		 * @return Ready-to-use {@code VectorGraphics2D} object.
+		 * @throws IllegalStateException if the configuration is not applicable for the graphics format.
+		 */
 		public VectorGraphics2D build() {
 			VectorGraphics2D vg2d = null;
 			if (format.equals("eps")) {
 				vg2d = new EPSGraphics2D(pageSize);
 			} else if (format.equals("pdf")) {
-				vg2d = new PDFGraphics2D(pageSize);
+				vg2d = new PDFGraphics2D(pageSize, compressed);
 			} else if (format.equals("svg")) {
 				vg2d = new SVGGraphics2D(pageSize);
 			}
+			if (compressed && (format.equals("eps") || format.equals("svg"))) {
+				throw new IllegalStateException("Unable to produce compressed output for format \"" + format + "\"");
+			}
 			return vg2d;
+		}
+
+		/**
+		 * Enables or disables compression for the output data.
+		 * @param compressed {@code true} if compression is enabled, {@code false} otherwise.
+		 * @return This Builder.
+		 */
+		public Builder compressed(boolean compressed) {
+			this.compressed = compressed;
+			return this;
 		}
 	}
 
