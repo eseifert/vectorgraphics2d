@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -157,5 +158,15 @@ public class VectorGraphics2DTest {
 		PageSize pageSize = PageSize.A4;
 
 		new VectorGraphics2D.Builder(format, pageSize);
+	}
+
+	@Test
+	public void testInitializesBuilderWhenFormatIsKnown() {
+		String format = "pdf";
+		PageSize pageSize = PageSize.A4;
+
+		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize);
+
+		assertNotNull(builder);
 	}
 }

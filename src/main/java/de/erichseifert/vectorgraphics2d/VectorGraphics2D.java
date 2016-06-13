@@ -60,10 +60,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
@@ -110,6 +112,14 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private GraphicsState state;
 
 	public static class Builder {
+		private static Set<String> supportedFormats;
+		static {
+			supportedFormats = new HashSet<String>();
+			supportedFormats.add("eps");
+			supportedFormats.add("pdf");
+			supportedFormats.add("svg");
+		}
+
 		public Builder(String format, PageSize pageSize) {
 			if (format == null) {
 				throw new NullPointerException("Graphics format cannot be null.");
@@ -117,7 +127,9 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 			if (pageSize == null) {
 				throw new NullPointerException("Page size cannot be null.");
 			}
-			throw new IllegalArgumentException("Unknown vector graphics format: " + format);
+			if (!supportedFormats.contains(format)) {
+				throw new IllegalArgumentException("Unknown vector graphics format: " + format);
+			}
 		}
 	}
 
