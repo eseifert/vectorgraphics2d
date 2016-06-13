@@ -53,7 +53,7 @@ public class SVGGraphics2DTest {
 		for (Command<?> command : commands) {
 			this.commands.add(command);
 		}
-		Document processed = svgGraphics.process(this.commands, PAGE_SIZE);
+		Document processed = svgGraphics.process(this.commands);
 		processed.writeTo(bytes);
 		return bytes.toString("UTF-8");
 	}

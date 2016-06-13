@@ -47,7 +47,7 @@ public class VectorGraphics2DTest {
 		}
 
 		@Override
-		protected Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+		protected Document process(Iterable<Command<?>> commands) {
 			return null;
 		}
 	}

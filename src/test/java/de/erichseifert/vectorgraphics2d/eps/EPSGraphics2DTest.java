@@ -76,7 +76,7 @@ public class EPSGraphics2DTest {
 		for (Command<?> command : commands) {
 			this.commands.add(command);
 		}
-		Document processed = epsGraphics.process(this.commands, PAGE_SIZE);
+		Document processed = epsGraphics.process(this.commands);
 		processed.writeTo(bytes);
 		return bytes.toString("ISO-8859-1");
 	}

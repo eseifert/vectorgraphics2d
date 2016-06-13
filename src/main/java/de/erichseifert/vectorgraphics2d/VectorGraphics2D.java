@@ -802,14 +802,14 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		return disposed;
 	}
 
-	protected abstract Document process(Iterable<Command<?>> commands, PageSize pageSize);
+	protected abstract Document process(Iterable<Command<?>> commands);
 
 	public PageSize getPageSize() {
 		return pageSize;
 	}
 
 	public void writeTo(OutputStream out) throws IOException {
-		Document doc = process(getCommands(), getPageSize());
+		Document doc = process(getCommands());
 		doc.writeTo(out);
 	}
 

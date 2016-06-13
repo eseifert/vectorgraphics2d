@@ -54,12 +54,12 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	protected Document process(Iterable<Command<?>> commands, PageSize pageSize) {
+	protected Document process(Iterable<Command<?>> commands) {
 		// TODO Apply rotate(theta,x,y) => translate-rotate-translate filter
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
-		EPSDocument doc = new EPSDocument(pageSize);
+		EPSDocument doc = new EPSDocument(getPageSize());
 		for (Command<?> command : paintedShapeAsImageFilter) {
 			doc.handle(command);
 		}
