@@ -114,6 +114,11 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	private GraphicsState state;
 
+	/**
+	 * Represents a configurator for {@code VectorGraphics2D} objects.
+	 * Using this {@code Builder} is the preferred way of constructing a {@code VectorGraphics2D} object
+	 * for a specific format.
+	 */
 	public static class Builder {
 		private static Set<String> supportedFormats;
 		static {
@@ -126,6 +131,13 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		private final PageSize pageSize;
 		private boolean compressed;
 
+		/**
+		 * Initializes a {@code Builder} used to construct a {@code VectorGraphics2D} object for the specified
+		 * vector file format and page size.
+		 * Supported formats are "eps", "pdf", and "svg".
+		 * @param format Vector file format.
+		 * @param pageSize Size of the drawing area.
+		 */
 		public Builder(String format, PageSize pageSize) {
 			if (format == null) {
 				throw new NullPointerException("Graphics format cannot be null.");
@@ -142,7 +154,7 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 
 		/**
-		 * Initializes a {@code {@link VectorGraphics2D} object using the current builder configuration.
+		 * Initializes a {@code VectorGraphics2D} object using the current builder configuration.
 		 * @return Ready-to-use {@code VectorGraphics2D} object.
 		 * @throws IllegalStateException if the configuration is not applicable for the graphics format.
 		 */
