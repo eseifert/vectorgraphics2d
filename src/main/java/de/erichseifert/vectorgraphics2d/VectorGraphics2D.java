@@ -109,6 +109,14 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	private GraphicsState state;
 
+	public static class Builder {
+		public Builder(String format, PageSize pageSize) {
+			if (pageSize == null) {
+				throw new NullPointerException("Page size cannot be null.");
+			}
+		}
+	}
+
 	public VectorGraphics2D(PageSize pageSize) {
 		this.pageSize = pageSize;
 		commands = new LinkedList<Command<?>>();

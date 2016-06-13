@@ -134,4 +134,12 @@ public class VectorGraphics2DTest {
 
 		assertThat(vg2d.getBackground(), is(backgroundColor));
 	}
+
+	@Test(expected = NullPointerException.class)
+	public void testThrowsNullPointerExceptionWhenPageSizeIsNull() {
+		String format = "svg";
+		PageSize pageSize = null;
+
+		new VectorGraphics2D.Builder(format, pageSize);
+	}
 }
