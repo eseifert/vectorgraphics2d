@@ -22,7 +22,7 @@
 package de.erichseifert.vectorgraphics2d.eps;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
+import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
@@ -31,7 +31,8 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Encapsulated PostScript®</i> (EPS) format.
  */
-public class EPSGraphics2D extends VectorGraphics2D {
+public class EPSProcessor implements Processor {
+	private final PageSize pageSize;
 
 	/**
 	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
@@ -39,17 +40,17 @@ public class EPSGraphics2D extends VectorGraphics2D {
 	 * parameters.
 	 * @param pageSize Document size.
 	 */
-	public EPSGraphics2D(PageSize pageSize) {
-		super(pageSize);
+	public EPSProcessor(PageSize pageSize) {
+		this.pageSize = pageSize;
 	}
 
 	@Override
-	protected Document process(Iterable<Command<?>> commands) {
+	public Document process(Iterable<Command<?>> commands) {
 		// TODO Apply rotate(theta,x,y) => translate-rotate-translate filter
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
-		EPSDocument doc = new EPSDocument(getPageSize());
+		EPSDocument doc = new EPSDocument(pageSize);
 		for (Command<?> command : paintedShapeAsImageFilter) {
 			doc.handle(command);
 		}

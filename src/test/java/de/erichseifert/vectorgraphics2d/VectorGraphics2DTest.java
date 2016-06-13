@@ -51,12 +51,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
 public class VectorGraphics2DTest {
 	private static class DummyVectorGraphics2D extends VectorGraphics2D {
 		public DummyVectorGraphics2D() {
-			super(PageSize.A4);
-		}
-
-		@Override
-		protected Document process(Iterable<Command<?>> commands) {
-			return null;
+			super(null, PageSize.A4);
 		}
 	}
 

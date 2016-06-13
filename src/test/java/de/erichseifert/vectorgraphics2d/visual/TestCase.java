@@ -33,9 +33,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
 
-import de.erichseifert.vectorgraphics2d.eps.EPSGraphics2D;
-import de.erichseifert.vectorgraphics2d.pdf.PDFGraphics2D;
-import de.erichseifert.vectorgraphics2d.svg.SVGGraphics2D;
+import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -48,9 +46,9 @@ public abstract class TestCase {
 	private static final double EPSILON = 1;
 	private final PageSize pageSize;
 	private final BufferedImage reference;
-	private final EPSGraphics2D epsGraphics;
-	private final PDFGraphics2D pdfGraphics;
-	private final SVGGraphics2D svgGraphics;
+	private final VectorGraphics2D epsGraphics;
+	private final VectorGraphics2D pdfGraphics;
+	private final VectorGraphics2D svgGraphics;
 	private BufferedImage rasterizedEPS;
 	private BufferedImage rasterizedPDF;
 	private BufferedImage rasterizedSVG;
@@ -60,11 +58,11 @@ public abstract class TestCase {
 		int height = 150;
 		pageSize = new PageSize(0.0, 0.0, width, height);
 
-		epsGraphics = new EPSGraphics2D(pageSize);
+		epsGraphics = new VectorGraphics2D.Builder("eps", pageSize).build();
 		draw(epsGraphics);
-		pdfGraphics = new PDFGraphics2D(pageSize);
+		pdfGraphics = new VectorGraphics2D.Builder("pdf", pageSize).build();
 		draw(pdfGraphics);
-		svgGraphics = new SVGGraphics2D(pageSize);
+		svgGraphics = new VectorGraphics2D.Builder("svg", pageSize).build();
 		draw(svgGraphics);
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

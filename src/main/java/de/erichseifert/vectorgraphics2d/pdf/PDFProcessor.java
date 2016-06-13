@@ -22,7 +22,7 @@
 package de.erichseifert.vectorgraphics2d.pdf;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
+import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.AbsoluteToRelativeTransformsFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
@@ -33,7 +33,8 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * {@code Graphics2D} implementation that saves all operations to a string
  * in the <i>Portable Document Format</i> (PDF).
  */
-public class PDFGraphics2D extends VectorGraphics2D {
+public class PDFProcessor implements Processor {
+	private final PageSize pageSize;
 	private final boolean compressed;
 
 	/**
@@ -42,7 +43,7 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	 * parameters.
 	 * @param pageSize Document size.
 	 */
-	public PDFGraphics2D(PageSize pageSize) {
+	public PDFProcessor(PageSize pageSize) {
 		this(pageSize, false);
 	}
 
@@ -53,8 +54,8 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	 * @param pageSize Document size.
 	 * @param compressed Compression enabled.
 	 */
-	public PDFGraphics2D(PageSize pageSize, boolean compressed) {
-		super(pageSize);
+	public PDFProcessor(PageSize pageSize, boolean compressed) {
+		this.pageSize = pageSize;
 		this.compressed = compressed;
 	}
 
@@ -67,11 +68,11 @@ public class PDFGraphics2D extends VectorGraphics2D {
 	}
 
 	@Override
-	protected Document process(Iterable<Command<?>> commands) {
+	public Document process(Iterable<Command<?>> commands) {
 		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
-		PDFDocument doc = new PDFDocument(getPageSize(), isCompressed());
+		PDFDocument doc = new PDFDocument(pageSize, isCompressed());
 		for (Command<?> command : filtered) {
 			doc.handle(command);
 		}

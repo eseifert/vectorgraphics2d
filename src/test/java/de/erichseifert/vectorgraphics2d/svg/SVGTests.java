@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	SVGGraphics2DTest.class
+	SVGProcessorTest.class
 })
 public class SVGTests {
 }

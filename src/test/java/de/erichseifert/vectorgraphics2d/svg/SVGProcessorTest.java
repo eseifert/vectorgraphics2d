@@ -36,7 +36,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
-public class SVGGraphics2DTest {
+public class SVGProcessorTest {
 	private static final String EOL = "\n";
 	private static final String HEADER =
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + EOL +
@@ -45,7 +45,7 @@ public class SVGGraphics2DTest {
 	private static final String FOOTER = "</svg>";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final SVGGraphics2D svgGraphics = new SVGGraphics2D(PAGE_SIZE);
+	private final SVGProcessor svgGraphics = new SVGProcessor(PAGE_SIZE);
 	private final List<Command<?>> commands = new LinkedList<Command<?>>();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 

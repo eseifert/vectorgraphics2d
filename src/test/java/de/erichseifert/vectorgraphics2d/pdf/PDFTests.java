@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	PDFGraphics2DTest.class
+	PDFProcessorTest.class
 })
 public class PDFTests {
 }

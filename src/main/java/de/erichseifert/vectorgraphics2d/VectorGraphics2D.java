@@ -68,7 +68,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import de.erichseifert.vectorgraphics2d.eps.EPSGraphics2D;
+import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
@@ -91,8 +91,8 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.SetXORModeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.ShearCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
-import de.erichseifert.vectorgraphics2d.pdf.PDFGraphics2D;
-import de.erichseifert.vectorgraphics2d.svg.SVGGraphics2D;
+import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
+import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
@@ -101,7 +101,8 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * @author Erich Seifert
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
-public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
+public class VectorGraphics2D extends Graphics2D implements Cloneable {
+	private final Processor processor;
 	private final PageSize pageSize;
 	/** List of operations that were performed on this graphics object and its
 	 * derived objects. */
@@ -160,17 +161,18 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		 * @throws IllegalStateException if the configuration is not applicable for the graphics format.
 		 */
 		public VectorGraphics2D build() {
-			VectorGraphics2D vg2d = null;
+			Processor processor = null;
 			if (format.equals("eps")) {
-				vg2d = new EPSGraphics2D(pageSize);
+				processor = new EPSProcessor(pageSize);
 			} else if (format.equals("pdf")) {
-				vg2d = new PDFGraphics2D(pageSize, compressed);
+				processor = new PDFProcessor(pageSize, compressed);
 			} else if (format.equals("svg")) {
-				vg2d = new SVGGraphics2D(pageSize);
+				processor = new SVGProcessor(pageSize);
 			}
 			if (compressed && (format.equals("eps") || format.equals("svg"))) {
 				throw new IllegalStateException("Unable to produce compressed output for format \"" + format + "\"");
 			}
+			VectorGraphics2D vg2d = new VectorGraphics2D(processor, pageSize);
 			return vg2d;
 		}
 
@@ -185,7 +187,8 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 	}
 
-	public VectorGraphics2D(PageSize pageSize) {
+	public VectorGraphics2D(Processor processor, PageSize pageSize) {
+		this.processor = processor;
 		this.pageSize = pageSize;
 		commands = new LinkedList<Command<?>>();
 		emit(new CreateCommand(this));
@@ -884,14 +887,12 @@ public abstract class VectorGraphics2D extends Graphics2D implements Cloneable {
 		return disposed;
 	}
 
-	protected abstract Document process(Iterable<Command<?>> commands);
-
 	public PageSize getPageSize() {
 		return pageSize;
 	}
 
 	public void writeTo(OutputStream out) throws IOException {
-		Document doc = process(getCommands());
+		Document doc = processor.process(getCommands());
 		doc.writeTo(out);
 	}
 
