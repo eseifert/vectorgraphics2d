@@ -21,16 +21,23 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import static org.hamcrest.CoreMatchers.hasItem;
 
-import de.erichseifert.vectorgraphics2d.intermediate.filters.FilterTests;
+import static org.junit.Assert.assertThat;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	DefaultCommandSequenceTest.class,
-	FilterTests.class
-})
-public class IRTests {
+import org.junit.Test;
+
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+
+public class DefaultCommandSequenceTest {
+	@Test
+	public void testIteratorContainsAddedCommands() {
+		CommandSequence commands = new DefaultCommandSequence();
+		Command<?> command = new Command<Object>(null) {};
+
+		commands.add(command);
+
+		assertThat(commands, hasItem(command));
+	}
 }
 

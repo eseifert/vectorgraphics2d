@@ -21,16 +21,32 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import de.erichseifert.vectorgraphics2d.intermediate.filters.FilterTests;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	DefaultCommandSequenceTest.class,
-	FilterTests.class
-})
-public class IRTests {
+/**
+ * Default implementation of {@code CommandSequence}.
+ */
+public class DefaultCommandSequence implements CommandSequence {
+	private final List<Command<?>> commands;
+
+	/**
+	 * Initializes a new {@code CommandSequence} object.
+	 */
+	public DefaultCommandSequence() {
+		this.commands = new LinkedList<Command<?>>();
+	}
+
+	@Override
+	public void add(Command<?> command) {
+		commands.add(command);
+	}
+
+	@Override
+	public Iterator<Command<?>> iterator() {
+		return commands.iterator();
+	}
 }
-
