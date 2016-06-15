@@ -28,4 +28,9 @@ public class ProcessorsTest {
 	public void testGetThrowsNullPointerExceptionWhenNullIsPassed() {
 		Processors.get(null);
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetThrowsIllegalArgumentExceptionWhenFormatIsUnknown() {
+		Processors.get("UnknownFormat");
+	}
 }

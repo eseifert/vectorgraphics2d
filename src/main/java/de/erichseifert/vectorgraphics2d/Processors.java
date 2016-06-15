@@ -23,7 +23,10 @@ package de.erichseifert.vectorgraphics2d;
 
 public class Processors {
 	public static Processor get(String format) {
-		throw new NullPointerException("Format cannot be null.");
+		if (format == null) {
+			throw new NullPointerException("Format cannot be null.");
+		}
+		throw new IllegalArgumentException("Unknown format \"" + format + "\"");
 	}
 }
 
