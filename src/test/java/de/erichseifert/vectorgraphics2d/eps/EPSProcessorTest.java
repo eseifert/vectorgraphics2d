@@ -68,7 +68,7 @@ public class EPSProcessorTest {
 	};
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final EPSProcessor epsProcessor = new EPSProcessor(PAGE_SIZE);
+	private final EPSProcessor epsProcessor = new EPSProcessor();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {

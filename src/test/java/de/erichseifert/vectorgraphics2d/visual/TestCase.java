@@ -68,9 +68,9 @@ public abstract class TestCase {
 		vectorGraphics = new VectorGraphics2D();
 		draw(vectorGraphics);
 
-		epsProcessor = new EPSProcessor(pageSize);
-		pdfProcessor = new PDFProcessor(pageSize);
-		svgProcessor = new SVGProcessor(pageSize);
+		epsProcessor = new EPSProcessor();
+		pdfProcessor = new PDFProcessor(false);
+		svgProcessor = new SVGProcessor();
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D referenceGraphics = reference.createGraphics();

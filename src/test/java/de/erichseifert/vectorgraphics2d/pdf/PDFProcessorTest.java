@@ -41,7 +41,7 @@ public class PDFProcessorTest {
 	private static final String FOOTER = "%%EOF";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final PDFProcessor pdfProcessor = new PDFProcessor(PAGE_SIZE, false);
+	private final PDFProcessor pdfProcessor = new PDFProcessor(false);
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {

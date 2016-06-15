@@ -45,7 +45,7 @@ public class SVGProcessorTest {
 	private static final String FOOTER = "</svg>";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 
-	private final SVGProcessor svgProcessor = new SVGProcessor(PAGE_SIZE);
+	private final SVGProcessor svgProcessor = new SVGProcessor();
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {

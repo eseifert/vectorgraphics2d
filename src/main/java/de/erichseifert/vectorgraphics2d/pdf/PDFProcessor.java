@@ -21,8 +21,8 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import de.erichseifert.vectorgraphics2d.AbstractProcessor;
 import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.AbsoluteToRelativeTransformsFilter;
@@ -31,31 +31,17 @@ import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGrouping
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
- * {@code Graphics2D} implementation that saves all operations to a string
+ * {@code Processor} implementation that translates {@link CommandSequence}s to a string
  * in the <i>Portable Document Format</i> (PDF).
  */
-public class PDFProcessor extends AbstractProcessor {
+public class PDFProcessor implements Processor {
 	private final boolean compressed;
 
 	/**
-	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
-	 * commands to PDF data. The document dimensions must be specified as
-	 * parameters.
-	 * @param pageSize Document size.
+	 * Initializes a {@code PDFProcessor} with the specified compression settings.
+	 * @param compressed {@code true} if compression is enabled, {@code false} otherwise.
 	 */
-	public PDFProcessor(PageSize pageSize) {
-		this(pageSize, false);
-	}
-
-	/**
-	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
-	 * commands to PDF data. The document dimensions must be specified as
-	 * parameters.
-	 * @param pageSize Document size.
-	 * @param compressed Compression enabled.
-	 */
-	public PDFProcessor(PageSize pageSize, boolean compressed) {
-		super(pageSize);
+	public PDFProcessor(boolean compressed) {
 		this.compressed = compressed;
 	}
 

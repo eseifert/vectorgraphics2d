@@ -21,27 +21,22 @@
  */
 package de.erichseifert.vectorgraphics2d.eps;
 
-import de.erichseifert.vectorgraphics2d.AbstractProcessor;
 import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
- * {@code Graphics2D} implementation that saves all operations to a string
+ * {@code Processor} implementation that translates {@link CommandSequence}s to string
  * in the <i>Encapsulated PostScript®</i> (EPS) format.
  */
-public class EPSProcessor extends AbstractProcessor {
+public class EPSProcessor implements Processor {
 	/**
-	 * Initializes a new VectorGraphics2D pipeline for translating Graphics2D
-	 * commands to EPS data. The document dimensions must be specified as
-	 * parameters.
-	 * @param pageSize Document size.
+	 * Initializes an {@code EPSProcessor}.
 	 */
-	public EPSProcessor(PageSize pageSize) {
-		super(pageSize);
-	}
+	public EPSProcessor() {}
 
 	@Override
 	public Document getDocument(CommandSequence commands, PageSize pageSize) {
