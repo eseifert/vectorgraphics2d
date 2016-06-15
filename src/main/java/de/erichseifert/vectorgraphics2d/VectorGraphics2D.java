@@ -57,9 +57,6 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.text.AttributedCharacterIterator;
 import java.util.HashSet;
 import java.util.Map;
@@ -879,36 +876,8 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		return disposed;
 	}
 
-	public void writeTo(OutputStream out) throws IOException {
-		Document doc = getProcessor().getDocument(getCommands());
-		doc.writeTo(out);
-	}
-
 	protected Processor getProcessor() {
 		return processor;
-	}
-
-	/**
-	 * Returns the resulting document as byte array.
-	 * This method is deprecated and will be removed in a future release. Please use
-	 * {@link #writeTo(OutputStream)} instead.
-	 * @return Byte array of the drawn document.
-	 */
-	@Deprecated
-	public byte[] getBytes() {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		try {
-			writeTo(out);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return out.toByteArray();
 	}
 
 	/**
