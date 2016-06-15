@@ -881,7 +881,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	public void writeTo(OutputStream out) throws IOException {
-		Document doc = getProcessor().getDocument();
+		Document doc = getProcessor().getDocument(getCommands());
 		doc.writeTo(out);
 	}
 

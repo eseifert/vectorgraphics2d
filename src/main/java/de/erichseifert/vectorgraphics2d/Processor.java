@@ -21,6 +21,7 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 
 /**
@@ -28,10 +29,11 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
  */
 public interface Processor {
 	/**
-	 * Constructs a {@code Document} from the commands that have been added.
+	 * Constructs a {@code Document} from the specified commands.
+	 * @param commands Commands used to create the document.
 	 * @return {@code Document} representation of the commands.
 	 */
-	Document getDocument();
+	Document getDocument(CommandSequence commands);
 
 	void add(Command<?> command);
 

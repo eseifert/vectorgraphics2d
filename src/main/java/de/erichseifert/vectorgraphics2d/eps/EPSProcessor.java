@@ -23,6 +23,7 @@ package de.erichseifert.vectorgraphics2d.eps;
 
 import de.erichseifert.vectorgraphics2d.AbstractProcessor;
 import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
@@ -43,11 +44,11 @@ public class EPSProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	public Document getDocument() {
+	public Document getDocument(CommandSequence commands) {
 		// TODO Apply rotate(theta,x,y) => translate-rotate-translate filter
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
-		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(getCommands());
+		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
 		EPSDocument doc = new EPSDocument(getPageSize());
 		for (Command<?> command : paintedShapeAsImageFilter) {
 			doc.handle(command);

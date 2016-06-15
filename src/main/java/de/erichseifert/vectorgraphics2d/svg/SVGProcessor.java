@@ -23,6 +23,7 @@ package de.erichseifert.vectorgraphics2d.svg;
 
 import de.erichseifert.vectorgraphics2d.AbstractProcessor;
 import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGroupingFilter;
@@ -45,8 +46,8 @@ public class SVGProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	public Document getDocument() {
-		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(getCommands());
+	public Document getDocument(CommandSequence commands) {
+		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(commands);
 		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(shapesAsImages);
 		SVGDocument doc = new SVGDocument(getPageSize());
 		for (Command<?> command : filtered) {
