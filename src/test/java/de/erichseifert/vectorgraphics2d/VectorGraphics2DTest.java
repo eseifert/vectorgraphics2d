@@ -26,19 +26,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import org.junit.Test;
-import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
-import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
@@ -46,7 +41,6 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
-import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 @RunWith(Theories.class)
 public class VectorGraphics2DTest {
@@ -133,69 +127,5 @@ public class VectorGraphics2DTest {
 		vg2d.setBackground(backgroundColor);
 
 		assertThat(vg2d.getBackground(), is(backgroundColor));
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void testThrowsNullPointerExceptionWhenPageSizeIsNull() {
-		String format = "svg";
-		PageSize pageSize = null;
-
-		new VectorGraphics2D.Builder(format, pageSize);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void testThrowsNullPointerExceptionWhenFormatIsNull() {
-		String format = null;
-		PageSize pageSize = PageSize.A4;
-
-		new VectorGraphics2D.Builder(format, pageSize);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testThrowsIllegalArgumentExceptionWhenFormatIsUnkown() {
-		String format = "UnknownFormat";
-		PageSize pageSize = PageSize.A4;
-
-		new VectorGraphics2D.Builder(format, pageSize);
-	}
-
-	@DataPoints
-	public static List<String> KNOWN_FORMATS = Arrays.asList("eps", "pdf", "svg");
-
-	@Theory
-	public void testInitializesBuilderWhenFormatIsKnown(String format) {
-		PageSize pageSize = PageSize.A4;
-
-		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize);
-
-		assertNotNull(builder);
-	}
-
-	@Theory
-	public void testBuildReturnsVG2DObjectThatIsNotNull(String format) {
-		PageSize pageSize = PageSize.A4;
-		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize);
-
-		VectorGraphics2D vg2d = builder.build();
-
-		assertNotNull(vg2d);
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testBuildThrowsIllegalStateExceptionWhenCompressionIsEnabledForEPS() {
-		String format = "eps";
-		PageSize pageSize = PageSize.A4;
-		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize).compressed(true);
-
-		builder.build();
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testBuildThrowsIllegalStateExceptionWhenCompressionIsEnabledForSVG() {
-		String format = "svg";
-		PageSize pageSize = PageSize.A4;
-		VectorGraphics2D.Builder builder = new VectorGraphics2D.Builder(format, pageSize).compressed(true);
-
-		builder.build();
 	}
 }

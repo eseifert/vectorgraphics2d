@@ -65,7 +65,7 @@ public abstract class TestCase {
 		int height = 150;
 		pageSize = new PageSize(0.0, 0.0, width, height);
 
-		vectorGraphics = new VectorGraphics2D.Builder("eps", pageSize).build();
+		vectorGraphics = new VectorGraphics2D();
 		draw(vectorGraphics);
 
 		epsProcessor = new EPSProcessor(pageSize);

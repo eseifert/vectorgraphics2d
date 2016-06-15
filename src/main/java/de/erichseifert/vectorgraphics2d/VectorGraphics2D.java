@@ -58,10 +58,8 @@ import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
 import java.text.AttributedCharacterIterator;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.DefaultCommandSequence;
@@ -88,7 +86,6 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.ShearCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
-import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * Base for classes that want to implement vector export.
@@ -105,69 +102,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private boolean disposed;
 
 	private GraphicsState state;
-
-	/**
-	 * Represents a configurator for {@code VectorGraphics2D} objects.
-	 * Using this {@code Builder} is the preferred way of constructing a {@code VectorGraphics2D} object
-	 * for a specific format.
-	 */
-	public static class Builder {
-		private static Set<String> supportedFormats;
-		static {
-			supportedFormats = new HashSet<String>();
-			supportedFormats.add("eps");
-			supportedFormats.add("pdf");
-			supportedFormats.add("svg");
-		}
-		private final String format;
-		private final PageSize pageSize;
-		private boolean compressed;
-
-		/**
-		 * Initializes a {@code Builder} used to construct a {@code VectorGraphics2D} object for the specified
-		 * vector file format and page size.
-		 * Supported formats are "eps", "pdf", and "svg".
-		 * @param format Vector file format.
-		 * @param pageSize Size of the drawing area.
-		 */
-		public Builder(String format, PageSize pageSize) {
-			if (format == null) {
-				throw new NullPointerException("Graphics format cannot be null.");
-			}
-			if (pageSize == null) {
-				throw new NullPointerException("Page size cannot be null.");
-			}
-			if (!supportedFormats.contains(format)) {
-				throw new IllegalArgumentException("Unknown vector graphics format: " + format);
-			}
-
-			this.format = format;
-			this.pageSize = pageSize;
-		}
-
-		/**
-		 * Initializes a {@code VectorGraphics2D} object using the current builder configuration.
-		 * @return Ready-to-use {@code VectorGraphics2D} object.
-		 * @throws IllegalStateException if the configuration is not applicable for the graphics format.
-		 */
-		public VectorGraphics2D build() {
-			if (compressed && (format.equals("eps") || format.equals("svg"))) {
-				throw new IllegalStateException("Unable to produce compressed output for format \"" + format + "\"");
-			}
-			VectorGraphics2D vg2d = new VectorGraphics2D();
-			return vg2d;
-		}
-
-		/**
-		 * Enables or disables compression for the output data.
-		 * @param compressed {@code true} if compression is enabled, {@code false} otherwise.
-		 * @return This Builder.
-		 */
-		public Builder compressed(boolean compressed) {
-			this.compressed = compressed;
-			return this;
-		}
-	}
 
 	public VectorGraphics2D() {
 		this.commands = new DefaultCommandSequence();
