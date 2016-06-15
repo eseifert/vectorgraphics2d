@@ -63,7 +63,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.DefaultCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
@@ -88,8 +87,6 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.SetXORModeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.ShearCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
-import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
-import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
@@ -100,7 +97,6 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  */
 public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private final CommandSequence commands;
-	private final Processor processor;
 	/** Device configuration settings. */
 	private final GraphicsConfiguration deviceConfig;
 	/** Context settings used to render fonts. */
@@ -155,18 +151,10 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		 * @throws IllegalStateException if the configuration is not applicable for the graphics format.
 		 */
 		public VectorGraphics2D build() {
-			Processor processor = null;
-			if (format.equals("eps")) {
-				processor = new EPSProcessor(pageSize);
-			} else if (format.equals("pdf")) {
-				processor = new PDFProcessor(pageSize, compressed);
-			} else if (format.equals("svg")) {
-				processor = new SVGProcessor(pageSize);
-			}
 			if (compressed && (format.equals("eps") || format.equals("svg"))) {
 				throw new IllegalStateException("Unable to produce compressed output for format \"" + format + "\"");
 			}
-			VectorGraphics2D vg2d = new VectorGraphics2D(processor);
+			VectorGraphics2D vg2d = new VectorGraphics2D();
 			return vg2d;
 		}
 
@@ -181,9 +169,8 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		}
 	}
 
-	public VectorGraphics2D(Processor processor) {
+	public VectorGraphics2D() {
 		this.commands = new DefaultCommandSequence();
-		this.processor = processor;
 		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = null;
@@ -874,10 +861,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	protected boolean isDisposed() {
 		return disposed;
-	}
-
-	protected Processor getProcessor() {
-		return processor;
 	}
 
 	/**

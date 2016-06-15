@@ -34,7 +34,6 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoints;
@@ -51,28 +50,9 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 @RunWith(Theories.class)
 public class VectorGraphics2DTest {
-	private static class MockProcessor implements Processor {
-		private final List<Command<?>> commands;
-
-		public MockProcessor() {
-			commands = new LinkedList<Command<?>>();
-		}
-
-		@Override
-		public Document getDocument(CommandSequence commands) {
-			return null;
-		}
-	}
-
-	private static class DummyVectorGraphics2D extends VectorGraphics2D {
-		public DummyVectorGraphics2D() {
-			super(new MockProcessor());
-		}
-	}
-
 	@Test
 	public void testVectorGraphics2DEmitsCreateCommand() {
-		VectorGraphics2D g = new DummyVectorGraphics2D();
+		VectorGraphics2D g = new VectorGraphics2D();
 
 		CommandSequence commands = g.getCommands();
 		Iterator<Command<?>> commandIterator = commands.iterator();
@@ -86,7 +66,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testCreateEmitsCreateCommand() {
-		VectorGraphics2D g = new DummyVectorGraphics2D();
+		VectorGraphics2D g = new VectorGraphics2D();
 		CommandSequence gCommands = g.getCommands();
 		Iterator<Command<?>> gCommandIterator = gCommands.iterator();
 		CreateCommand gCreateCommand = (CreateCommand) gCommandIterator.next();
@@ -104,7 +84,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testDisposeCommandEmitted() {
-		VectorGraphics2D g = new DummyVectorGraphics2D();
+		VectorGraphics2D g = new VectorGraphics2D();
 		g.setColor(Color.RED);
 
 		VectorGraphics2D g2 = (VectorGraphics2D) g.create();
@@ -123,7 +103,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testClipIntersectsClipRectangle() {
-		VectorGraphics2D vg2d = new DummyVectorGraphics2D();
+		VectorGraphics2D vg2d = new VectorGraphics2D();
 		Rectangle2D currentClipShape = new Rectangle2D.Double(5, 10, 20, 30);
 		vg2d.setClip(currentClipShape);
 		Rectangle2D newClipShape = new Rectangle2D.Double(10, 20, 30, 40);
@@ -136,7 +116,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testClipClearsClippingShapeWhenNullIsPassed() {
-		VectorGraphics2D vg2d = new DummyVectorGraphics2D();
+		VectorGraphics2D vg2d = new VectorGraphics2D();
 		Rectangle2D clipShape = new Rectangle2D.Double(5, 10, 20, 30);
 		vg2d.setClip(clipShape);
 
@@ -147,7 +127,7 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testSetBackgroundSetsBackgroundColor() {
-		VectorGraphics2D vg2d = new DummyVectorGraphics2D();
+		VectorGraphics2D vg2d = new VectorGraphics2D();
 		Color backgroundColor = Color.DARK_GRAY;
 
 		vg2d.setBackground(backgroundColor);
