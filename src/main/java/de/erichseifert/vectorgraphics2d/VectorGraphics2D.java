@@ -67,6 +67,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
+import de.erichseifert.vectorgraphics2d.intermediate.DefaultCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
@@ -100,6 +102,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
 public class VectorGraphics2D extends Graphics2D implements Cloneable {
+	private final CommandSequence commands;
 	private final Processor processor;
 	/** Device configuration settings. */
 	private final GraphicsConfiguration deviceConfig;
@@ -182,6 +185,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	public VectorGraphics2D(Processor processor) {
+		this.commands = new DefaultCommandSequence();
 		this.processor = processor;
 		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -869,6 +873,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	private void emit(Command<?> command) {
 		getProcessor().add(command);
+		commands.add(command);
 	}
 
 	protected boolean isDisposed() {
@@ -905,6 +910,14 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 			}
 		}
 		return out.toByteArray();
+	}
+
+	/**
+	 * Returns a {@code CommandSequence} representing all calls that were issued to this {@code VectorGraphics2D} object.
+	 * @return Sequence of commands since.
+	 */
+	public CommandSequence getCommands() {
+		return commands;
 	}
 }
 

@@ -21,6 +21,7 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -30,7 +31,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -42,6 +42,7 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
@@ -82,19 +83,21 @@ public class VectorGraphics2DTest {
 	@Test
 	public void testVectorGraphics2DEmitsCreateCommand() {
 		VectorGraphics2D g = new DummyVectorGraphics2D();
-		Iterable<Command<?>> commands = g.getProcessor().getCommands();
+
+		CommandSequence commands = g.getCommands();
 		Iterator<Command<?>> commandIterator = commands.iterator();
 		assertTrue(commandIterator.hasNext());
 
 		Command<?> firstCommand = commandIterator.next();
-		assertTrue(firstCommand instanceof CreateCommand);
+		assertThat(firstCommand, instanceOf(CreateCommand.class));
+		// TODO: Move this assertion into a separate test case
 		assertEquals(g, ((CreateCommand) firstCommand).getValue());
 	}
 
 	@Test
 	public void testCreateEmitsCreateCommand() {
 		VectorGraphics2D g = new DummyVectorGraphics2D();
-		Iterable<Command<?>> gCommands = g.getProcessor().getCommands();
+		CommandSequence gCommands = g.getCommands();
 		Iterator<Command<?>> gCommandIterator = gCommands.iterator();
 		CreateCommand gCreateCommand = (CreateCommand) gCommandIterator.next();
 
@@ -111,14 +114,14 @@ public class VectorGraphics2DTest {
 
 	@Test
 	public void testDisposeCommandEmitted() {
-		Graphics2D g = new DummyVectorGraphics2D();
+		VectorGraphics2D g = new DummyVectorGraphics2D();
 		g.setColor(Color.RED);
 
-		Graphics2D g2 = (Graphics2D) g.create();
+		VectorGraphics2D g2 = (VectorGraphics2D) g.create();
 		g2.setColor(Color.BLUE);
 		g2.dispose();
 
-		Iterable<Command<?>> commands = ((VectorGraphics2D) g).getProcessor().getCommands();
+		CommandSequence commands = g.getCommands();
 		Command<?> lastCommand = null;
 		for (Command<?> command : commands) {
 			lastCommand = command;
