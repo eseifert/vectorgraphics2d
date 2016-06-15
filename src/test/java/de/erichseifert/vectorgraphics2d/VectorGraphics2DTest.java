@@ -59,18 +59,8 @@ public class VectorGraphics2DTest {
 		}
 
 		@Override
-		public Document getDocument() {
+		public Document getDocument(CommandSequence commands) {
 			return null;
-		}
-
-		@Override
-		public void add(Command<?> command) {
-			commands.add(command);
-		}
-
-		@Override
-		public Iterable<Command<?>> getCommands() {
-			return commands;
 		}
 	}
 
@@ -103,7 +93,7 @@ public class VectorGraphics2DTest {
 
 		VectorGraphics2D g2 = (VectorGraphics2D) g.create();
 		CreateCommand g2CreateCommand = null;
-		for (Command<?> g2Command : g2.getProcessor().getCommands()) {
+		for (Command<?> g2Command : g2.getCommands()) {
 			if (g2Command instanceof CreateCommand) {
 				g2CreateCommand = (CreateCommand) g2Command;
 			}

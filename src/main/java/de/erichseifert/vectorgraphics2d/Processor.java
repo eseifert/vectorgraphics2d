@@ -34,9 +34,5 @@ public interface Processor {
 	 * @return {@code Document} representation of the commands.
 	 */
 	Document getDocument(CommandSequence commands);
-
-	void add(Command<?> command);
-
-	Iterable<Command<?>> getCommands();
 }
 

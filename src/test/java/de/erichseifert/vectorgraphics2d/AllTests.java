@@ -35,7 +35,6 @@ import de.erichseifert.vectorgraphics2d.util.UtilTests;
 	TestUtilsTest.class,
 	UtilTests.class,
 	IRTests.class,
-	AbstractProcessorTest.class,
 	VectorGraphics2DTest.class,
 	EPSTests.class,
 	PDFTests.class,

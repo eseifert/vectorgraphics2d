@@ -872,7 +872,6 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	private void emit(Command<?> command) {
-		getProcessor().add(command);
 		commands.add(command);
 	}
 
