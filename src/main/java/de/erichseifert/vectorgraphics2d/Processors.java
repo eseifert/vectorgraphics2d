@@ -21,12 +21,24 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
+import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
+import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
+import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
+
 public class Processors {
 	public static Processor get(String format) {
 		if (format == null) {
 			throw new NullPointerException("Format cannot be null.");
 		}
-		throw new IllegalArgumentException("Unknown format \"" + format + "\"");
+		if (format.equals("eps")) {
+			return new EPSProcessor();
+		} else if (format.equals("pdf")) {
+			return new PDFProcessor(true);
+		} else if (format.equals("svg")) {
+			return new SVGProcessor();
+		} else {
+			throw new IllegalArgumentException("Unknown format \"" + format + "\"");
+		}
 	}
 }
 

@@ -21,8 +21,19 @@
  */
 package de.erichseifert.vectorgraphics2d;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
+import org.junit.Test;
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
+
+@RunWith(Theories.class)
 public class ProcessorsTest {
 	@Test(expected = NullPointerException.class)
 	public void testGetThrowsNullPointerExceptionWhenNullIsPassed() {
@@ -32,5 +43,15 @@ public class ProcessorsTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetThrowsIllegalArgumentExceptionWhenFormatIsUnknown() {
 		Processors.get("UnknownFormat");
+	}
+
+	@DataPoints
+	public static List<String> KNOWN_FORMATS = Arrays.asList("eps", "pdf", "svg");
+
+	@Theory
+	public void testGetReturnsNonNullWhenFormatIsKnown(String format) {
+		Processor processor = Processors.get(format);
+
+		assertThat(processor, is(notNullValue()));
 	}
 }
