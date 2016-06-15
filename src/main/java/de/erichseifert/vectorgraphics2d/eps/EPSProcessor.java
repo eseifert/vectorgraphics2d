@@ -44,12 +44,12 @@ public class EPSProcessor extends AbstractProcessor {
 	}
 
 	@Override
-	public Document getDocument(CommandSequence commands) {
+	public Document getDocument(CommandSequence commands, PageSize pageSize) {
 		// TODO Apply rotate(theta,x,y) => translate-rotate-translate filter
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
-		EPSDocument doc = new EPSDocument(getPageSize());
+		EPSDocument doc = new EPSDocument(pageSize);
 		for (Command<?> command : paintedShapeAsImageFilter) {
 			doc.handle(command);
 		}

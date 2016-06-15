@@ -23,6 +23,7 @@ package de.erichseifert.vectorgraphics2d;
 
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * Translates {@link Command} objects into a {@link Document}.
@@ -30,9 +31,10 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 public interface Processor {
 	/**
 	 * Constructs a {@code Document} from the specified commands.
-	 * @param commands Commands used to create the document.
+	 * @param commands Commands used to create the {@code Document}.
+	 * @param pageSize Size of the resulting {@code Document}.
 	 * @return {@code Document} representation of the commands.
 	 */
-	Document getDocument(CommandSequence commands);
+	Document getDocument(CommandSequence commands, PageSize pageSize);
 }
 

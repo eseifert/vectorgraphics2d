@@ -96,21 +96,21 @@ public abstract class TestCase {
 	}
 
 	public InputStream getEPS() throws IOException {
-		Document document = epsProcessor.getDocument(vectorGraphics.getCommands());
+		Document document = epsProcessor.getDocument(vectorGraphics.getCommands(), getPageSize());
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		document.writeTo(byteOutput);
 		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
 	public InputStream getPDF() throws IOException {
-		Document document = pdfProcessor.getDocument(vectorGraphics.getCommands());
+		Document document = pdfProcessor.getDocument(vectorGraphics.getCommands(), getPageSize());
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		document.writeTo(byteOutput);
 		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
 	public InputStream getSVG() throws IOException {
-		Document document = svgProcessor.getDocument(vectorGraphics.getCommands());
+		Document document = svgProcessor.getDocument(vectorGraphics.getCommands(), getPageSize());
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		document.writeTo(byteOutput);
 		return new ByteArrayInputStream(byteOutput.toByteArray());
@@ -124,7 +124,7 @@ public abstract class TestCase {
 		File epsInputFile = File.createTempFile(getClass().getName() + ".testEPS", ".eps");
 		epsInputFile.deleteOnExit();
 		OutputStream epsInput = new FileOutputStream(epsInputFile);
-		epsProcessor.getDocument(vectorGraphics.getCommands()).writeTo(epsInput);
+		epsProcessor.getDocument(vectorGraphics.getCommands(), getPageSize()).writeTo(epsInput);
 		epsInput.close();
 
 		File pngOutputFile = File.createTempFile(getClass().getName() + ".testEPS", "png");
@@ -157,7 +157,7 @@ public abstract class TestCase {
 		File pdfInputFile = File.createTempFile(getClass().getName() + ".testPDF", ".pdf");
 		pdfInputFile.deleteOnExit();
 		OutputStream pdfInput = new FileOutputStream(pdfInputFile);
-		pdfProcessor.getDocument(vectorGraphics.getCommands()).writeTo(pdfInput);
+		pdfProcessor.getDocument(vectorGraphics.getCommands(), getPageSize()).writeTo(pdfInput);
 		pdfInput.close();
 
 		File pngOutputFile = File.createTempFile(getClass().getName() + ".testPDF", "png");

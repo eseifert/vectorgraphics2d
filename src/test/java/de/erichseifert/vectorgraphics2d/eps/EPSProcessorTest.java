@@ -76,7 +76,7 @@ public class EPSProcessorTest {
 		for (Command<?> command : commands) {
 			sequence.add(command);
 		}
-		Document processed = epsProcessor.getDocument(sequence);
+		Document processed = epsProcessor.getDocument(sequence, PAGE_SIZE);
 		processed.writeTo(bytes);
 		return bytes.toString("ISO-8859-1");
 	}

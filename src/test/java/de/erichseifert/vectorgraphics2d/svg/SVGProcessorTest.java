@@ -53,7 +53,7 @@ public class SVGProcessorTest {
 		for (Command<?> command : commands) {
 			sequence.add(command);
 		}
-		Document processed = svgProcessor.getDocument(sequence);
+		Document processed = svgProcessor.getDocument(sequence, PAGE_SIZE);
 		processed.writeTo(bytes);
 		return bytes.toString("UTF-8");
 	}

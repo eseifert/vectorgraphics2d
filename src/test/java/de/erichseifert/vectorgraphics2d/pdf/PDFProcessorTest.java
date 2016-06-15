@@ -49,7 +49,7 @@ public class PDFProcessorTest {
 		for (Command<?> command : commands) {
 			sequence.add(command);
 		}
-		Document processed = pdfProcessor.getDocument(sequence);
+		Document processed = pdfProcessor.getDocument(sequence, PAGE_SIZE);
 		processed.writeTo(bytes);
 		return bytes.toString("ISO-8859-1");
 	}
