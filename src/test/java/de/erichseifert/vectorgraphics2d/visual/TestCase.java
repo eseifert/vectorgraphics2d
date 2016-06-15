@@ -26,6 +26,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,7 +34,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import javax.imageio.ImageIO;
 
+import de.erichseifert.vectorgraphics2d.Document;
+import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
+import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
+import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
+import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
@@ -46,9 +52,10 @@ public abstract class TestCase {
 	private static final double EPSILON = 1;
 	private final PageSize pageSize;
 	private final BufferedImage reference;
-	private final VectorGraphics2D epsGraphics;
-	private final VectorGraphics2D pdfGraphics;
-	private final VectorGraphics2D svgGraphics;
+	private final VectorGraphics2D vectorGraphics;
+	private final Processor epsProcessor;
+	private final Processor pdfProcessor;
+	private final Processor svgProcessor;
 	private BufferedImage rasterizedEPS;
 	private BufferedImage rasterizedPDF;
 	private BufferedImage rasterizedSVG;
@@ -58,12 +65,12 @@ public abstract class TestCase {
 		int height = 150;
 		pageSize = new PageSize(0.0, 0.0, width, height);
 
-		epsGraphics = new VectorGraphics2D.Builder("eps", pageSize).build();
-		draw(epsGraphics);
-		pdfGraphics = new VectorGraphics2D.Builder("pdf", pageSize).build();
-		draw(pdfGraphics);
-		svgGraphics = new VectorGraphics2D.Builder("svg", pageSize).build();
-		draw(svgGraphics);
+		vectorGraphics = new VectorGraphics2D.Builder("eps", pageSize).build();
+		draw(vectorGraphics);
+
+		epsProcessor = new EPSProcessor(pageSize);
+		pdfProcessor = new PDFProcessor(pageSize);
+		svgProcessor = new SVGProcessor(pageSize);
 
 		reference = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D referenceGraphics = reference.createGraphics();
@@ -88,16 +95,25 @@ public abstract class TestCase {
 		return reference;
 	}
 
-	public InputStream getEPS() {
-		return new ByteArrayInputStream(epsGraphics.getBytes());
+	public InputStream getEPS() throws IOException {
+		Document document = epsProcessor.getDocument(vectorGraphics.getCommands());
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+		document.writeTo(byteOutput);
+		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
-	public InputStream getPDF() {
-		return new ByteArrayInputStream(pdfGraphics.getBytes());
+	public InputStream getPDF() throws IOException {
+		Document document = pdfProcessor.getDocument(vectorGraphics.getCommands());
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+		document.writeTo(byteOutput);
+		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
-	public InputStream getSVG() {
-		return new ByteArrayInputStream(svgGraphics.getBytes());
+	public InputStream getSVG() throws IOException {
+		Document document = svgProcessor.getDocument(vectorGraphics.getCommands());
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+		document.writeTo(byteOutput);
+		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
 	public BufferedImage getRasterizedEPS() throws GhostscriptException, IOException {
@@ -108,7 +124,7 @@ public abstract class TestCase {
 		File epsInputFile = File.createTempFile(getClass().getName() + ".testEPS", ".eps");
 		epsInputFile.deleteOnExit();
 		OutputStream epsInput = new FileOutputStream(epsInputFile);
-		epsInput.write(epsGraphics.getBytes());
+		epsProcessor.getDocument(vectorGraphics.getCommands()).writeTo(epsInput);
 		epsInput.close();
 
 		File pngOutputFile = File.createTempFile(getClass().getName() + ".testEPS", "png");
@@ -141,7 +157,7 @@ public abstract class TestCase {
 		File pdfInputFile = File.createTempFile(getClass().getName() + ".testPDF", ".pdf");
 		pdfInputFile.deleteOnExit();
 		OutputStream pdfInput = new FileOutputStream(pdfInputFile);
-		pdfInput.write(pdfGraphics.getBytes());
+		pdfProcessor.getDocument(vectorGraphics.getCommands()).writeTo(pdfInput);
 		pdfInput.close();
 
 		File pngOutputFile = File.createTempFile(getClass().getName() + ".testPDF", "png");
@@ -167,7 +183,7 @@ public abstract class TestCase {
 		return rasterizedPDF;
 	}
 
-	public BufferedImage getRasterizedSVG() throws TranscoderException {
+	public BufferedImage getRasterizedSVG() throws TranscoderException, IOException {
 		if (rasterizedSVG != null) {
 			return rasterizedSVG;
 		}
