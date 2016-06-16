@@ -29,8 +29,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
-import de.erichseifert.vectorgraphics2d.intermediate.DefaultCommandSequence;
+import de.erichseifert.vectorgraphics2d.intermediate.MutableCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
@@ -49,7 +48,7 @@ public class SVGProcessorTest {
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {
-		CommandSequence sequence = new DefaultCommandSequence();
+		MutableCommandSequence sequence = new MutableCommandSequence();
 		for (Command<?> command : commands) {
 			sequence.add(command);
 		}

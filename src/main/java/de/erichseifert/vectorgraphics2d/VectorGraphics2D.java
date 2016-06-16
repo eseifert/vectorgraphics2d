@@ -62,7 +62,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
-import de.erichseifert.vectorgraphics2d.intermediate.DefaultCommandSequence;
+import de.erichseifert.vectorgraphics2d.intermediate.MutableCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
@@ -93,7 +93,7 @@ import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
 public class VectorGraphics2D extends Graphics2D implements Cloneable {
-	private final CommandSequence commands;
+	private final MutableCommandSequence commands;
 	/** Device configuration settings. */
 	private final GraphicsConfiguration deviceConfig;
 	/** Context settings used to render fonts. */
@@ -104,7 +104,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private GraphicsState state;
 
 	public VectorGraphics2D() {
-		this.commands = new DefaultCommandSequence();
+		this.commands = new MutableCommandSequence();
 		emit(new CreateCommand(this));
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = null;

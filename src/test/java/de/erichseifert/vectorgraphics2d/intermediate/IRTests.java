@@ -28,7 +28,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.filters.FilterTests;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	DefaultCommandSequenceTest.class,
+	MutableCommandSequenceTest.class,
 	FilterTests.class
 })
 public class IRTests {

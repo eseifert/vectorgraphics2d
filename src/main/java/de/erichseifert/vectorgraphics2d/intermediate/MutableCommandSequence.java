@@ -21,23 +21,32 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-
-import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 
-public class DefaultCommandSequenceTest {
-	@Test
-	public void testIteratorContainsAddedCommands() {
-		CommandSequence commands = new DefaultCommandSequence();
-		Command<?> command = new Command<Object>(null) {};
+/**
+ * Mutable implementation of {@code CommandSequence}.
+ * It is possible to add commands to this sequence.
+ */
+public class MutableCommandSequence implements CommandSequence {
+	private final List<Command<?>> commands;
 
+	/**
+	 * Initializes a new {@code CommandSequence} object.
+	 */
+	public MutableCommandSequence() {
+		this.commands = new LinkedList<Command<?>>();
+	}
+
+	public void add(Command<?> command) {
 		commands.add(command);
+	}
 
-		assertThat(commands, hasItem(command));
+	@Override
+	public Iterator<Command<?>> iterator() {
+		return commands.iterator();
 	}
 }
-

@@ -30,8 +30,7 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 import de.erichseifert.vectorgraphics2d.Document;
-import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
-import de.erichseifert.vectorgraphics2d.intermediate.DefaultCommandSequence;
+import de.erichseifert.vectorgraphics2d.intermediate.MutableCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
@@ -72,7 +71,7 @@ public class EPSProcessorTest {
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
 	private String process(Command<?>... commands) throws IOException {
-		CommandSequence sequence = new DefaultCommandSequence();
+		MutableCommandSequence sequence = new MutableCommandSequence();
 		for (Command<?> command : commands) {
 			sequence.add(command);
 		}
