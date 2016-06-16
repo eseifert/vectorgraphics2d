@@ -31,7 +31,6 @@ public class SizePayload extends GeneratedPayload {
 	private final String charset;
 
 	public SizePayload(PDFObject object, String charset) {
-		super(false);
 		this.object = object;
 		this.charset = charset;
 	}

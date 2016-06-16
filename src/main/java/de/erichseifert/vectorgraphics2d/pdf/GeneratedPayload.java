@@ -24,8 +24,8 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import java.io.IOException;
 
 public abstract class GeneratedPayload extends Payload {
-	public GeneratedPayload(boolean stream) {
-		super(stream);
+	public GeneratedPayload() {
+		super(false);
 	}
 
 	@Override
