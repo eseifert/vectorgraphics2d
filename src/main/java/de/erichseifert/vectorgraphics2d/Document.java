@@ -28,5 +28,11 @@ import de.erichseifert.vectorgraphics2d.intermediate.CommandHandler;
 
 public interface Document extends CommandHandler {
 	void writeTo(OutputStream out) throws IOException;
+
+	/**
+	 * Returns whether or not the {@code Document} represents compressed data.
+	 * @return {@code true} if the contents are compressed, {@code false} otherwise.
+	 */
+	boolean isCompressed();
 }
 

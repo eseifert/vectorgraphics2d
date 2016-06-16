@@ -128,7 +128,7 @@ public class SVGDocument extends SizedDocument {
 	);
 
 	public SVGDocument(PageSize pageSize) {
-		super(pageSize);
+		super(pageSize, true);
 
 		states = new Stack<GraphicsState>();
 		states.push(new GraphicsState());

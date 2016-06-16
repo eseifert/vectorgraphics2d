@@ -105,7 +105,7 @@ public class EPSDocument extends SizedDocument {
 	private final List<String> elements;
 
 	public EPSDocument(PageSize pageSize) {
-		super(pageSize);
+		super(pageSize, true);
 		elements = new LinkedList<String>();
 		addHeader();
 	}

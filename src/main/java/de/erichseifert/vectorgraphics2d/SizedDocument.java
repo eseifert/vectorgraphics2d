@@ -25,13 +25,20 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 public abstract class SizedDocument implements Document {
 	private final PageSize pageSize;
+	private final boolean compressed;
 
-	public SizedDocument(PageSize pageSize) {
+	public SizedDocument(PageSize pageSize, boolean compressed) {
 		this.pageSize = pageSize;
+		this.compressed = compressed;
 	}
 
 	public PageSize getPageSize() {
 		return pageSize;
+	}
+
+	@Override
+	public boolean isCompressed() {
+		return this.compressed;
 	}
 }
 

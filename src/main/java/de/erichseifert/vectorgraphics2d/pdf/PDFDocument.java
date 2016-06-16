@@ -106,12 +106,8 @@ public class PDFDocument extends SizedDocument {
 	private final Stack<GraphicsState> states;
 	private boolean transformed;
 
-	private final boolean compressed;
-
 	public PDFDocument(PageSize pageSize, boolean compressed) {
-		super(pageSize);
-
-		this.compressed = compressed;
+		super(pageSize, compressed);
 
 		states = new Stack<GraphicsState>();
 		states.push(new GraphicsState());
@@ -165,7 +161,7 @@ public class PDFDocument extends SizedDocument {
 		page.dict.put("Contents", contents);
 
 		// Compression
-		if (compressed) {
+		if (isCompressed()) {
 			contentsPayload.addFilter(FlateEncodeStream.class);
 			contents.dict.put("Filter", new Object[] {"FlateDecode"});
 		}
@@ -227,7 +223,7 @@ public class PDFDocument extends SizedDocument {
 
 		// Compression
 		String[] imageFilters = {};
-		if (compressed) {
+		if (isCompressed()) {
 			imagePayload.addFilter(FlateEncodeStream.class);
 			imageFilters = new String[] {"FlateDecode"};
 		}
@@ -668,8 +664,5 @@ public class PDFDocument extends SizedDocument {
 		}
 	}
 
-	public boolean isCompressed() {
-		return this.compressed;
-	}
 }
 
