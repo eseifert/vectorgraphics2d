@@ -131,14 +131,8 @@ public class PDFDocument extends SizedDocument {
 
 		PDFObject catalog = addCatalog();
 
-		// Pages
 		List<PDFObject> pagesKids = new LinkedList<PDFObject>();
-		dict = DataUtils.map(
-			new String[] {"Type", "Kids", "Count"},
-			new Object[] {"Pages", pagesKids, 1}
-		);
-		PDFObject pages = addDictionary(dict);
-		catalog.dict.put("Pages", pages);
+		PDFObject pages = addPageTree(catalog, pagesKids);
 
 		// Page
 		double x = getPageSize().getX()*MM_IN_UNITS;
@@ -221,6 +215,16 @@ public class PDFDocument extends SizedDocument {
 				new Object[] {"Catalog"}
 		);
 		return addDictionary(dict);
+	}
+
+	private PDFObject addPageTree(PDFObject catalog, List<PDFObject> pages) {
+		Map<String, Object> dict = DataUtils.map(
+				new String[] {"Type", "Kids", "Count"},
+				new Object[] {"Pages", pages, 1}
+		);
+		PDFObject pageTree = addDictionary(dict);
+		catalog.dict.put("Pages", pageTree);
+		return pageTree;
 	}
 
 	private PDFObject addDictionary(Map<String, Object> dict) {
