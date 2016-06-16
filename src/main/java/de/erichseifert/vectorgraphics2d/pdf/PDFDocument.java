@@ -129,12 +129,7 @@ public class PDFDocument extends SizedDocument {
 	private void initPage() {
 		Map<String, Object> dict;
 
-		// Catalog
-		dict = DataUtils.map(
-			new String[] {"Type"},
-			new Object[] {"Catalog"}
-		);
-		PDFObject catalog = addDictionary(dict);
+		PDFObject catalog = addCatalog();
 
 		// Pages
 		List<PDFObject> pagesKids = new LinkedList<PDFObject>();
@@ -218,6 +213,14 @@ public class PDFDocument extends SizedDocument {
 		PDFObject object = new PDFObject(id, version, null, payload, false);
 		objects.add(object);
 		return object;
+	}
+
+	private PDFObject addCatalog() {
+		Map<String, Object> dict = DataUtils.map(
+				new String[] {"Type"},
+				new Object[] {"Catalog"}
+		);
+		return addDictionary(dict);
 	}
 
 	private PDFObject addDictionary(Map<String, Object> dict) {
