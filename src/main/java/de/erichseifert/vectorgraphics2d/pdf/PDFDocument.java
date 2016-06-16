@@ -96,8 +96,10 @@ public class PDFDocument extends SizedDocument {
 	);
 
 	private final List<PDFObject> objects;
+	/** Counter representing the next free object ID. */
 	private int objectIdCounter;
-	private final Map<PDFObject, Long> xref;
+	/** Cross-reference table ("xref"). */
+	private final Map<PDFObject, Long> crossReferences;
 
 	private PDFObject contents;
 	private Resources resources;
@@ -114,7 +116,7 @@ public class PDFDocument extends SizedDocument {
 
 		objects = new LinkedList<PDFObject>();
 		objectIdCounter = 1;
-		xref = new HashMap<PDFObject, Long>();
+		crossReferences = new HashMap<PDFObject, Long>();
 		images = new HashMap<Integer, PDFObject>();
 
 		initPage();
@@ -275,7 +277,7 @@ public class PDFDocument extends SizedDocument {
 		o.writeln(HEADER);
 
 		for (PDFObject obj : objects) {
-			xref.put(obj, o.tell());
+			crossReferences.put(obj, o.tell());
 			o.writeln(toString(obj));
 			o.flush();
 		}
@@ -285,7 +287,7 @@ public class PDFDocument extends SizedDocument {
 		o.write(0).write(" ").writeln(objects.size() + 1);
 		o.format("%010d %05d f ", 0, 65535).writeln();
 		for (PDFObject obj : objects) {
-			o.format("%010d %05d n ", xref.get(obj), 0).writeln();
+			o.format("%010d %05d n ", crossReferences.get(obj), 0).writeln();
 		}
 		o.flush();
 
