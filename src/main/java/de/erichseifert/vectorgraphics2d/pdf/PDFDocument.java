@@ -181,7 +181,7 @@ public class PDFDocument extends SizedDocument {
 
 		// Content length
 		Payload contentLengthPayload = new SizePayload(contents, CHARSET);
-		PDFObject contentLength = addObject(null, contentLengthPayload);
+		PDFObject contentLength = addInteger(contentLengthPayload);
 		contents.dict.put("Length", contentLength);
 
 		// Resources
@@ -208,6 +208,14 @@ public class PDFDocument extends SizedDocument {
 		final int id = objectIdCounter++;
 		final int version = 0;
 		PDFObject object = new PDFObject(id, version, dict, payload);
+		objects.add(object);
+		return object;
+	}
+
+	private PDFObject addInteger(Payload payload) {
+		final int id = objectIdCounter++;
+		final int version = 0;
+		PDFObject object = new PDFObject(id, version, null, payload);
 		objects.add(object);
 		return object;
 	}
