@@ -134,7 +134,7 @@ public class PDFDocument extends SizedDocument {
 			new String[] {"Type"},
 			new Object[] {"Catalog"}
 		);
-		PDFObject catalog = addObject(dict, null);
+		PDFObject catalog = addDictionary(dict);
 
 		// Pages
 		List<PDFObject> pagesKids = new LinkedList<PDFObject>();
@@ -142,7 +142,7 @@ public class PDFDocument extends SizedDocument {
 			new String[] {"Type", "Kids", "Count"},
 			new Object[] {"Pages", pagesKids, 1}
 		);
-		PDFObject pages = addObject(dict, null);
+		PDFObject pages = addDictionary(dict);
 		catalog.dict.put("Pages", pages);
 
 		// Page
@@ -154,7 +154,7 @@ public class PDFDocument extends SizedDocument {
 			new String[] {"Type", "Parent", "MediaBox"},
 			new Object[] {"Page", pages, new double[] {x, y, width, height}}
 		);
-		PDFObject page = addObject(dict, null);
+		PDFObject page = addDictionary(dict);
 		pagesKids.add(page);
 
 		// Contents
@@ -208,6 +208,14 @@ public class PDFDocument extends SizedDocument {
 		final int id = objectIdCounter++;
 		final int version = 0;
 		PDFObject object = new PDFObject(id, version, dict, payload);
+		objects.add(object);
+		return object;
+	}
+
+	private PDFObject addDictionary(Map<String, Object> dict) {
+		final int id = objectIdCounter++;
+		final int version = 0;
+		PDFObject object = new PDFObject(id, version, dict, null);
 		objects.add(object);
 		return object;
 	}
