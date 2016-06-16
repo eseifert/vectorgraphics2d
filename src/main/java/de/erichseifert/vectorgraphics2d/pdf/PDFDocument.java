@@ -178,7 +178,7 @@ public class PDFDocument extends SizedDocument {
 		}
 
 		// Content length
-		Payload contentLengthPayload = new SizePayload(contents, CHARSET, false);
+		Payload contentLengthPayload = new SizePayload(contents, CHARSET);
 		PDFObject contentLength = addObject(null, contentLengthPayload);
 		contents.dict.put("Length", contentLength);
 

@@ -30,8 +30,8 @@ public class SizePayload extends GeneratedPayload {
 	private final PDFObject object;
 	private final String charset;
 
-	public SizePayload(PDFObject object, String charset, boolean stream) {
-		super(stream);
+	public SizePayload(PDFObject object, String charset) {
+		super(false);
 		this.object = object;
 		this.charset = charset;
 	}
