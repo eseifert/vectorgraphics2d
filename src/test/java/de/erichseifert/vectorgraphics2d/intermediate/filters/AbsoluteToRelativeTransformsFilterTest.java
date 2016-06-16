@@ -28,11 +28,10 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.Test;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
+import de.erichseifert.vectorgraphics2d.intermediate.MutableCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
@@ -46,7 +45,7 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.rotate(42.0);
 		absoluteTransform.translate(4.0, 2.0);
-		List<Command<?>> commands = wrapCommands(
+		CommandSequence commands = wrapCommands(
 			new SetTransformCommand(absoluteTransform)
 		);
 
@@ -59,7 +58,7 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.rotate(42.0);
 		absoluteTransform.translate(4.0, 2.0);
-		List<Command<?>> commands = wrapCommands(
+		CommandSequence commands = wrapCommands(
 			new SetTransformCommand(absoluteTransform)
 		);
 
@@ -75,7 +74,7 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.scale(2.0, 2.0);
 		absoluteTransform.translate(4.2, 4.2); // (8.4, 8.4)
-		List<Command<?>> commands = wrapCommands(
+		CommandSequence commands = wrapCommands(
 			new TranslateCommand(4.0, 2.0),
 			new SetTransformCommand(absoluteTransform)
 		);
@@ -99,7 +98,7 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		AffineTransform absoluteTransform = new AffineTransform();
 		absoluteTransform.rotate(42.0);
 		absoluteTransform.translate(4.0, 2.0);
-		List<Command<?>> commands = wrapCommands(
+		CommandSequence commands = wrapCommands(
 			new CreateCommand(null),
 			new TransformCommand(absoluteTransform),
 			new DisposeCommand(null),
@@ -116,12 +115,14 @@ public class AbsoluteToRelativeTransformsFilterTest {
 		assertThat(lastTransformCommand.getValue(), is(absoluteTransform));
 	}
 
-	private List<Command<?>> wrapCommands(Command<?>... commands) {
-		List<Command<?>> commandList = new ArrayList<Command<?>>(commands.length + 2);
-		commandList.add(new CreateCommand(null));
-		commandList.addAll(Arrays.asList(commands));
-		commandList.add(new DisposeCommand(null));
-		return commandList;
+	private CommandSequence wrapCommands(Command<?>... commands) {
+		MutableCommandSequence commandSequence = new MutableCommandSequence();
+		commandSequence.add(new CreateCommand(null));
+		for (Command<?> command : commands) {
+			commandSequence.add(command);
+		}
+		commandSequence.add(new DisposeCommand(null));
+		return commandSequence;
 	}
 }
 

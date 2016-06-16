@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
@@ -37,7 +38,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 public class AbsoluteToRelativeTransformsFilter extends Filter {
 	private Stack<AffineTransform> transforms;
 
-	public AbsoluteToRelativeTransformsFilter(Iterable<Command<?>> stream) {
+	public AbsoluteToRelativeTransformsFilter(CommandSequence stream) {
 		super(stream);
 		transforms = new Stack<AffineTransform>();
 	}

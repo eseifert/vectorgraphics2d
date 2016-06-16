@@ -32,17 +32,19 @@ import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
 
+import de.erichseifert.vectorgraphics2d.intermediate.MutableCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.StateCommand;
 
 public class GroupingFilterTest {
-	@Test public void filtered() {
-		List<Command<?>> resultStream = new LinkedList<Command<?>>();
+	@Test
+	public void filtered() {
+		MutableCommandSequence resultStream = new MutableCommandSequence();
 		resultStream.add(new SetColorCommand(Color.BLACK));
 		resultStream.add(new SetStrokeCommand(new BasicStroke(1f)));
 		resultStream.add(new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 10.0, 11.0)));

@@ -24,6 +24,7 @@ package de.erichseifert.vectorgraphics2d.intermediate.filters;
 import java.util.Arrays;
 import java.util.List;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 
@@ -31,7 +32,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 public abstract class GroupingFilter extends Filter {
 	private Group group;
 
-	public GroupingFilter(Iterable<Command<?>> stream) {
+	public GroupingFilter(CommandSequence stream) {
 		super(stream);
 	}
 

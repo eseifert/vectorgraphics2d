@@ -26,13 +26,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 
-public abstract class Filter implements Iterable<Command<?>>, Iterator<Command<?>> {
+public abstract class Filter implements CommandSequence, Iterator<Command<?>> {
 	private final Queue<Command<?>> buffer;
 	private final Iterator<Command<?>> iterator;
 
-	public Filter(Iterable<Command<?>> stream) {
+	public Filter(CommandSequence stream) {
 		buffer = new LinkedList<Command<?>>();
 		iterator = stream.iterator();
 	}

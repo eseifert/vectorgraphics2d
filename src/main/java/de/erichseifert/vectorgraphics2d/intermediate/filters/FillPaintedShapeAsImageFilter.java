@@ -29,6 +29,7 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
@@ -38,7 +39,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.SetPaintCommand;
 public class FillPaintedShapeAsImageFilter extends Filter {
 	private SetPaintCommand lastSetPaintCommand;
 
-	public FillPaintedShapeAsImageFilter(Iterable<Command<?>> stream) {
+	public FillPaintedShapeAsImageFilter(CommandSequence stream) {
 		super(stream);
 	}
 

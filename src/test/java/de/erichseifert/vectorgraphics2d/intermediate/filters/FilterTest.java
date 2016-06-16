@@ -31,11 +31,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-
 import org.junit.Test;
 
+import de.erichseifert.vectorgraphics2d.intermediate.MutableCommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
@@ -43,8 +42,9 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
 
 public class FilterTest {
-	@Test public void filterNone() {
-		List<Command<?>> stream = new LinkedList<Command<?>>();
+	@Test
+	public void filterNone() {
+		MutableCommandSequence stream = new MutableCommandSequence();
 		stream.add(new SetColorCommand(Color.BLACK));
 		stream.add(new SetStrokeCommand(new BasicStroke(1f)));
 		stream.add(new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 10.0, 11.0)));
@@ -67,8 +67,9 @@ public class FilterTest {
 		}
 	}
 
-	@Test public void filterAll() {
-		List<Command<?>> stream = new LinkedList<Command<?>>();
+	@Test
+	public void filterAll() {
+		MutableCommandSequence stream = new MutableCommandSequence();
 		stream.add(new SetColorCommand(Color.BLACK));
 		stream.add(new SetStrokeCommand(new BasicStroke(1f)));
 		stream.add(new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 10.0, 11.0)));
@@ -88,8 +89,9 @@ public class FilterTest {
 		assertFalse(filtered.hasNext());
 	}
 
-	@Test public void duplicate() {
-		List<Command<?>> stream = new LinkedList<Command<?>>();
+	@Test
+	public void duplicate() {
+		MutableCommandSequence stream = new MutableCommandSequence();
 		stream.add(new SetColorCommand(Color.BLACK));
 		stream.add(new SetStrokeCommand(new BasicStroke(1f)));
 		stream.add(new DrawShapeCommand(new Line2D.Double(0.0, 1.0, 10.0, 11.0)));

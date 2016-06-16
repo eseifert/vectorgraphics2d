@@ -21,13 +21,14 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.StateCommand;
 
 
 public class StateChangeGroupingFilter extends GroupingFilter {
 
-	public StateChangeGroupingFilter(Iterable<Command<?>> stream) {
+	public StateChangeGroupingFilter(CommandSequence stream) {
 		super(stream);
 	}
 

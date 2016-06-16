@@ -27,15 +27,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
+import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetHintCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.StateCommand;
 
 public class OptimizeFilter extends Filter {
 	private final Queue<Command<?>> buffer;
 
-	public OptimizeFilter(Iterable<Command<?>> stream) {
+	public OptimizeFilter(CommandSequence stream) {
 		super(stream);
 		buffer = new LinkedList<Command<?>>();
 	}
