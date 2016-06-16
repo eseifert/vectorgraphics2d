@@ -31,22 +31,16 @@ import de.erichseifert.vectorgraphics2d.util.FlateEncodeStream;
 public class Payload extends OutputStream {
 	private final ByteArrayOutputStream byteStream;
 	private OutputStream filteredStream;
-	private final boolean stream;
 	private boolean empty;
 
-	public Payload(boolean stream) {
+	public Payload() {
 		byteStream = new ByteArrayOutputStream();
 		filteredStream = byteStream;
-		this.stream = stream;
 		empty = true;
 	}
 
 	public byte[] getBytes() {
 		return byteStream.toByteArray();
-	}
-
-	public boolean isStream() {
-		return stream;
 	}
 
 	@Override

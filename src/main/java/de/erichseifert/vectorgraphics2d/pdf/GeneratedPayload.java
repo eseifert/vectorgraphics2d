@@ -25,7 +25,6 @@ import java.io.IOException;
 
 public abstract class GeneratedPayload extends Payload {
 	public GeneratedPayload() {
-		super(false);
 	}
 
 	@Override

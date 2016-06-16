@@ -158,7 +158,7 @@ public class PDFDocument extends SizedDocument {
 		pagesKids.add(page);
 
 		// Contents
-		Payload contentsPayload = new Payload(true);
+		Payload contentsPayload = new Payload();
 		contents = addObject(null, contentsPayload);
 		page.dict.put("Contents", contents);
 
@@ -207,7 +207,7 @@ public class PDFDocument extends SizedDocument {
 	private PDFObject addObject(Map<String, Object> dict, Payload payload) {
 		final int id = objectIdCounter++;
 		final int version = 0;
-		PDFObject object = new PDFObject(id, version, dict, payload);
+		PDFObject object = new PDFObject(id, version, dict, payload, true);
 		objects.add(object);
 		return object;
 	}
@@ -215,7 +215,7 @@ public class PDFDocument extends SizedDocument {
 	private PDFObject addInteger(Payload payload) {
 		final int id = objectIdCounter++;
 		final int version = 0;
-		PDFObject object = new PDFObject(id, version, null, payload);
+		PDFObject object = new PDFObject(id, version, null, payload, false);
 		objects.add(object);
 		return object;
 	}
@@ -223,7 +223,7 @@ public class PDFDocument extends SizedDocument {
 	private PDFObject addDictionary(Map<String, Object> dict) {
 		final int id = objectIdCounter++;
 		final int version = 0;
-		PDFObject object = new PDFObject(id, version, dict, null);
+		PDFObject object = new PDFObject(id, version, dict, null, false);
 		objects.add(object);
 		return object;
 	}
@@ -237,7 +237,7 @@ public class PDFDocument extends SizedDocument {
 		int bands = bufferedImage.getSampleModel().getNumBands();
 		String colorSpaceName = (bands == 1) ? "DeviceGray" : "DeviceRGB";
 
-		Payload imagePayload = new Payload(true);
+		Payload imagePayload = new Payload();
 
 		// Compression
 		String[] imageFilters = {};
@@ -335,11 +335,11 @@ public class PDFDocument extends SizedDocument {
 				content = "";
 			}
 			if (content.length() > 0) {
-				if (obj.payload.isStream()) {
+				if (obj.stream) {
 					out.append("stream").append(EOL);
 				}
 				out.append(content);
-				if (obj.payload.isStream()) {
+				if (obj.stream) {
 					out.append("endstream");
 				}
 				out.append(EOL);

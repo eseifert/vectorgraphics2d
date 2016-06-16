@@ -29,12 +29,14 @@ public class PDFObject {
 	public final int version;
 	public final Map<String, Object> dict;
 	public final Payload payload;
+	public final boolean stream;
 
-	public PDFObject(int id, int version, Map<String, Object> dict, Payload payload) {
+	public PDFObject(int id, int version, Map<String, Object> dict, Payload payload, boolean stream) {
 		this.dict = new LinkedHashMap<String, Object>();
 		this.id = id;
 		this.version = version;
 		this.payload = payload;
+		this.stream = stream;
 		if (dict != null) {
 			this.dict.putAll(dict);
 		}
