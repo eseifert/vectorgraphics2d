@@ -654,7 +654,6 @@ public class PDFDocument extends SizedDocument {
 		return "q " + width + " 0 0 " + height + " " + x + " " + y + " cm " + "1 0 0 -1 0 1 cm " + "/" + resourceId + " Do " + "Q";
 	}
 
-	@Override
 	public void close() {
 		try {
 			String footer = "Q" + EOL;
@@ -667,7 +666,6 @@ public class PDFDocument extends SizedDocument {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		super.close();
 	}
 
 	public boolean isCompressed() {

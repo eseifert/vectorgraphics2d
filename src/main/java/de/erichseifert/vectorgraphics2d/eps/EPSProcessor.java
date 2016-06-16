@@ -48,7 +48,6 @@ public class EPSProcessor implements Processor {
 		for (Command<?> command : paintedShapeAsImageFilter) {
 			doc.handle(command);
 		}
-		doc.close();
 		return doc;
 	}
 }

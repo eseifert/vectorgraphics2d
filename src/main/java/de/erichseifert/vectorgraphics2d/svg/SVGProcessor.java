@@ -47,7 +47,6 @@ public class SVGProcessor implements Processor {
 		for (Command<?> command : filtered) {
 			doc.handle(command);
 		}
-		doc.close();
 		return doc;
 	}
 }

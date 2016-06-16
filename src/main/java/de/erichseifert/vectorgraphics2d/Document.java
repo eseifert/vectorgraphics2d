@@ -28,6 +28,5 @@ import de.erichseifert.vectorgraphics2d.intermediate.CommandHandler;
 
 public interface Document extends CommandHandler {
 	void writeTo(OutputStream out) throws IOException;
-	void close();
 }
 

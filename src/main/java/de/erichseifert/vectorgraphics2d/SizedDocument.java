@@ -33,8 +33,5 @@ public abstract class SizedDocument implements Document {
 	public PageSize getPageSize() {
 		return pageSize;
 	}
-
-	public void close() {
-	}
 }
 
