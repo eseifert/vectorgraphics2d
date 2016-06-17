@@ -36,7 +36,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.DrawImageCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.FillShapeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetPaintCommand;
 
-public class FillPaintedShapeAsImageFilter extends Filter {
+public class FillPaintedShapeAsImageFilter extends StreamingFilter {
 	private SetPaintCommand lastSetPaintCommand;
 
 	public FillPaintedShapeAsImageFilter(CommandSequence stream) {

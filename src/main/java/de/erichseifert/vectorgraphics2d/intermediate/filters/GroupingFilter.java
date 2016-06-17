@@ -29,7 +29,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Group;
 
 
-public abstract class GroupingFilter extends Filter {
+public abstract class GroupingFilter extends StreamingFilter {
 	private Group group;
 
 	public GroupingFilter(CommandSequence stream) {

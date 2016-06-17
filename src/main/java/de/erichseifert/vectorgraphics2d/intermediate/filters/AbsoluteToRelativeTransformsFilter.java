@@ -35,7 +35,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.TransformCommand;
 
-public class AbsoluteToRelativeTransformsFilter extends Filter {
+public class AbsoluteToRelativeTransformsFilter extends StreamingFilter {
 	private Stack<AffineTransform> transforms;
 
 	public AbsoluteToRelativeTransformsFilter(CommandSequence stream) {

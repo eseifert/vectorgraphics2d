@@ -64,7 +64,7 @@ public class GroupingFilterTest {
 		expectedStream.add(resultCloneIterator.next());
 		Iterator<Command<?>> expectedIterator = expectedStream.iterator();
 
-		Filter resultIterator = new GroupingFilter(resultStream) {
+		StreamingFilter resultIterator = new GroupingFilter(resultStream) {
 			@Override
 			protected boolean isGrouped(Command<?> command) {
 				return command instanceof StateCommand;

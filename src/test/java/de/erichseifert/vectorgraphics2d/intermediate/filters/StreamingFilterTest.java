@@ -41,7 +41,7 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.SetColorCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetStrokeCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.SetTransformCommand;
 
-public class FilterTest {
+public class StreamingFilterTest {
 	@Test
 	public void filterNone() {
 		MutableCommandSequence stream = new MutableCommandSequence();
@@ -53,7 +53,7 @@ public class FilterTest {
 
 		Iterator<Command<?>> unfiltered = stream.iterator();
 
-		Filter filtered = new Filter(stream) {
+		StreamingFilter filtered = new StreamingFilter(stream) {
 			@Override
 			protected List<Command<?>> filter(Command<?> command) {
 				return Arrays.<Command<?>>asList(command);
@@ -78,7 +78,7 @@ public class FilterTest {
 
 		Iterator<Command<?>> unfiltered = stream.iterator();
 
-		Filter filtered = new Filter(stream) {
+		StreamingFilter filtered = new StreamingFilter(stream) {
 			@Override
 			protected List<Command<?>> filter(Command<?> command) {
 				return null;
@@ -100,7 +100,7 @@ public class FilterTest {
 
 		Iterator<Command<?>> unfiltered = stream.iterator();
 
-		Filter filtered = new Filter(stream) {
+		StreamingFilter filtered = new StreamingFilter(stream) {
 			@Override
 			protected List<Command<?>> filter(Command<?> command) {
 				return Arrays.asList(command, command);

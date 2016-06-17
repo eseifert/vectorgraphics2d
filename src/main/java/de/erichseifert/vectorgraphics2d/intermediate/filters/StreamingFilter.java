@@ -21,59 +21,50 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.SetHintCommand;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.StateCommand;
 
-public class OptimizeFilter extends StreamingFilter {
+public abstract class StreamingFilter implements Iterator<Command<?>>, Filter {
 	private final Queue<Command<?>> buffer;
+	private final Iterator<Command<?>> iterator;
 
-	public OptimizeFilter(CommandSequence stream) {
-		super(stream);
+	public StreamingFilter(CommandSequence stream) {
 		buffer = new LinkedList<Command<?>>();
+		iterator = stream.iterator();
 	}
 
-	@Override
+	public Iterator<Command<?>> iterator() {
+		return this;
+	}
+
 	public boolean hasNext() {
-		return super.hasNext();
+		findNextCommand();
+		return !buffer.isEmpty();
 	}
 
-	@Override
-	public Command<?> next() {
-		if (buffer.isEmpty()) {
-			return super.next();
+	private void findNextCommand() {
+		while (buffer.isEmpty() && iterator.hasNext()) {
+			Command<?> command = iterator.next();
+			List<Command<?>> commands = filter(command);
+			if (commands != null) {
+				buffer.addAll(commands);
+			}
 		}
+	}
+
+	public Command<?> next() {
+		findNextCommand();
 		return buffer.poll();
 	}
 
-	@Override
-	protected List<Command<?>> filter(Command<?> command) {
-		if (!isStateChange(command)) {
-			return Arrays.<Command<?>>asList(command);
-		}
-		Iterator<Command<?>> i = buffer.iterator();
-		Class<?> cls = command.getClass();
-		while (i.hasNext()) {
-			if (cls.equals(i.next().getClass())) {
-				i.remove();
-			}
-		}
-		buffer.add(command);
-		return null;
+	public void remove() {
 	}
 
-	private static boolean isStateChange(Command<?> command) {
-		return (command instanceof StateCommand) &&
-				!(command instanceof AffineTransformCommand) &&
-				!(command instanceof SetHintCommand);
-	}
+	protected abstract List<Command<?>> filter(Command<?> command);
 }
 
