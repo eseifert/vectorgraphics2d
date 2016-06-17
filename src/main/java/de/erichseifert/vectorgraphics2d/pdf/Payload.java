@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import de.erichseifert.vectorgraphics2d.util.FlateEncodeStream;
 
-public class Payload extends OutputStream {
+class Payload extends OutputStream {
 	private final ByteArrayOutputStream byteStream;
 	private OutputStream filteredStream;
 	private boolean empty;

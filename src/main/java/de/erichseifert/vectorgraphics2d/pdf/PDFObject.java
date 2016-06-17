@@ -24,7 +24,7 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class PDFObject {
+class PDFObject {
 	public final int id;
 	public final int version;
 	public final Map<String, Object> dict;

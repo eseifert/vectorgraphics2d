@@ -26,7 +26,7 @@ import java.io.UnsupportedEncodingException;
 
 import de.erichseifert.vectorgraphics2d.util.DataUtils;
 
-public class SizePayload extends GeneratedPayload {
+class SizePayload extends GeneratedPayload {
 	private final PDFObject object;
 	private final String charset;
 

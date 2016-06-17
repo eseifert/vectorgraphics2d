@@ -75,7 +75,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * TODO Support for different image formats (binary, grayscale, etc.)
  * TODO Paint support (as images)
  */
-public class PDFDocument extends SizedDocument {
+class PDFDocument extends SizedDocument {
 	private static final String EOL = "\n";
 	private static final String CHARSET = "ISO-8859-1";
 	private static final String HEADER = "%PDF-1.4";
