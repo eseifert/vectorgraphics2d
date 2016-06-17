@@ -44,6 +44,7 @@ import java.util.Stack;
 
 import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.SizedDocument;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
@@ -108,7 +109,7 @@ public class PDFDocument extends SizedDocument {
 	private final Stack<GraphicsState> states;
 	private boolean transformed;
 
-	public PDFDocument(PageSize pageSize, boolean compressed) {
+	public PDFDocument(CommandSequence commands, PageSize pageSize, boolean compressed) {
 		super(pageSize, compressed);
 
 		states = new Stack<GraphicsState>();
@@ -120,6 +121,10 @@ public class PDFDocument extends SizedDocument {
 		images = new HashMap<Integer, PDFObject>();
 
 		initPage();
+		for (Command<?> command : commands) {
+			handle(command);
+		}
+		close();
 	}
 
 	private GraphicsState getCurrentState() {

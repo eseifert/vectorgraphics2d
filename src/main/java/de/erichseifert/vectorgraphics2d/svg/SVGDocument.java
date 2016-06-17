@@ -58,6 +58,7 @@ import javax.xml.transform.stream.StreamResult;
 import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.SizedDocument;
 import de.erichseifert.vectorgraphics2d.VectorHints;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.AffineTransformCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
@@ -127,7 +128,7 @@ public class SVGDocument extends SizedDocument {
 		new String[] { "miter", "round", "bevel" }
 	);
 
-	public SVGDocument(PageSize pageSize) {
+	public SVGDocument(CommandSequence commands, PageSize pageSize) {
 		super(pageSize, true);
 
 		states = new Stack<GraphicsState>();
@@ -159,6 +160,9 @@ public class SVGDocument extends SizedDocument {
 		initRoot();
 
 		group = root;
+		for (Command<?> command : commands) {
+			handle(command);
+		}
 	}
 
 	private GraphicsState getCurrentState() {

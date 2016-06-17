@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 
 import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.SizedDocument;
+import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.CreateCommand;
 import de.erichseifert.vectorgraphics2d.intermediate.commands.DisposeCommand;
@@ -104,10 +105,13 @@ public class EPSDocument extends SizedDocument {
 
 	private final List<String> elements;
 
-	public EPSDocument(PageSize pageSize) {
+	public EPSDocument(CommandSequence commands, PageSize pageSize) {
 		super(pageSize, true);
 		elements = new LinkedList<String>();
 		addHeader();
+		for (Command<?> command : commands) {
+			handle(command);
+		}
 	}
 
 	private void addHeader() {

@@ -24,7 +24,6 @@ package de.erichseifert.vectorgraphics2d.eps;
 import de.erichseifert.vectorgraphics2d.Document;
 import de.erichseifert.vectorgraphics2d.Processor;
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
-import de.erichseifert.vectorgraphics2d.intermediate.commands.Command;
 import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsImageFilter;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
@@ -44,10 +43,7 @@ public class EPSProcessor implements Processor {
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
-		EPSDocument doc = new EPSDocument(pageSize);
-		for (Command<?> command : paintedShapeAsImageFilter) {
-			doc.handle(command);
-		}
+		EPSDocument doc = new EPSDocument(paintedShapeAsImageFilter, pageSize);
 		return doc;
 	}
 }

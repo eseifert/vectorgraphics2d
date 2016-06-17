@@ -24,9 +24,7 @@ package de.erichseifert.vectorgraphics2d;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import de.erichseifert.vectorgraphics2d.intermediate.CommandHandler;
-
-public interface Document extends CommandHandler {
+public interface Document {
 	void writeTo(OutputStream out) throws IOException;
 
 	/**

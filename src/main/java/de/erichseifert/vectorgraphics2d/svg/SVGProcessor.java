@@ -42,11 +42,8 @@ public class SVGProcessor implements Processor {
 	@Override
 	public Document getDocument(CommandSequence commands, PageSize pageSize) {
 		FillPaintedShapeAsImageFilter shapesAsImages = new FillPaintedShapeAsImageFilter(commands);
-		Iterable<Command<?>> filtered = new StateChangeGroupingFilter(shapesAsImages);
-		SVGDocument doc = new SVGDocument(pageSize);
-		for (Command<?> command : filtered) {
-			doc.handle(command);
-		}
+		CommandSequence filtered = new StateChangeGroupingFilter(shapesAsImages);
+		SVGDocument doc = new SVGDocument(filtered, pageSize);
 		return doc;
 	}
 }
