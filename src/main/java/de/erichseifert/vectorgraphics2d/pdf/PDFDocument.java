@@ -120,7 +120,7 @@ class PDFDocument extends SizedDocument {
 		crossReferences = new HashMap<PDFObject, Long>();
 		images = new HashMap<Integer, PDFObject>();
 
-		initPage();
+		contents = initPage();
 		for (Command<?> command : commands) {
 			String pdfStatement = toString(command);
 			try {
@@ -138,7 +138,11 @@ class PDFDocument extends SizedDocument {
 		return states.peek();
 	}
 
-	private void initPage() {
+	/**
+	 * Initializes the document and returns a {@code PDFObject} representing the contents.
+	 * @return {@code PDFObject} to which the contents are written.
+	 */
+	private PDFObject initPage() {
 		Map<String, Object> dict;
 
 		PDFObject catalog = addCatalog();
@@ -160,7 +164,7 @@ class PDFDocument extends SizedDocument {
 
 		// Contents
 		Payload contentsPayload = new Payload();
-		contents = addObject(null, contentsPayload);
+		PDFObject contents = addObject(null, contentsPayload);
 		page.dict.put("Contents", contents);
 
 		// Compression
@@ -203,6 +207,7 @@ class PDFDocument extends SizedDocument {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		return contents;
 	}
 
 	private PDFObject addObject(Map<String, Object> dict, Payload payload) {
