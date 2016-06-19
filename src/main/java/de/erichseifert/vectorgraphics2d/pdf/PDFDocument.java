@@ -188,16 +188,20 @@ class PDFDocument extends SizedDocument {
 		Font font = getCurrentState().getFont();
 		String fontResourceId = resources.getId(font);
 		float fontSize = font.getSize2D();
+		setFont(fontResourceId, fontSize, contents);
+		return contents;
+	}
+
+	private void setFont(String fontId, float fontSize, PDFObject contents) {
 		StringBuilder out = new StringBuilder();
-		out.append("/").append(fontResourceId).append(" ").append(fontSize).append(" Tf").append(EOL);
+		out.append("/").append(fontId).append(" ").append(fontSize).append(" Tf").append(EOL);
 		try {
-			contentsPayload.write(
-				out.toString().getBytes(CHARSET)
+			contents.payload.write(
+					out.toString().getBytes(CHARSET)
 			);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		return contents;
 	}
 
 	private PDFObject addObject(Map<String, Object> dict, Payload payload) {
