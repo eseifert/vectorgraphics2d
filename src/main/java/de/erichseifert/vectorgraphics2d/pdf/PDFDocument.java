@@ -143,23 +143,13 @@ class PDFDocument extends SizedDocument {
 	 * @return {@code PDFObject} to which the contents are written.
 	 */
 	private PDFObject initPage() {
-		Map<String, Object> dict;
-
 		PDFObject catalog = addCatalog();
 
 		List<PDFObject> pagesKids = new LinkedList<PDFObject>();
-		PDFObject pages = addPageTree(catalog, pagesKids);
+		PDFObject pageTree = addPageTree(catalog, pagesKids);
 
 		// Page
-		double x = getPageSize().getX()*MM_IN_UNITS;
-		double y = getPageSize().getY()*MM_IN_UNITS;
-		double width = getPageSize().getWidth()*MM_IN_UNITS;
-		double height = getPageSize().getHeight()*MM_IN_UNITS;
-		dict = DataUtils.map(
-			new String[] {"Type", "Parent", "MediaBox"},
-			new Object[] {"Page", pages, new double[] {x, y, width, height}}
-		);
-		PDFObject page = addDictionary(dict);
+		PDFObject page = addPage(pageTree);
 		pagesKids.add(page);
 
 		// Contents
@@ -178,7 +168,7 @@ class PDFDocument extends SizedDocument {
 			contentsPayload.write(DataUtils.join("", new Object[] {
 				"q", EOL,
 				getOutput(getCurrentState().getColor()), EOL,
-				MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", height, " cm", EOL
+				MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", getPageSize().getHeight()*MM_IN_UNITS, " cm", EOL
 			}).getBytes(CHARSET));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -242,6 +232,19 @@ class PDFDocument extends SizedDocument {
 		PDFObject pageTree = addDictionary(dict);
 		catalog.dict.put("Pages", pageTree);
 		return pageTree;
+	}
+
+	private PDFObject addPage(PDFObject pageTree) {
+		double x = getPageSize().getX()*MM_IN_UNITS;
+		double y = getPageSize().getY()*MM_IN_UNITS;
+		double width = getPageSize().getWidth()*MM_IN_UNITS;
+		double height = getPageSize().getHeight()*MM_IN_UNITS;
+		Map<String, Object> dict = DataUtils.map(
+				new String[] {"Type", "Parent", "MediaBox"},
+				new Object[] {"Page", pageTree, new double[] {x, y, width, height}}
+		);
+		PDFObject page = addDictionary(dict);
+		return page;
 	}
 
 	private PDFObject addDictionary(Map<String, Object> dict) {
