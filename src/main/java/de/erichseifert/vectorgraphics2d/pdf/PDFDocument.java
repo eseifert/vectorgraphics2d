@@ -122,7 +122,14 @@ class PDFDocument extends SizedDocument {
 
 		initPage();
 		for (Command<?> command : commands) {
-			handle(command);
+			String pdfStatement = toString(command);
+			try {
+				Payload contentsPayload = contents.payload;
+				contentsPayload.write(pdfStatement.getBytes(CHARSET));
+				contentsPayload.write(EOL.getBytes(CHARSET));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		close();
 	}
@@ -404,7 +411,7 @@ class PDFDocument extends SizedDocument {
 		}
 	}
 
-	public void handle(Command<?> command) {
+	private String toString(Command<?> command) {
 		String s = "";
 		if (command instanceof Group) {
 			Group c = (Group) command;
@@ -432,14 +439,7 @@ class PDFDocument extends SizedDocument {
 			s = getOutput(imageObject, c.getX(), c.getY(),
 					c.getWidth(), c.getHeight(), resources);
 		}
-
-		try {
-			Payload contentsPayload = contents.payload;
-			contentsPayload.write(s.getBytes(CHARSET));
-			contentsPayload.write(EOL.getBytes(CHARSET));
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		return s;
 	}
 
 	private void applyStateCommands(List<Command<?>> commands) {
