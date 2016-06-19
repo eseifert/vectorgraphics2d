@@ -97,8 +97,6 @@ class PDFDocument extends SizedDocument {
 	);
 
 	private final List<PDFObject> objects;
-	/** Counter representing the next free object ID. */
-	private int objectIdCounter;
 	/** Cross-reference table ("xref"). */
 	private final Map<PDFObject, Long> crossReferences;
 
@@ -116,7 +114,6 @@ class PDFDocument extends SizedDocument {
 		states.push(new GraphicsState());
 
 		objects = new LinkedList<PDFObject>();
-		objectIdCounter = 1;
 		crossReferences = new HashMap<PDFObject, Long>();
 		images = new HashMap<Integer, PDFObject>();
 
@@ -180,7 +177,7 @@ class PDFDocument extends SizedDocument {
 		contents.dict.put("Length", contentLength);
 
 		// Resources
-		resources = new Resources(objectIdCounter++, 0);
+		resources = new Resources(0);
 		objects.add(resources);
 		page.dict.put("Resources", resources);
 
@@ -205,17 +202,15 @@ class PDFDocument extends SizedDocument {
 	}
 
 	private PDFObject addObject(Map<String, Object> dict, Payload payload) {
-		final int id = objectIdCounter++;
 		final int version = 0;
-		PDFObject object = new PDFObject(id, version, dict, payload, true);
+		PDFObject object = new PDFObject(version, dict, payload, true);
 		objects.add(object);
 		return object;
 	}
 
 	private PDFObject addInteger(Payload payload) {
-		final int id = objectIdCounter++;
 		final int version = 0;
-		PDFObject object = new PDFObject(id, version, null, payload, false);
+		PDFObject object = new PDFObject(version, null, payload, false);
 		objects.add(object);
 		return object;
 	}
@@ -252,9 +247,8 @@ class PDFDocument extends SizedDocument {
 	}
 
 	private PDFObject addDictionary(Map<String, Object> dict) {
-		final int id = objectIdCounter++;
 		final int version = 0;
-		PDFObject object = new PDFObject(id, version, dict, null, false);
+		PDFObject object = new PDFObject(version, dict, null, false);
 		objects.add(object);
 		return object;
 	}
@@ -351,9 +345,18 @@ class PDFDocument extends SizedDocument {
 		o.flush();
 	}
 
-	public static String toString(PDFObject obj) {
+	private int getId(PDFObject object) {
+		int index = objects.indexOf(object);
+		if (index < 0) {
+			throw new IllegalArgumentException("Object " + object + " is not part of this document.");
+		}
+		return index + 1;
+	}
+
+	public String toString(PDFObject obj) {
 		StringBuilder out = new StringBuilder();
-		out.append(obj.id).append(" ").append(obj.version).append(" obj")
+
+		out.append(getId(obj)).append(" ").append(obj.version).append(" obj")
 			.append(EOL);
 		if (!obj.dict.isEmpty()) {
 			out.append(serialize(obj.dict)).append(EOL);
@@ -380,7 +383,7 @@ class PDFDocument extends SizedDocument {
 		return out.toString();
 	}
 
-	private static String serialize(Object obj) {
+	private String serialize(Object obj) {
 		if (obj instanceof String) {
 			return "/" + obj.toString();
 		} else if (obj instanceof float[]) {
@@ -417,7 +420,7 @@ class PDFDocument extends SizedDocument {
 			return out.toString();
 		} else if (obj instanceof PDFObject) {
 			PDFObject pdfObj = (PDFObject) obj;
-			return String.valueOf(pdfObj.id) + " " + pdfObj.version + " R";
+			return String.valueOf(getId(pdfObj)) + " " + pdfObj.version + " R";
 		} else {
 			return DataUtils.format(obj);
 		}
@@ -497,7 +500,7 @@ class PDFDocument extends SizedDocument {
 		}
 	}
 
-	private static String getOutput(Color color) {
+	private String getOutput(Color color) {
 		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
 			float[] cmyk = color.getComponents(null);
 			String c = serialize(cmyk[0]);
@@ -515,7 +518,7 @@ class PDFDocument extends SizedDocument {
 		}
 	}
 
-	private static String getOutput(Shape s) {
+	private String getOutput(Shape s) {
 		StringBuilder out = new StringBuilder();
 		PathIterator segments = s.getPathIterator(null);
 		double[] coordsCur = new double[6];
@@ -575,7 +578,7 @@ class PDFDocument extends SizedDocument {
 		return out.toString();
 	}
 
-	private static String getOutput(GraphicsState state, Resources resources, boolean first) {
+	private String getOutput(GraphicsState state, Resources resources, boolean first) {
 		StringBuilder out = new StringBuilder();
 
 		if (!first) {
@@ -611,7 +614,7 @@ class PDFDocument extends SizedDocument {
 		return DataUtils.stripTrailing(out.toString(), EOL);
 	}
 
-	private static String getOutput(Stroke s) {
+	private String getOutput(Stroke s) {
 		StringBuilder out = new StringBuilder();
 		if (s instanceof BasicStroke) {
 			BasicStroke strokeDefault = (BasicStroke) GraphicsState.DEFAULT_STROKE;
