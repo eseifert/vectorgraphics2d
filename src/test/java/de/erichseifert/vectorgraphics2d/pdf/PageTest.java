@@ -21,15 +21,20 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	PageTest.class,
-	PDFDictionaryTest.class,
-	PDFProcessorTest.class
-})
-public class PDFTests {
+import org.junit.Test;
+
+public class PageTest {
+	@Test
+	public void testTypeEntryIsPage() {
+		Page page = new Page();
+		String typeKey = "Type";
+
+		Object type = page.get(typeKey);
+
+		assertThat((String) type, is("Page"));
+	}
 }
 
