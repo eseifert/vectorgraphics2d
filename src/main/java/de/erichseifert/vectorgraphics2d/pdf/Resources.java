@@ -50,8 +50,8 @@ class Resources extends DefaultPDFObject {
 	private final AtomicInteger currentImageId = new AtomicInteger();
 	private final AtomicInteger currentTransparencyId = new AtomicInteger();
 
-	public Resources(int version) {
-		super(version, null, null, false);
+	public Resources() {
+		super(null, null, false);
 
 		fonts = new HashMap<Font, String>();
 		images = new HashMap<PDFObject, String>();

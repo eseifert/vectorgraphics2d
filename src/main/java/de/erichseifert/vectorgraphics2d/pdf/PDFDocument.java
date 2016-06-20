@@ -177,7 +177,7 @@ class PDFDocument extends SizedDocument {
 		contents.dict.put("Length", contentLength);
 
 		// Resources
-		resources = new Resources(0);
+		resources = new Resources();
 		objects.add(resources);
 		page.dict.put("Resources", resources);
 
@@ -202,15 +202,13 @@ class PDFDocument extends SizedDocument {
 	}
 
 	private DefaultPDFObject addObject(Map<String, Object> dict, Payload payload) {
-		final int version = 0;
-		DefaultPDFObject object = new DefaultPDFObject(version, dict, payload, true);
+		DefaultPDFObject object = new DefaultPDFObject(dict, payload, true);
 		objects.add(object);
 		return object;
 	}
 
 	private PDFObject addInteger(Payload payload) {
-		final int version = 0;
-		PDFObject object = new DefaultPDFObject(version, null, payload, false);
+		PDFObject object = new DefaultPDFObject(null, payload, false);
 		objects.add(object);
 		return object;
 	}
@@ -247,8 +245,7 @@ class PDFDocument extends SizedDocument {
 	}
 
 	private DefaultPDFObject addDictionary(Map<String, Object> dict) {
-		final int version = 0;
-		DefaultPDFObject object = new DefaultPDFObject(version, dict, null, false);
+		DefaultPDFObject object = new DefaultPDFObject(dict, null, false);
 		objects.add(object);
 		return object;
 	}
@@ -353,11 +350,20 @@ class PDFDocument extends SizedDocument {
 		return index + 1;
 	}
 
+	/**
+	 * Returns the version of the specified object.
+	 * @param object {@code PDFObject} whose version should be determined.
+	 * @return Version number.
+	 */
+	private int getVersion(PDFObject object) {
+		return 0;
+	}
+
 	public String toString(PDFObject object) {
 		DefaultPDFObject obj = (DefaultPDFObject) object;
 		StringBuilder out = new StringBuilder();
 
-		out.append(getId(obj)).append(" ").append(obj.version).append(" obj")
+		out.append(getId(obj)).append(" ").append(getVersion(obj)).append(" obj")
 			.append(EOL);
 		if (!obj.dict.isEmpty()) {
 			out.append(serialize(obj.dict)).append(EOL);
@@ -421,7 +427,7 @@ class PDFDocument extends SizedDocument {
 			return out.toString();
 		} else if (obj instanceof DefaultPDFObject) {
 			DefaultPDFObject pdfObj = (DefaultPDFObject) obj;
-			return String.valueOf(getId(pdfObj)) + " " + pdfObj.version + " R";
+			return String.valueOf(getId(pdfObj)) + " " + getVersion(pdfObj) + " R";
 		} else {
 			return DataUtils.format(obj);
 		}

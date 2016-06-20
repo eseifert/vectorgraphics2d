@@ -25,14 +25,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 class DefaultPDFObject implements PDFObject {
-	public final int version;
 	public final Map<String, Object> dict;
 	public final Payload payload;
 	public final boolean stream;
 
-	public DefaultPDFObject(int version, Map<String, Object> dict, Payload payload, boolean stream) {
+	public DefaultPDFObject(Map<String, Object> dict, Payload payload, boolean stream) {
 		this.dict = new LinkedHashMap<String, Object>();
-		this.version = version;
 		this.payload = payload;
 		this.stream = stream;
 		if (dict != null) {
