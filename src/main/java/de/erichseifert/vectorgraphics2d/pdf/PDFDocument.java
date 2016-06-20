@@ -100,7 +100,7 @@ class PDFDocument extends SizedDocument {
 	/** Cross-reference table ("xref"). */
 	private final Map<PDFObject, Long> crossReferences;
 
-	private PDFObject contents;
+	private DefaultPDFObject contents;
 	private Resources resources;
 	private final Map<Integer, PDFObject> images;
 
@@ -139,19 +139,19 @@ class PDFDocument extends SizedDocument {
 	 * Initializes the document and returns a {@code PDFObject} representing the contents.
 	 * @return {@code PDFObject} to which the contents are written.
 	 */
-	private PDFObject initPage() {
-		PDFObject catalog = addCatalog();
+	private DefaultPDFObject initPage() {
+		DefaultPDFObject catalog = addCatalog();
 
 		List<PDFObject> pagesKids = new LinkedList<PDFObject>();
 		PDFObject pageTree = addPageTree(catalog, pagesKids);
 
 		// Page
-		PDFObject page = addPage(pageTree);
+		DefaultPDFObject page = addPage(pageTree);
 		pagesKids.add(page);
 
 		// Contents
 		Payload contentsPayload = new Payload();
-		PDFObject contents = addObject(null, contentsPayload);
+		DefaultPDFObject contents = addObject(null, contentsPayload);
 		page.dict.put("Contents", contents);
 
 		// Compression
@@ -189,7 +189,7 @@ class PDFDocument extends SizedDocument {
 		return contents;
 	}
 
-	private void setFont(String fontId, float fontSize, PDFObject contents) {
+	private void setFont(String fontId, float fontSize, DefaultPDFObject contents) {
 		StringBuilder out = new StringBuilder();
 		out.append("/").append(fontId).append(" ").append(fontSize).append(" Tf").append(EOL);
 		try {
@@ -201,21 +201,21 @@ class PDFDocument extends SizedDocument {
 		}
 	}
 
-	private PDFObject addObject(Map<String, Object> dict, Payload payload) {
+	private DefaultPDFObject addObject(Map<String, Object> dict, Payload payload) {
 		final int version = 0;
-		PDFObject object = new PDFObject(version, dict, payload, true);
+		DefaultPDFObject object = new DefaultPDFObject(version, dict, payload, true);
 		objects.add(object);
 		return object;
 	}
 
 	private PDFObject addInteger(Payload payload) {
 		final int version = 0;
-		PDFObject object = new PDFObject(version, null, payload, false);
+		PDFObject object = new DefaultPDFObject(version, null, payload, false);
 		objects.add(object);
 		return object;
 	}
 
-	private PDFObject addCatalog() {
+	private DefaultPDFObject addCatalog() {
 		Map<String, Object> dict = DataUtils.map(
 				new String[] {"Type"},
 				new Object[] {"Catalog"}
@@ -223,7 +223,7 @@ class PDFDocument extends SizedDocument {
 		return addDictionary(dict);
 	}
 
-	private PDFObject addPageTree(PDFObject catalog, List<PDFObject> pages) {
+	private PDFObject addPageTree(DefaultPDFObject catalog, List<PDFObject> pages) {
 		Map<String, Object> dict = DataUtils.map(
 				new String[] {"Type", "Kids", "Count"},
 				new Object[] {"Pages", pages, 1}
@@ -233,7 +233,7 @@ class PDFDocument extends SizedDocument {
 		return pageTree;
 	}
 
-	private PDFObject addPage(PDFObject pageTree) {
+	private DefaultPDFObject addPage(PDFObject pageTree) {
 		double x = getPageSize().getX()*MM_IN_UNITS;
 		double y = getPageSize().getY()*MM_IN_UNITS;
 		double width = getPageSize().getWidth()*MM_IN_UNITS;
@@ -242,18 +242,18 @@ class PDFDocument extends SizedDocument {
 				new String[] {"Type", "Parent", "MediaBox"},
 				new Object[] {"Page", pageTree, new double[] {x, y, width, height}}
 		);
-		PDFObject page = addDictionary(dict);
+		DefaultPDFObject page = addDictionary(dict);
 		return page;
 	}
 
-	private PDFObject addDictionary(Map<String, Object> dict) {
+	private DefaultPDFObject addDictionary(Map<String, Object> dict) {
 		final int version = 0;
-		PDFObject object = new PDFObject(version, dict, null, false);
+		DefaultPDFObject object = new DefaultPDFObject(version, dict, null, false);
 		objects.add(object);
 		return object;
 	}
 
-	private PDFObject addObject(Image image) {
+	private DefaultPDFObject addObject(Image image) {
 		BufferedImage bufferedImage = GraphicsUtils.toBufferedImage(image);
 
 		int width = bufferedImage.getWidth();
@@ -291,13 +291,13 @@ class PDFDocument extends SizedDocument {
 					bitsPerSample, length, imageFilters}
 		);
 
-		PDFObject imageObject = addObject(imageDict, imagePayload);
+		DefaultPDFObject imageObject = addObject(imageDict, imagePayload);
 
 		boolean hasAlpha = bufferedImage.getColorModel().hasAlpha();
 		if (hasAlpha) {
 			BufferedImage mask = GraphicsUtils.getAlphaImage(bufferedImage);
 
-			PDFObject maskObject = addObject(mask);
+			DefaultPDFObject maskObject = addObject(mask);
 
 			boolean isBitmask = mask.getSampleModel().getSampleSize(0) == 1;
 			if (isBitmask) {
@@ -353,7 +353,8 @@ class PDFDocument extends SizedDocument {
 		return index + 1;
 	}
 
-	public String toString(PDFObject obj) {
+	public String toString(PDFObject object) {
+		DefaultPDFObject obj = (DefaultPDFObject) object;
 		StringBuilder out = new StringBuilder();
 
 		out.append(getId(obj)).append(" ").append(obj.version).append(" obj")
@@ -418,8 +419,8 @@ class PDFDocument extends SizedDocument {
 			}
 			out.append(">>");
 			return out.toString();
-		} else if (obj instanceof PDFObject) {
-			PDFObject pdfObj = (PDFObject) obj;
+		} else if (obj instanceof DefaultPDFObject) {
+			DefaultPDFObject pdfObj = (DefaultPDFObject) obj;
 			return String.valueOf(getId(pdfObj)) + " " + pdfObj.version + " R";
 		} else {
 			return DataUtils.format(obj);

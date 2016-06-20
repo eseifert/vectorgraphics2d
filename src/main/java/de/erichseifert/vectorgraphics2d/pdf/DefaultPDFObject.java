@@ -21,30 +21,22 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import de.erichseifert.vectorgraphics2d.util.DataUtils;
+class DefaultPDFObject implements PDFObject {
+	public final int version;
+	public final Map<String, Object> dict;
+	public final Payload payload;
+	public final boolean stream;
 
-class SizePayload extends GeneratedPayload {
-	private final DefaultPDFObject object;
-	private final String charset;
-
-	public SizePayload(DefaultPDFObject object, String charset) {
-		this.object = object;
-		this.charset = charset;
-	}
-
-	@Override
-	protected byte[] generatePayload() {
-		try {
-			object.payload.close();
-			String content = DataUtils.format(object.payload.getBytes().length);
-			return content.getBytes(charset);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+	public DefaultPDFObject(int version, Map<String, Object> dict, Payload payload, boolean stream) {
+		this.dict = new LinkedHashMap<String, Object>();
+		this.version = version;
+		this.payload = payload;
+		this.stream = stream;
+		if (dict != null) {
+			this.dict.putAll(dict);
 		}
 	}
 }

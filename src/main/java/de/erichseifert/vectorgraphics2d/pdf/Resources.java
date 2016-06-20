@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import de.erichseifert.vectorgraphics2d.util.DataUtils;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
-class Resources extends PDFObject {
+class Resources extends DefaultPDFObject {
 	private static final String KEY_PROC_SET = "ProcSet";
 	private static final String KEY_TRANSPARENCY = "ExtGState";
 	private static final String KEY_FONT = "Font";
