@@ -24,17 +24,28 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.awt.geom.Rectangle2D;
 import org.junit.Test;
+
+import org.hamcrest.CoreMatchers;
 
 public class PageTest {
 	@Test
 	public void testTypeEntryIsPage() {
-		Page page = new Page();
+		Page page = new Page(null);
 		String typeKey = "Type";
 
 		Object type = page.get(typeKey);
 
 		assertThat((String) type, is("Page"));
+	}
+
+	@Test
+	public void testConstructorSetsMediaBoxEntry() {
+		Rectangle2D mediaBox = new Rectangle2D.Double(2, 4, 24, 42);
+		Page page = new Page(mediaBox);
+
+		assertThat(page.get("MediaBox"), CoreMatchers.<Object>is(mediaBox));
 	}
 }
 
