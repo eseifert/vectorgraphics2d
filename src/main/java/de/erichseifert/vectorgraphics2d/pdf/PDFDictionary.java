@@ -7,7 +7,7 @@ import java.util.Map;
  * Represents a dictionary in the sense of the <i>Portable Document Format</i>.
  * A dictionary can store and retrieve key-value pairs.
  */
-public class PDFDictionary {
+public class PDFDictionary implements PDFObject {
 	private final Map<String, Object> dict;
 
 	/**
