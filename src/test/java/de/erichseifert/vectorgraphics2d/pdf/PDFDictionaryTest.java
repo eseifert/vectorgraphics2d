@@ -21,14 +21,21 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	PDFDictionaryTest.class,
-	PDFProcessorTest.class
-})
-public class PDFTests {
+import org.junit.Test;
+
+public class PDFDictionaryTest {
+	@Test
+	public void testAddedValuesCanBeRetrievedWithGet() {
+		PDFDictionary dict = new PDFDictionary();
+		String key = "SomeKey";
+		Object value = new Object();
+
+		dict.put(key, value);
+
+		assertThat(dict.get(key), is(value));
+	}
 }
 
