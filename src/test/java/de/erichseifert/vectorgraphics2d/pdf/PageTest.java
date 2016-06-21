@@ -27,25 +27,22 @@ import static org.junit.Assert.assertThat;
 import java.awt.geom.Rectangle2D;
 import org.junit.Test;
 
-import org.hamcrest.CoreMatchers;
-
 public class PageTest {
 	@Test
-	public void testTypeEntryIsPage() {
+	public void testTypeIsPage() {
 		Page page = new Page(null);
-		String typeKey = "Type";
 
-		Object type = page.get(typeKey);
+		String type = page.getType();
 
-		assertThat((String) type, is("Page"));
+		assertThat(type, is("Page"));
 	}
 
 	@Test
-	public void testConstructorSetsMediaBoxEntry() {
+	public void testConstructorSetsMediaBox() {
 		Rectangle2D mediaBox = new Rectangle2D.Double(2, 4, 24, 42);
 		Page page = new Page(mediaBox);
 
-		assertThat(page.get("MediaBox"), CoreMatchers.<Object>is(mediaBox));
+		assertThat(page.getMediaBox(), is(mediaBox));
 	}
 }
 

@@ -26,7 +26,8 @@ import java.awt.geom.Rectangle2D;
 /**
  * Represents a page of a PDF document.
  */
-class Page extends PDFDictionary {
+class Page implements PDFObject {
+	private final Rectangle2D mediaBox;
 	/**
 	 * Initializes a {@code Page}.
 	 * Sets the {@literal Type} entry of this object to {@literal Page}.
@@ -34,8 +35,19 @@ class Page extends PDFDictionary {
 	 * @param mediaBox Boundaries of the page.
 	 */
 	public Page(Rectangle2D mediaBox) {
-		put("Type", "Page");
-		put("MediaBox", mediaBox);
+		this.mediaBox = mediaBox;
+	}
+
+	/**
+	 * Returns the type of this object.
+	 * @return Constant string: {@literal Page}
+	 */
+	public String getType() {
+		return "Page";
+	}
+
+	public Rectangle2D getMediaBox() {
+		return mediaBox;
 	}
 }
 
