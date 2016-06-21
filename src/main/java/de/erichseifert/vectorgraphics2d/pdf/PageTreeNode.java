@@ -25,15 +25,28 @@ package de.erichseifert.vectorgraphics2d.pdf;
  * Represents an intermediate node in the page tree of a PDF document.
  */
 class PageTreeNode implements PDFObject {
+	private final PageTreeNode parent;
+
 	/**
-	 * Initializes a {@code PageTreeNode}.
+	 * Initializes a {@code PageTreeNode} with the specified parent node.
+	 * @param parent Parent node or {@code null} to create a root node.
 	 */
-	public PageTreeNode() {
+	public PageTreeNode(PageTreeNode parent) {
+		this.parent = parent;
 	}
 
 	@Override
 	public String getType() {
 		return "Pages";
+	}
+
+	/**
+	 * Returns the parent of this node.
+	 * If this node is a root node, the method returns {@code null}.
+	 * @return Parent node or {@code null}, if this is a root node.
+	 */
+	public PageTreeNode getParent() {
+		return parent;
 	}
 }
 

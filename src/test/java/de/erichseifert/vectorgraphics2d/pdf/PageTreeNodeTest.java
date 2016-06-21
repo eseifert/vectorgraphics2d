@@ -24,17 +24,25 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.awt.geom.Rectangle2D;
 import org.junit.Test;
 
 public class PageTreeNodeTest {
 	@Test
 	public void testTypeIsPages() {
-		PageTreeNode pages = new PageTreeNode();
+		PageTreeNode pages = new PageTreeNode(null);
 
 		String type = pages.getType();
 
 		assertThat(type, is("Pages"));
+	}
+
+	@Test
+	public void testConstructorSetsParent() {
+		PageTreeNode parent = new PageTreeNode(null);
+
+		PageTreeNode pages = new PageTreeNode(parent);
+
+		assertThat(pages.getParent(), is(parent));
 	}
 }
 
