@@ -21,11 +21,16 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Represents an intermediate node in the page tree of a PDF document.
  */
 class PageTreeNode implements PDFObject {
 	private final PageTreeNode parent;
+	private final List<Page> children;
 
 	/**
 	 * Initializes a {@code PageTreeNode} with the specified parent node.
@@ -33,6 +38,7 @@ class PageTreeNode implements PDFObject {
 	 */
 	public PageTreeNode(PageTreeNode parent) {
 		this.parent = parent;
+		this.children = new LinkedList<Page>();
 	}
 
 	@Override
@@ -47,6 +53,22 @@ class PageTreeNode implements PDFObject {
 	 */
 	public PageTreeNode getParent() {
 		return parent;
+	}
+
+	/**
+	 * Adds the specified {@code Page} to the node's children.
+	 * @param page {@code Page} to be added.
+	 */
+	public void add(Page page) {
+		children.add(page);
+	}
+
+	/**
+	 * Returns all {@code Page} objects that are immediate children of this node.
+	 * @return List of child pages.
+	 */
+	public List<Page> getKids() {
+		return Collections.unmodifiableList(children);
 	}
 }
 

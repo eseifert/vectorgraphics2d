@@ -21,6 +21,7 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -43,6 +44,16 @@ public class PageTreeNodeTest {
 		PageTreeNode pages = new PageTreeNode(parent);
 
 		assertThat(pages.getParent(), is(parent));
+	}
+
+	@Test
+	public void testAddInsertsPage() {
+		PageTreeNode pages = new PageTreeNode(null);
+		Page child = new Page(null);
+
+		pages.add(child);
+
+		assertThat(pages.getKids(), hasItem(child));
 	}
 }
 
