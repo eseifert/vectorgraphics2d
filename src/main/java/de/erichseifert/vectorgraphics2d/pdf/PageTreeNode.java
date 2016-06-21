@@ -60,6 +60,7 @@ class PageTreeNode implements PDFObject {
 	 * @param page {@code Page} to be added.
 	 */
 	public void add(Page page) {
+		page.setParent(this);
 		children.add(page);
 	}
 

@@ -28,10 +28,10 @@ import java.awt.geom.Rectangle2D;
  */
 class Page implements PDFObject {
 	private final Rectangle2D mediaBox;
+	private PageTreeNode parent;
+
 	/**
-	 * Initializes a {@code Page}.
-	 * Sets the {@literal Type} entry of this object to {@literal Page}.
-	 * Sets the {@literal MediaBox} entry.
+	 * Initializes a {@code Page} with the specified parent node and MediaBox.
 	 * @param mediaBox Boundaries of the page.
 	 */
 	public Page(Rectangle2D mediaBox) {
@@ -45,6 +45,22 @@ class Page implements PDFObject {
 
 	public Rectangle2D getMediaBox() {
 		return mediaBox;
+	}
+
+	/**
+	 * Returns the immediate parent of this {@code Page}.
+	 * @return Parent node.
+	 */
+	public PageTreeNode getParent() {
+		return parent;
+	}
+
+	/**
+	 * Sets the parent of this {@code Page} to the specified node.
+	 * @param parent Immediate parent.
+	 */
+	protected void setParent(PageTreeNode parent) {
+		this.parent = parent;
 	}
 }
 

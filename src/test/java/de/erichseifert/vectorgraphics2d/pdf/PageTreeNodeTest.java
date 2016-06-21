@@ -57,6 +57,16 @@ public class PageTreeNodeTest {
 	}
 
 	@Test
+	public void testAddSetsParentOfAddedPage() {
+		PageTreeNode pages = new PageTreeNode(null);
+		Page child = new Page(null);
+
+		pages.add(child);
+
+		assertThat(child.getParent(), is(pages));
+	}
+
+	@Test
 	public void testCountReturnsZeroWhenEmpty() {
 		PageTreeNode pages = new PageTreeNode(null);
 
