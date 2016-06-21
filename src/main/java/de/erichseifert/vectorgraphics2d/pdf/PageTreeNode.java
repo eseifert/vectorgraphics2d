@@ -21,15 +21,22 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+/**
+ * Represents an intermediate node in the page tree of a PDF document.
+ */
+class PageTreeNode implements PDFObject {
+	/**
+	 * Initializes a {@code PageTreeNode}.
+	 */
+	public PageTreeNode() {
+	}
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	PageTreeNodeTest.class,
-	PageTest.class,
-	PDFProcessorTest.class
-})
-public class PDFTests {
+	/**
+	 * Returns the type of this object.
+	 * @return Constant string: {@literal Pages}
+	 */
+	public String getType() {
+		return "Pages";
+	}
 }
 
