@@ -55,5 +55,14 @@ public class PageTreeNodeTest {
 
 		assertThat(pages.getKids(), hasItem(child));
 	}
+
+	@Test
+	public void testCountReturnsZeroWhenEmpty() {
+		PageTreeNode pages = new PageTreeNode(null);
+
+		int count = pages.getCount();
+
+		assertThat(count, is(0));
+	}
 }
 

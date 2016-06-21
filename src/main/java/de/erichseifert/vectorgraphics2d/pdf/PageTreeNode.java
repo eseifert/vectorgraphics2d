@@ -70,5 +70,13 @@ class PageTreeNode implements PDFObject {
 	public List<Page> getKids() {
 		return Collections.unmodifiableList(children);
 	}
+
+	/**
+	 * Returns the total number of {@code Page} objects in this subtree.
+	 * @return Number of pages that are direct or indirect children.
+	 */
+	public int getCount() {
+		return 0;
+	}
 }
 
