@@ -76,7 +76,7 @@ class PageTreeNode implements PDFObject {
 	 * @return Number of pages that are direct or indirect children.
 	 */
 	public int getCount() {
-		return 0;
+		return children.size();
 	}
 }
 

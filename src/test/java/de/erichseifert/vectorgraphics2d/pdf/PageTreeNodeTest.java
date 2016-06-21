@@ -64,5 +64,20 @@ public class PageTreeNodeTest {
 
 		assertThat(count, is(0));
 	}
+
+	@Test
+	public void testCountReturnsNumberOfDirectChildrenWhenOnlyDirectChildrenArePresent() {
+		PageTreeNode pages = new PageTreeNode(null);
+		Page child1 = new Page(null);
+		Page child2 = new Page(null);
+		Page child3 = new Page(null);
+		pages.add(child1);
+		pages.add(child2);
+		pages.add(child3);
+
+		int count = pages.getCount();
+
+		assertThat(count, is(3));
+	}
 }
 
