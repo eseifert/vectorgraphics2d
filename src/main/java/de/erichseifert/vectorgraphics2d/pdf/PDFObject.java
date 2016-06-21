@@ -22,4 +22,9 @@
 package de.erichseifert.vectorgraphics2d.pdf;
 
 public interface PDFObject {
+	/**
+	 * Returns the type of this object.
+	 * @return Type name as {@code String}.
+	 */
+	String getType();
 }

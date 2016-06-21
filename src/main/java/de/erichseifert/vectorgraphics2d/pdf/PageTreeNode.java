@@ -31,10 +31,7 @@ class PageTreeNode implements PDFObject {
 	public PageTreeNode() {
 	}
 
-	/**
-	 * Returns the type of this object.
-	 * @return Constant string: {@literal Pages}
-	 */
+	@Override
 	public String getType() {
 		return "Pages";
 	}

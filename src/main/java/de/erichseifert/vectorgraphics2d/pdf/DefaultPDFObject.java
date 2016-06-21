@@ -37,5 +37,10 @@ class DefaultPDFObject implements PDFObject {
 			this.dict.putAll(dict);
 		}
 	}
+
+	@Override
+	public String getType() {
+		return (String) dict.get("Type");
+	}
 }
 

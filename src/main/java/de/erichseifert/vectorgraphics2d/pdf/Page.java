@@ -38,10 +38,7 @@ class Page implements PDFObject {
 		this.mediaBox = mediaBox;
 	}
 
-	/**
-	 * Returns the type of this object.
-	 * @return Constant string: {@literal Page}
-	 */
+	@Override
 	public String getType() {
 		return "Page";
 	}
