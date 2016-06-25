@@ -34,7 +34,6 @@ import de.erichseifert.vectorgraphics2d.util.DataUtils;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 class Resources extends DefaultPDFObject {
-	private static final String KEY_PROC_SET = "ProcSet";
 	private static final String KEY_TRANSPARENCY = "ExtGState";
 	private static final String KEY_FONT = "Font";
 	private static final String KEY_IMAGE = "XObject";
@@ -62,7 +61,6 @@ class Resources extends DefaultPDFObject {
 		images = new HashMap<PDFObject, String>();
 		transparencies = new HashMap<Double, String>();
 
-		dict.put(KEY_PROC_SET, VALUE_PROC_SET);
 		setProcSet(VALUE_PROC_SET);
 	}
 
