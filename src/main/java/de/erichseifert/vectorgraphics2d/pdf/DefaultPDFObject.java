@@ -38,7 +38,6 @@ class DefaultPDFObject implements PDFObject {
 		}
 	}
 
-	@Override
 	public String getType() {
 		return (String) dict.get("Type");
 	}

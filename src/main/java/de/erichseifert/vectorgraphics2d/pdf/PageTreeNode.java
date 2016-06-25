@@ -41,7 +41,11 @@ class PageTreeNode implements PDFObject {
 		this.children = new LinkedList<Page>();
 	}
 
-	@Override
+	/**
+	 * Returns the type of this object.
+	 * The return value is always {@literal Pages}.
+	 * @return The String {@literal Pages}.
+	 */
 	public String getType() {
 		return "Pages";
 	}
