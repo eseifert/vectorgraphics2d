@@ -372,8 +372,8 @@ class PDFDocument extends SizedDocument {
 		if (!resources.getProcSet().isEmpty()) {
 			string.append("/ProcSet ").append(serialize(resources.getProcSet())).append(EOL);
 		}
-		if (resources.dict.get("Font") != null) {
-			string.append("/Font ").append(serialize(resources.dict.get("Font"))).append(EOL);
+		if (!resources.getFont().isEmpty()) {
+			string.append("/Font ").append(serialize(resources.getFont())).append(EOL);
 		}
 		if (resources.dict.get("ExtGState") != null) {
 			string.append("/ExtGState ").append(serialize(resources.dict.get("ExtGState"))).append(EOL);

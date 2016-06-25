@@ -35,7 +35,6 @@ import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 class Resources extends DefaultPDFObject {
 	private static final String KEY_TRANSPARENCY = "ExtGState";
-	private static final String KEY_FONT = "Font";
 	private static final String KEY_IMAGE = "XObject";
 
 	private static final String[] VALUE_PROC_SET = {"PDF", "Text", "ImageB", "ImageC", "ImageI"};
@@ -45,7 +44,8 @@ class Resources extends DefaultPDFObject {
 	private static final String PREFIX_TRANSPARENCY = "Trp";
 
 	private final List<String> procSet;
-	private final Map<Font, String> fonts;
+	private final Map<String, TrueTypeFont> fontsByFontId;
+	private final Map<Font, String> fontIDsByFont;
 	private final Map<PDFObject, String> images;
 	private final Map<Double, String> transparencies;
 
@@ -57,7 +57,8 @@ class Resources extends DefaultPDFObject {
 		super(null, null, false);
 
 		procSet = new LinkedList<String>();
-		fonts = new HashMap<Font, String>();
+		fontsByFontId = new HashMap<String, TrueTypeFont>();
+		fontIDsByFont = new HashMap<Font, String>();
 		images = new HashMap<PDFObject, String>();
 		transparencies = new HashMap<Double, String>();
 
@@ -75,16 +76,8 @@ class Resources extends DefaultPDFObject {
 	}
 
 	public String getId(Font font) {
-		// Make sure a dictionary entry for fonts exists
-		Map<String, TrueTypeFont> fontsByFontId =
-				(Map<String, TrueTypeFont>) dict.get(KEY_FONT);
-		if (fontsByFontId == null) {
-			fontsByFontId = new LinkedHashMap<String, TrueTypeFont>();
-			dict.put(KEY_FONT, fontsByFontId);
-		}
-
 		font = GraphicsUtils.getPhysicalFont(font);
-		String resourceId = getResourceId(fonts, font, PREFIX_FONT, currentFontId);
+		String resourceId = getResourceId(fontIDsByFont, font, PREFIX_FONT, currentFontId);
 
 		String baseFontName = font.getPSName();
 		// TODO: Determine font encoding (e.g. MacRomanEncoding, MacExpertEncoding, WinAnsiEncoding)
@@ -138,6 +131,10 @@ class Resources extends DefaultPDFObject {
 
 	public List<String> getProcSet() {
 		return Collections.unmodifiableList(procSet);
+	}
+
+	public Map<String, TrueTypeFont> getFont() {
+		return Collections.unmodifiableMap(fontsByFontId);
 	}
 }
 
