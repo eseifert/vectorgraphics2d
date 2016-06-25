@@ -76,23 +76,21 @@ class Resources extends DefaultPDFObject {
 
 	public String getId(Font font) {
 		// Make sure a dictionary entry for fonts exists
-		Map<String, Map<String, Object>> dictEntry =
-				(Map<String, Map<String, Object>>) dict.get(KEY_FONT);
-		if (dictEntry == null) {
-			dictEntry = new LinkedHashMap<String, Map<String, Object>>();
-			dict.put(KEY_FONT, dictEntry);
+		Map<String, TrueTypeFont> fontsByFontId =
+				(Map<String, TrueTypeFont>) dict.get(KEY_FONT);
+		if (fontsByFontId == null) {
+			fontsByFontId = new LinkedHashMap<String, TrueTypeFont>();
+			dict.put(KEY_FONT, fontsByFontId);
 		}
 
 		font = GraphicsUtils.getPhysicalFont(font);
 		String resourceId = getResourceId(fonts, font, PREFIX_FONT, currentFontId);
 
-		String fontName = font.getPSName();
+		String baseFontName = font.getPSName();
 		// TODO: Determine font encoding (e.g. MacRomanEncoding, MacExpertEncoding, WinAnsiEncoding)
 		String fontEncoding = "WinAnsiEncoding";
-		dictEntry.put(resourceId, DataUtils.map(
-			new String[] {"Type", "Subtype", "Encoding", "BaseFont"},
-			new Object[] {"Font", "TrueType", fontEncoding, fontName}
-		));
+		TrueTypeFont pdfFont = new TrueTypeFont(fontEncoding, baseFontName);
+		fontsByFontId.put(resourceId, pdfFont);
 
 		return resourceId;
 	}
