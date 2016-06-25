@@ -27,14 +27,17 @@ import java.awt.geom.Rectangle2D;
  * Represents a page of a PDF document.
  */
 class Page implements PDFObject {
+	private final Resources resources;
 	private final Rectangle2D mediaBox;
 	private PageTreeNode parent;
 
 	/**
 	 * Initializes a {@code Page} with the specified parent node and MediaBox.
+	 * @param resources Page resources
 	 * @param mediaBox Boundaries of the page.
 	 */
-	public Page(Rectangle2D mediaBox) {
+	public Page(Resources resources, Rectangle2D mediaBox) {
+		this.resources = resources;
 		this.mediaBox = mediaBox;
 	}
 
@@ -65,6 +68,14 @@ class Page implements PDFObject {
 	 */
 	protected void setParent(PageTreeNode parent) {
 		this.parent = parent;
+	}
+
+	/**
+	 * Returns the {@code Resources} object associated with this {@code Page}.
+	 * @return Page resources.
+	 */
+	public Resources getResources() {
+		return resources;
 	}
 }
 
