@@ -22,8 +22,11 @@
 package de.erichseifert.vectorgraphics2d.pdf;
 
 import java.awt.Font;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,6 +45,7 @@ class Resources extends DefaultPDFObject {
 	private static final String PREFIX_IMAGE = "Img";
 	private static final String PREFIX_TRANSPARENCY = "Trp";
 
+	private final List<String> procSet;
 	private final Map<Font, String> fonts;
 	private final Map<PDFObject, String> images;
 	private final Map<Double, String> transparencies;
@@ -53,11 +57,13 @@ class Resources extends DefaultPDFObject {
 	public Resources() {
 		super(null, null, false);
 
+		procSet = new LinkedList<String>();
 		fonts = new HashMap<Font, String>();
 		images = new HashMap<PDFObject, String>();
 		transparencies = new HashMap<Double, String>();
 
 		dict.put(KEY_PROC_SET, VALUE_PROC_SET);
+		setProcSet(VALUE_PROC_SET);
 	}
 
 	private <T> String getResourceId(Map<T, String> resources, T resource,
@@ -125,6 +131,17 @@ class Resources extends DefaultPDFObject {
 		));
 
 		return resourceId;
+	}
+
+	public void setProcSet(String... procedureNames) {
+		procSet.clear();
+		for (String procedureName : procedureNames) {
+			procSet.add(procedureName);
+		}
+	}
+
+	public List<String> getProcSet() {
+		return Collections.unmodifiableList(procSet);
 	}
 }
 
