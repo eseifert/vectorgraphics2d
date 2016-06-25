@@ -316,7 +316,13 @@ class PDFDocument extends SizedDocument {
 
 		for (PDFObject obj : objects) {
 			crossReferences.put(obj, o.tell());
-			o.writeln(toString(obj));
+			String objectString;
+			if (obj instanceof Resources) {
+				objectString = toString((Resources) obj);
+			} else {
+				objectString = toString(obj);
+			}
+			o.writeln(objectString);
 			o.flush();
 		}
 
@@ -357,6 +363,27 @@ class PDFDocument extends SizedDocument {
 	 */
 	private int getVersion(PDFObject object) {
 		return 0;
+	}
+
+	private String toString(Resources resources) {
+		StringBuilder string = new StringBuilder();
+		string.append(getId(resources)).append(" ").append(getVersion(resources)).append(" obj").append(EOL);
+		string.append("<<").append(EOL);
+		if (!resources.getProcSet().isEmpty()) {
+			string.append("/ProcSet ").append(serialize(resources.getProcSet())).append(EOL);
+		}
+		if (resources.dict.get("Font") != null) {
+			string.append("/Font ").append(serialize(resources.dict.get("Font"))).append(EOL);
+		}
+		if (resources.dict.get("ExtGState") != null) {
+			string.append("/ExtGState ").append(serialize(resources.dict.get("ExtGState"))).append(EOL);
+		}
+		if (resources.dict.get("XObject") != null) {
+			string.append("/XObject ").append(serialize(resources.dict.get("XObject"))).append(EOL);
+		}
+		string.append(">>").append(EOL);
+		string.append("endobj");
+		return string.toString();
 	}
 
 	public String toString(PDFObject object) {
