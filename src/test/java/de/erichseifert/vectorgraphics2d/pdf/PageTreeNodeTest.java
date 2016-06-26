@@ -49,7 +49,7 @@ public class PageTreeNodeTest {
 	@Test
 	public void testAddInsertsPage() {
 		PageTreeNode pages = new PageTreeNode(null);
-		Page child = new Page(null, null);
+		Page child = new Page(null, null, null);
 
 		pages.add(child);
 
@@ -59,7 +59,7 @@ public class PageTreeNodeTest {
 	@Test
 	public void testAddSetsParentOfAddedPage() {
 		PageTreeNode pages = new PageTreeNode(null);
-		Page child = new Page(null, null);
+		Page child = new Page(null, null, null);
 
 		pages.add(child);
 
@@ -78,9 +78,9 @@ public class PageTreeNodeTest {
 	@Test
 	public void testCountReturnsNumberOfDirectChildrenWhenOnlyDirectChildrenArePresent() {
 		PageTreeNode pages = new PageTreeNode(null);
-		Page child1 = new Page(null, null);
-		Page child2 = new Page(null, null);
-		Page child3 = new Page(null, null);
+		Page child1 = new Page(null, null, null);
+		Page child2 = new Page(null, null, null);
+		Page child3 = new Page(null, null, null);
 		pages.add(child1);
 		pages.add(child2);
 		pages.add(child3);

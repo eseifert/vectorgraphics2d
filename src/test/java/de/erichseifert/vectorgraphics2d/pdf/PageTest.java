@@ -30,7 +30,7 @@ import org.junit.Test;
 public class PageTest {
 	@Test
 	public void testTypeIsPage() {
-		Page page = new Page(null, null);
+		Page page = new Page(null, null, null);
 
 		String type = page.getType();
 
@@ -40,7 +40,7 @@ public class PageTest {
 	@Test
 	public void testConstructorSetsMediaBox() {
 		Rectangle2D mediaBox = new Rectangle2D.Double(2, 4, 24, 42);
-		Page page = new Page(null, mediaBox);
+		Page page = new Page(null, mediaBox, null);
 
 		assertThat(page.getMediaBox(), is(mediaBox));
 	}

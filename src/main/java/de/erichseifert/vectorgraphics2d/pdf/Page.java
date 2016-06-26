@@ -29,16 +29,19 @@ import java.awt.geom.Rectangle2D;
 class Page implements PDFObject {
 	private final Resources resources;
 	private final Rectangle2D mediaBox;
+	private final DefaultPDFObject contents;
 	private PageTreeNode parent;
 
 	/**
-	 * Initializes a {@code Page} with the specified parent node and MediaBox.
+	 * Initializes a {@code Page} with the specified parent node, MediaBox and contents.
 	 * @param resources Page resources
 	 * @param mediaBox Boundaries of the page.
+	 * @param contents Contents of the page.
 	 */
-	public Page(Resources resources, Rectangle2D mediaBox) {
+	public Page(Resources resources, Rectangle2D mediaBox, DefaultPDFObject contents) {
 		this.resources = resources;
 		this.mediaBox = mediaBox;
+		this.contents = contents;
 	}
 
 	/**
@@ -76,6 +79,14 @@ class Page implements PDFObject {
 	 */
 	public Resources getResources() {
 		return resources;
+	}
+
+	/**
+	 * Returns the contents of this {@code Page}.
+	 * @return Page contents.
+	 */
+	public DefaultPDFObject getContents() {
+		return contents;
 	}
 }
 
