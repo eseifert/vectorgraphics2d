@@ -395,7 +395,9 @@ class PDFDocument extends SizedDocument {
 		StringBuilder serializedStream = new StringBuilder();
 		serializedStream.append("<<").append(EOL);
 		serializedStream.append("/Length ").append(stream.getLength()).append(EOL);
-		serializedStream.append("/Filter /FlateDecode").append(EOL);
+		if (stream.getFilters().contains(Stream.Filter.FLATE)) {
+			serializedStream.append("/Filter /FlateDecode").append(EOL);
+		}
 		serializedStream.append(">>").append(EOL);
 		serializedStream.append("stream").append(EOL);
 		serializedStream.append(new String(stream.getContent())).append(EOL);

@@ -39,11 +39,11 @@ public class PDFDocumentTest {
 
 		String expected =
 				"<<\n" +
-				"/Type /Font\n" +
-				"/Subtype /TrueType\n" +
-				"/Encoding /" + encoding + "\n" +
-				"/BaseFont /" + baseFont + "\n" +
-				">>";
+						"/Type /Font\n" +
+						"/Subtype /TrueType\n" +
+						"/Encoding /" + encoding + "\n" +
+						"/BaseFont /" + baseFont + "\n" +
+						">>";
 		assertThat(serialized, is(expected));
 	}
 
@@ -58,12 +58,31 @@ public class PDFDocumentTest {
 
 		String expected =
 				"<<\n" +
-				"/Length " + stream.getLength() +"\n" +
-				"/Filter /FlateDecode\n" +
-				">>\n" +
-				"stream\n" +
-				new String(stream.getContent()) + "\n" +
-				"endstream";
+						"/Length " + stream.getLength() + "\n" +
+						"/Filter /FlateDecode\n" +
+						">>\n" +
+						"stream\n" +
+						new String(stream.getContent()) + "\n" +
+						"endstream";
+		assertThat(serialized, is(expected));
+	}
+
+	@Test
+	public void testSerializeStreamWhenStreamIsNotFiltered() throws IOException {
+		Stream stream = new Stream();
+		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
+		stream.write(inputData);
+		stream.close();
+
+		String serialized = PDFDocument.serialize(stream);
+
+		String expected =
+				"<<\n" +
+						"/Length " + stream.getLength() + "\n" +
+						">>\n" +
+						"stream\n" +
+						new String(stream.getContent()) + "\n" +
+						"endstream";
 		assertThat(serialized, is(expected));
 	}
 }
