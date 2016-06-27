@@ -36,6 +36,13 @@ public class StreamTest {
 		stream.getLength();
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void testGetContentThrowsExceptionWhenStreamIsOpen() {
+		Stream stream = new Stream();
+
+		stream.getContent();
+	}
+
 	@Test
 	public void testLengthIsZeroOnInitialization() {
 		Stream stream = new Stream();

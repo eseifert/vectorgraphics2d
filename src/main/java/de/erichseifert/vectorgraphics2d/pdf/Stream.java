@@ -81,8 +81,12 @@ class Stream implements PDFObject, Closeable {
 	/**
 	 * Returns the content that has been written to this {@code Stream}.
 	 * @return Stream content.
+	 * @throws if the stream is still open.
 	 */
 	public byte[] getContent() {
+		if (!isClosed()) {
+			throw new IllegalStateException("Unable to retrive the content of an open Stream. Close the stream first.");
+		}
 		return data.toByteArray();
 	}
 
