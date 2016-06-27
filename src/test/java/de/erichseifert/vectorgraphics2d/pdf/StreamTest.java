@@ -31,7 +31,7 @@ import org.junit.Test;
 public class StreamTest {
 	@Test
 	public void testLengthIsZeroOnInitialization() {
-		Stream stream = new Stream.Builder().build();
+		Stream stream = new Stream();
 
 		int length = stream.getLength();
 
@@ -41,7 +41,8 @@ public class StreamTest {
 	@Test
 	public void testLengthEqualsByteCountInWrittenDataWhenNoFiltersAreSet() {
 		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
-		Stream stream = new Stream.Builder().write(garbage).build();
+		Stream stream = new Stream();
+		stream.write(garbage);
 
 		int length = stream.getLength();
 
@@ -51,7 +52,8 @@ public class StreamTest {
 	@Test
 	public void testWrittenDataIsIdenticalToStreamContentWhenNoFiltersAreUsed() {
 		byte[] data = new byte[] {4, 2, 42, -1, 0};
-		Stream stream = new Stream.Builder().write(data).build();
+		Stream stream = new Stream();
+		stream.write(data);
 
 		byte[] content = stream.getContent();
 
@@ -61,10 +63,8 @@ public class StreamTest {
 	@Test
 	public void testContentsAreCompressedWhenFlateFilterIsSet() throws DataFormatException {
 		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
-		Stream stream = new Stream.Builder()
-				.write(inputData)
-				.filters(Stream.Filter.FLATE)
-				.build();
+		Stream stream = new Stream(Stream.Filter.FLATE);
+		stream.write(inputData);
 
 		byte[] compressedContent = stream.getContent();
 

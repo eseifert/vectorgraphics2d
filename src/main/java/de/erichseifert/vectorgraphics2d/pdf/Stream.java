@@ -24,9 +24,6 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 
 /**
@@ -38,75 +35,41 @@ class Stream implements PDFObject {
 		FLATE
 	};
 
-	public static class Builder {
-		private final ByteArrayOutputStream data;
-		private final List<Filter> filters;
-
-		public Builder() {
-			data = new ByteArrayOutputStream();
-			filters = new LinkedList<Filter>();
-		}
-
-		/**
-		 * Appends the specified byte array to the {@code Stream}.
-		 * @param data Data to be appended.
-		 */
-		public Builder write(byte[] data) {
-			try {
-				this.data.write(data);
-			} catch (IOException e) {
-				throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
-			}
-			return this;
-		}
-
-		public Builder filters(Filter... filters) {
-			this.filters.addAll(Arrays.asList(filters));
-			return this;
-		}
-
-		private byte[] getFilteredData(List<Filter> filters) {
-			ByteArrayOutputStream filteredDataOutput = new ByteArrayOutputStream();
-			OutputStream filteredData = filteredDataOutput;
-			for (Filter filter : filters) {
-				if (filter == Filter.FLATE) {
-					filteredData = new DeflaterOutputStream(filteredData);
-				}
-			}
-			try {
-				filteredData.write(data.toByteArray());
-			} catch (IOException e) {
-				throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
-			}
-			try {
-				filteredData.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return filteredDataOutput.toByteArray();
-		}
-
-		public Stream build() {
-			return new Stream(getFilteredData(this.filters));
-		}
-	}
-
-	private final byte[] content;
+	private final ByteArrayOutputStream data;
+	private OutputStream filteredData;
 
 	/**
 	 * Initializes a new {@code Stream}.
 	 */
-	private Stream(byte[] content) {
-		this.content = new byte[content.length];
-		System.arraycopy(content, 0, this.content, 0, content.length);
+	public Stream(Filter... filters) {
+		data = new ByteArrayOutputStream();
+		filteredData = data;
+		for (Filter filter : filters) {
+			if (filter == Filter.FLATE) {
+				filteredData = new DeflaterOutputStream(filteredData);
+			}
+		}
 	}
+
+	/**
+	 * Appends the specified byte array to the {@code Stream}.
+	 * @param data Data to be appended.
+	 */
+	public void write(byte[] data) {
+		try {
+			this.filteredData.write(data);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
+		}
+	}
+
 
 	/**
 	 * Returns the size of the stream contents in bytes.
 	 * @return Number of bytes.
 	 */
 	public int getLength() {
-		return content.length;
+		return data.size();
 	}
 
 	/**
@@ -114,9 +77,12 @@ class Stream implements PDFObject {
 	 * @return Stream content.
 	 */
 	public byte[] getContent() {
-		byte[] contentCopy = new byte[content.length];
-		System.arraycopy(content, 0, contentCopy, 0, content.length);
-		return contentCopy;
+		try {
+			filteredData.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return data.toByteArray();
 	}
 }
 
