@@ -32,6 +32,7 @@ public class StreamTest {
 	@Test
 	public void testLengthIsZeroOnInitialization() {
 		Stream stream = new Stream();
+		stream.close();
 
 		int length = stream.getLength();
 
@@ -43,6 +44,7 @@ public class StreamTest {
 		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream();
 		stream.write(garbage);
+		stream.close();
 
 		int length = stream.getLength();
 
@@ -54,6 +56,7 @@ public class StreamTest {
 		byte[] data = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream();
 		stream.write(data);
+		stream.close();
 
 		byte[] content = stream.getContent();
 
@@ -65,6 +68,7 @@ public class StreamTest {
 		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream(Stream.Filter.FLATE);
 		stream.write(inputData);
+		stream.close();
 
 		byte[] compressedContent = stream.getContent();
 

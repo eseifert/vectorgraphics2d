@@ -22,6 +22,7 @@
 package de.erichseifert.vectorgraphics2d.pdf;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.DeflaterOutputStream;
@@ -30,7 +31,7 @@ import java.util.zip.DeflaterOutputStream;
  * Represents a stream object in the sense of the PDF specification.
  * The {@code Stream} has a defined length.
  */
-class Stream implements PDFObject {
+class Stream implements PDFObject, Closeable {
 	public enum Filter {
 		FLATE
 	};
@@ -77,12 +78,16 @@ class Stream implements PDFObject {
 	 * @return Stream content.
 	 */
 	public byte[] getContent() {
+		return data.toByteArray();
+	}
+
+	@Override
+	public void close() {
 		try {
 			filteredData.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return data.toByteArray();
 	}
 }
 
