@@ -29,6 +29,13 @@ import java.util.zip.Inflater;
 import org.junit.Test;
 
 public class StreamTest {
+	@Test(expected = IllegalStateException.class)
+	public void testGetLengthThrowsExceptionWhenStreamIsOpen() {
+		Stream stream = new Stream();
+
+		stream.getLength();
+	}
+
 	@Test
 	public void testLengthIsZeroOnInitialization() {
 		Stream stream = new Stream();

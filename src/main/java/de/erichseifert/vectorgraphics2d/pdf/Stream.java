@@ -38,6 +38,7 @@ class Stream implements PDFObject, Closeable {
 
 	private final ByteArrayOutputStream data;
 	private OutputStream filteredData;
+	private boolean closed;
 
 	/**
 	 * Initializes a new {@code Stream}.
@@ -68,8 +69,12 @@ class Stream implements PDFObject, Closeable {
 	/**
 	 * Returns the size of the stream contents in bytes.
 	 * @return Number of bytes.
+	 * @throws IllegalStateException if the stream is still open.
 	 */
 	public int getLength() {
+		if (!isClosed()) {
+			throw new IllegalStateException("Unable to determine the length of an open Stream. Close the stream first.");
+		}
 		return data.size();
 	}
 
@@ -81,8 +86,13 @@ class Stream implements PDFObject, Closeable {
 		return data.toByteArray();
 	}
 
+	private boolean isClosed() {
+		return closed;
+	}
+
 	@Override
 	public void close() {
+		closed = true;
 		try {
 			filteredData.close();
 		} catch (IOException e) {
