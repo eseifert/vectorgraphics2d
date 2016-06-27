@@ -25,6 +25,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 
 /**
@@ -37,6 +40,7 @@ class Stream implements PDFObject, Closeable {
 	};
 
 	private final ByteArrayOutputStream data;
+	private final List<Filter> filters;
 	private OutputStream filteredData;
 	private boolean closed;
 
@@ -45,6 +49,11 @@ class Stream implements PDFObject, Closeable {
 	 */
 	public Stream(Filter... filters) {
 		data = new ByteArrayOutputStream();
+		this.filters = new ArrayList<Filter>(filters.length);
+		for (Filter filter : filters) {
+			this.filters.add(filter);
+		}
+
 		filteredData = data;
 		for (Filter filter : filters) {
 			if (filter == Filter.FLATE) {
@@ -105,6 +114,10 @@ class Stream implements PDFObject, Closeable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public List<Filter> getFilters() {
+		return Collections.unmodifiableList(filters);
 	}
 }
 
