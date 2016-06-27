@@ -21,17 +21,23 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+/**
+ * Represents a stream object in the sense of the PDF specification.
+ * The {@code Stream} has a defined length.
+ */
+class Stream implements PDFObject {
+	/**
+	 * Initializes a new {@code Stream}.
+	 */
+	public Stream() {
+	}
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	PageTreeNodeTest.class,
-	PageTest.class,
-	StreamTest.class,
-	PDFProcessorTest.class,
-	PDFDocumentTest.class
-})
-public class PDFTests {
+	/**
+	 * Returns the size of the stream contents in bytes.
+	 * @return Number of bytes.
+	 */
+	public int getLength() {
+		return 0;
+	}
 }
 

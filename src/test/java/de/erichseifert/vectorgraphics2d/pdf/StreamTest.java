@@ -21,17 +21,19 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	PageTreeNodeTest.class,
-	PageTest.class,
-	StreamTest.class,
-	PDFProcessorTest.class,
-	PDFDocumentTest.class
-})
-public class PDFTests {
+import org.junit.Test;
+
+public class StreamTest {
+	@Test
+	public void testLengthIsZeroOnInitialization() {
+		Stream stream = new Stream();
+
+		int length = stream.getLength();
+
+		assertThat(length, is(0));
+	}
 }
 
