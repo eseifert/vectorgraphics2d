@@ -386,7 +386,7 @@ class PDFDocument extends SizedDocument {
 		return string.toString();
 	}
 
-	private String toString(TrueTypeFont font) {
+	protected static String serialize(TrueTypeFont font) {
 		StringBuilder string = new StringBuilder();
 		string.append("<<").append(EOL);
 		string.append("/Type ").append("/").append(font.getType()).append(EOL);
@@ -467,7 +467,7 @@ class PDFDocument extends SizedDocument {
 			DefaultPDFObject pdfObj = (DefaultPDFObject) obj;
 			return String.valueOf(getId(pdfObj)) + " " + getVersion(pdfObj) + " R";
 		} else if (obj instanceof TrueTypeFont) {
-			return toString((TrueTypeFont) obj);
+			return serialize((TrueTypeFont) obj);
 		} else {
 			return DataUtils.format(obj);
 		}

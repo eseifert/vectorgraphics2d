@@ -21,16 +21,29 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import static org.hamcrest.CoreMatchers.is;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	PageTreeNodeTest.class,
-	PageTest.class,
-	PDFProcessorTest.class,
-	PDFDocumentTest.class
-})
-public class PDFTests {
+import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
+
+public class PDFDocumentTest {
+	@Test
+	public void testSerializeTrueTypeFont() {
+		String encoding = "CustomEncoding";
+		String baseFont = "MyBaseFont";
+		TrueTypeFont font = new TrueTypeFont(encoding, baseFont);
+
+		String serialized = PDFDocument.serialize(font);
+
+		String expected =
+				"<<\n" +
+				"/Type /Font\n" +
+				"/Subtype /TrueType\n" +
+				"/Encoding /" + encoding + "\n" +
+				"/BaseFont /" + baseFont + "\n" +
+				">>";
+		assertThat(serialized, is(expected));
+	}
 }
 
