@@ -25,6 +25,7 @@ import static org.hamcrest.CoreMatchers.is;
 
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import org.junit.Test;
 
 public class PDFDocumentTest {
@@ -43,6 +44,26 @@ public class PDFDocumentTest {
 				"/Encoding /" + encoding + "\n" +
 				"/BaseFont /" + baseFont + "\n" +
 				">>";
+		assertThat(serialized, is(expected));
+	}
+
+	@Test
+	public void testSerializeStreamWhenStreamIsFiltered() throws IOException {
+		Stream stream = new Stream(Stream.Filter.FLATE);
+		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
+		stream.write(inputData);
+		stream.close();
+
+		String serialized = PDFDocument.serialize(stream);
+
+		String expected =
+				"<<\n" +
+				"/Length " + stream.getLength() +"\n" +
+				"/Filter /FlateDecode\n" +
+				">>\n" +
+				"stream\n" +
+				new String(stream.getContent()) + "\n" +
+				"endstream";
 		assertThat(serialized, is(expected));
 	}
 }

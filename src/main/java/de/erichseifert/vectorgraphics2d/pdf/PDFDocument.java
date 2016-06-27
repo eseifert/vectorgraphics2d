@@ -391,6 +391,18 @@ class PDFDocument extends SizedDocument {
 		return string.toString();
 	}
 
+	protected static String serialize(Stream stream) {
+		StringBuilder serializedStream = new StringBuilder();
+		serializedStream.append("<<").append(EOL);
+		serializedStream.append("/Length ").append(stream.getLength()).append(EOL);
+		serializedStream.append("/Filter /FlateDecode").append(EOL);
+		serializedStream.append(">>").append(EOL);
+		serializedStream.append("stream").append(EOL);
+		serializedStream.append(new String(stream.getContent())).append(EOL);
+		serializedStream.append("endstream");
+		return serializedStream.toString();
+	}
+
 	protected static String serialize(TrueTypeFont font) {
 		StringBuilder string = new StringBuilder();
 		string.append("<<").append(EOL);
