@@ -29,13 +29,39 @@ import java.io.IOException;
  * The {@code Stream} has a defined length.
  */
 class Stream implements PDFObject {
-	private final ByteArrayOutputStream byteStream;
+	public static class Builder {
+		private final ByteArrayOutputStream byteStream;
+
+		public Builder() {
+			byteStream = new ByteArrayOutputStream();
+		}
+
+		/**
+		 * Appends the specified byte array to the {@code Stream}.
+		 * @param data Data to be appended.
+		 */
+		public Builder write(byte[] data) {
+			try {
+				byteStream.write(data);
+			} catch (IOException e) {
+				throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
+			}
+			return this;
+		}
+
+		public Stream build() {
+			return new Stream(byteStream.toByteArray());
+		}
+	}
+
+	private byte[] content;
 
 	/**
 	 * Initializes a new {@code Stream}.
 	 */
-	public Stream() {
-		byteStream = new ByteArrayOutputStream();
+	private Stream(byte[] content) {
+		this.content = new byte[content.length];
+		System.arraycopy(content, 0, this.content, 0, content.length);
 	}
 
 	/**
@@ -43,19 +69,7 @@ class Stream implements PDFObject {
 	 * @return Number of bytes.
 	 */
 	public int getLength() {
-		return byteStream.size();
-	}
-
-	/**
-	 * Appends the specified byte array to the {@code Stream}.
-	 * @param data Data to be appended.
-	 */
-	public void write(byte[] data) {
-		try {
-			byteStream.write(data);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
-		}
+		return content.length;
 	}
 
 	/**
@@ -63,7 +77,9 @@ class Stream implements PDFObject {
 	 * @return Stream content.
 	 */
 	public byte[] getContent() {
-		return byteStream.toByteArray();
+		byte[] contentCopy = new byte[content.length];
+		System.arraycopy(content, 0, contentCopy, 0, content.length);
+		return contentCopy;
 	}
 }
 

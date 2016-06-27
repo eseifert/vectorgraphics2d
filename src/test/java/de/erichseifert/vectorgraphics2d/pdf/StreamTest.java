@@ -24,13 +24,12 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
 import org.junit.Test;
 
 public class StreamTest {
 	@Test
 	public void testLengthIsZeroOnInitialization() {
-		Stream stream = new Stream();
+		Stream stream = new Stream.Builder().build();
 
 		int length = stream.getLength();
 
@@ -38,23 +37,23 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testWriteAdvancesLength() {
-		Stream stream = new Stream();
+	public void testLengthEqualsByteCountInWrittenDataWhenNoFiltersAreSet() {
 		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
+		Stream stream = new Stream.Builder().write(garbage).build();
 
-		stream.write(garbage);
+		int length = stream.getLength();
 
-		assertThat(stream.getLength(), is(garbage.length));
+		assertThat(length, is(garbage.length));
 	}
 
 	@Test
-	public void testWrittenDataIsContainedInStreamContent() {
-		Stream stream = new Stream();
-		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
+	public void testWrittenDataIsIdenticalToStreamContentWhenNoFiltersAreUsed() {
+		byte[] data = new byte[] {4, 2, 42, -1, 0};
+		Stream stream = new Stream.Builder().write(data).build();
 
-		stream.write(garbage);
+		byte[] content = stream.getContent();
 
-		assertThat(stream.getContent(), is(garbage));
+		assertThat(content, is(data));
 	}
 }
 
