@@ -24,6 +24,7 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import org.junit.Test;
@@ -43,6 +44,14 @@ public class StreamTest {
 		stream.getContent();
 	}
 
+	@Test(expected = IOException.class)
+	public void testWriteThrowsExceptionWhenStreamIsClosed() throws IOException {
+		Stream stream = new Stream();
+		stream.close();
+
+		stream.write(new byte[] {42});
+	}
+
 	@Test
 	public void testLengthIsZeroOnInitialization() {
 		Stream stream = new Stream();
@@ -54,7 +63,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testLengthEqualsByteCountInWrittenDataWhenNoFiltersAreSet() {
+	public void testLengthEqualsByteCountInWrittenDataWhenNoFiltersAreSet() throws IOException {
 		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream();
 		stream.write(garbage);
@@ -66,7 +75,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testWrittenDataIsIdenticalToStreamContentWhenNoFiltersAreUsed() {
+	public void testWrittenDataIsIdenticalToStreamContentWhenNoFiltersAreUsed() throws IOException {
 		byte[] data = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream();
 		stream.write(data);
@@ -78,7 +87,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testContentsAreCompressedWhenFlateFilterIsSet() throws DataFormatException {
+	public void testContentsAreCompressedWhenFlateFilterIsSet() throws DataFormatException, IOException {
 		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream(Stream.Filter.FLATE);
 		stream.write(inputData);

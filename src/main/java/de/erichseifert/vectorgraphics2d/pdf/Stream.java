@@ -57,7 +57,10 @@ class Stream implements PDFObject, Closeable {
 	 * Appends the specified byte array to the {@code Stream}.
 	 * @param data Data to be appended.
 	 */
-	public void write(byte[] data) {
+	public void write(byte[] data) throws IOException {
+		if (isClosed()) {
+			throw new IOException("Unable to write to closed stream.");
+		}
 		try {
 			this.filteredData.write(data);
 		} catch (IOException e) {
