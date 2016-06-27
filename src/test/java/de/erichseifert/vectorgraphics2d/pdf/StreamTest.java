@@ -35,5 +35,15 @@ public class StreamTest {
 
 		assertThat(length, is(0));
 	}
+
+	@Test
+	public void testWriteAdvancesLength() {
+		Stream stream = new Stream();
+		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
+
+		stream.write(garbage);
+
+		assertThat(stream.getLength(), is(garbage.length));
+	}
 }
 

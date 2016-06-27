@@ -21,15 +21,21 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 /**
  * Represents a stream object in the sense of the PDF specification.
  * The {@code Stream} has a defined length.
  */
 class Stream implements PDFObject {
+	private final ByteArrayOutputStream byteStream;
+
 	/**
 	 * Initializes a new {@code Stream}.
 	 */
 	public Stream() {
+		byteStream = new ByteArrayOutputStream();
 	}
 
 	/**
@@ -37,7 +43,19 @@ class Stream implements PDFObject {
 	 * @return Number of bytes.
 	 */
 	public int getLength() {
-		return 0;
+		return byteStream.size();
+	}
+
+	/**
+	 * Appends the specified byte array to the {@code Stream}.
+	 * @param data Data to be appended.
+	 */
+	public void write(byte[] data) {
+		try {
+			byteStream.write(data);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
+		}
 	}
 }
 
