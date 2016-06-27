@@ -129,6 +129,16 @@ class PDFDocument extends SizedDocument {
 			}
 		}
 		close();
+		// Content length
+		Payload contentLengthPayload = new Payload();
+		int contentSize = contents.payload.getBytes().length;
+		try {
+			contentLengthPayload.write(String.valueOf(contentSize).getBytes(CHARSET));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		PDFObject contentLength = addInteger(contentLengthPayload);
+		contents.dict.put("Length", contentLength);
 	}
 
 	private GraphicsState getCurrentState() {
@@ -170,11 +180,6 @@ class PDFDocument extends SizedDocument {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
-		// Content length
-		Payload contentLengthPayload = new SizePayload(contents, CHARSET);
-		PDFObject contentLength = addInteger(contentLengthPayload);
-		contents.dict.put("Length", contentLength);
 
 		// Resources
 		resources = new Resources();
