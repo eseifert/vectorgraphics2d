@@ -57,5 +57,13 @@ class Stream implements PDFObject {
 			throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
 		}
 	}
+
+	/**
+	 * Returns the content that has been written to this {@code Stream}.
+	 * @return Stream content.
+	 */
+	public byte[] getContent() {
+		return byteStream.toByteArray();
+	}
 }
 

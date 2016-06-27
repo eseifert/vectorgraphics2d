@@ -24,6 +24,7 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import org.junit.Test;
 
 public class StreamTest {
@@ -44,6 +45,16 @@ public class StreamTest {
 		stream.write(garbage);
 
 		assertThat(stream.getLength(), is(garbage.length));
+	}
+
+	@Test
+	public void testWrittenDataIsContainedInStreamContent() {
+		Stream stream = new Stream();
+		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
+
+		stream.write(garbage);
+
+		assertThat(stream.getContent(), is(garbage));
 	}
 }
 
