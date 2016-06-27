@@ -100,7 +100,7 @@ class PDFDocument extends SizedDocument {
 	/** Cross-reference table ("xref"). */
 	private final Map<PDFObject, Long> crossReferences;
 
-	private DefaultPDFObject contents;
+	private Stream contents;
 	private Resources resources;
 	private final Map<Integer, PDFObject> images;
 
@@ -121,24 +121,13 @@ class PDFDocument extends SizedDocument {
 		for (Command<?> command : commands) {
 			String pdfStatement = toString(command);
 			try {
-				Payload contentsPayload = contents.payload;
-				contentsPayload.write(pdfStatement.getBytes(CHARSET));
-				contentsPayload.write(EOL.getBytes(CHARSET));
+				contents.write(pdfStatement.getBytes(CHARSET));
+				contents.write(EOL.getBytes(CHARSET));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
 		}
 		close();
-		// Content length
-		Payload contentLengthPayload = new Payload();
-		int contentSize = contents.payload.getBytes().length;
-		try {
-			contentLengthPayload.write(String.valueOf(contentSize).getBytes(CHARSET));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		PDFObject contentLength = addInteger(contentLengthPayload);
-		contents.dict.put("Length", contentLength);
 	}
 
 	private GraphicsState getCurrentState() {
@@ -146,10 +135,10 @@ class PDFDocument extends SizedDocument {
 	}
 
 	/**
-	 * Initializes the document and returns a {@code PDFObject} representing the contents.
-	 * @return {@code PDFObject} to which the contents are written.
+	 * Initializes the document and returns a {@code Stream} representing the contents.
+	 * @return {@code Stream} to which the contents are written.
 	 */
-	private DefaultPDFObject initPage() {
+	private Stream initPage() {
 		DefaultPDFObject catalog = addCatalog();
 
 		List<PDFObject> pagesKids = new LinkedList<PDFObject>();
@@ -160,19 +149,14 @@ class PDFDocument extends SizedDocument {
 		pagesKids.add(page);
 
 		// Contents
-		Payload contentsPayload = new Payload();
-		DefaultPDFObject contents = addObject(null, contentsPayload);
+		Stream.Filter[] filters = isCompressed() ? new Stream.Filter[] {Stream.Filter.FLATE} : new Stream.Filter[0];
+		Stream contents = new Stream(filters);
+		objects.add(contents);
 		page.dict.put("Contents", contents);
-
-		// Compression
-		if (isCompressed()) {
-			contentsPayload.addFilter(FlateEncodeStream.class);
-			contents.dict.put("Filter", new Object[] {"FlateDecode"});
-		}
 
 		// Initial content
 		try {
-			contentsPayload.write(DataUtils.join("", new Object[] {
+			contents.write(DataUtils.join("", new Object[] {
 				"q", EOL,
 				getOutput(getCurrentState().getColor()), EOL,
 				MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", getPageSize().getHeight()*MM_IN_UNITS, " cm", EOL
@@ -194,11 +178,11 @@ class PDFDocument extends SizedDocument {
 		return contents;
 	}
 
-	private void setFont(String fontId, float fontSize, DefaultPDFObject contents) {
+	private void setFont(String fontId, float fontSize, Stream contents) {
 		StringBuilder out = new StringBuilder();
 		out.append("/").append(fontId).append(" ").append(fontSize).append(" Tf").append(EOL);
 		try {
-			contents.payload.write(
+			contents.write(
 					out.toString().getBytes(CHARSET)
 			);
 		} catch (IOException e) {
@@ -324,6 +308,8 @@ class PDFDocument extends SizedDocument {
 			String objectString;
 			if (obj instanceof Resources) {
 				objectString = toString((Resources) obj);
+			} else if (obj instanceof Stream) {
+				objectString = toString((Stream) obj);
 			} else {
 				objectString = toString(obj);
 			}
@@ -387,6 +373,14 @@ class PDFDocument extends SizedDocument {
 			string.append("/XObject ").append(serialize(resources.dict.get("XObject"))).append(EOL);
 		}
 		string.append(">>").append(EOL);
+		string.append("endobj");
+		return string.toString();
+	}
+
+	private String toString(Stream stream) {
+		StringBuilder string = new StringBuilder();
+		string.append(getId(stream)).append(" ").append(getVersion(stream)).append(" obj").append(EOL);
+		string.append(serialize(stream)).append(EOL);
 		string.append("endobj");
 		return string.toString();
 	}
@@ -482,11 +476,11 @@ class PDFDocument extends SizedDocument {
 			}
 			out.append(">>");
 			return out.toString();
-		} else if (obj instanceof DefaultPDFObject) {
-			DefaultPDFObject pdfObj = (DefaultPDFObject) obj;
-			return String.valueOf(getId(pdfObj)) + " " + getVersion(pdfObj) + " R";
 		} else if (obj instanceof TrueTypeFont) {
 			return serialize((TrueTypeFont) obj);
+		} else if (obj instanceof PDFObject) {
+			PDFObject pdfObj = (PDFObject) obj;
+			return String.valueOf(getId(pdfObj)) + " " + getVersion(pdfObj) + " R";
 		} else {
 			return DataUtils.format(obj);
 		}
@@ -763,13 +757,12 @@ class PDFDocument extends SizedDocument {
 
 	public void close() {
 		try {
-			String footer = "Q" + EOL;
+			String footer = "Q";
 			if (transformed) {
-				footer += "Q" + EOL;
+				footer += EOL + "Q";
 			}
-			Payload contentsPayload = contents.payload;
-			contentsPayload.write(footer.getBytes(CHARSET));
-			contentsPayload.close();
+			contents.write(footer.getBytes(CHARSET));
+			contents.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
