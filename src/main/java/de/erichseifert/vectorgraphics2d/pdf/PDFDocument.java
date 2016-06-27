@@ -196,12 +196,6 @@ class PDFDocument extends SizedDocument {
 		return object;
 	}
 
-	private PDFObject addInteger(Payload payload) {
-		PDFObject object = new DefaultPDFObject(null, payload, false);
-		objects.add(object);
-		return object;
-	}
-
 	private DefaultPDFObject addCatalog() {
 		Map<String, Object> dict = DataUtils.map(
 				new String[] {"Type"},
