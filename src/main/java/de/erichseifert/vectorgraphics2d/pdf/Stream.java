@@ -23,17 +23,28 @@ package de.erichseifert.vectorgraphics2d.pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.zip.DeflaterOutputStream;
 
 /**
  * Represents a stream object in the sense of the PDF specification.
  * The {@code Stream} has a defined length.
  */
 class Stream implements PDFObject {
+	public enum Filter {
+		FLATE
+	};
+
 	public static class Builder {
-		private final ByteArrayOutputStream byteStream;
+		private final ByteArrayOutputStream data;
+		private final List<Filter> filters;
 
 		public Builder() {
-			byteStream = new ByteArrayOutputStream();
+			data = new ByteArrayOutputStream();
+			filters = new LinkedList<Filter>();
 		}
 
 		/**
@@ -42,19 +53,45 @@ class Stream implements PDFObject {
 		 */
 		public Builder write(byte[] data) {
 			try {
-				byteStream.write(data);
+				this.data.write(data);
 			} catch (IOException e) {
 				throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
 			}
 			return this;
 		}
 
+		public Builder filters(Filter... filters) {
+			this.filters.addAll(Arrays.asList(filters));
+			return this;
+		}
+
+		private byte[] getFilteredData(List<Filter> filters) {
+			ByteArrayOutputStream filteredDataOutput = new ByteArrayOutputStream();
+			OutputStream filteredData = filteredDataOutput;
+			for (Filter filter : filters) {
+				if (filter == Filter.FLATE) {
+					filteredData = new DeflaterOutputStream(filteredData);
+				}
+			}
+			try {
+				filteredData.write(data.toByteArray());
+			} catch (IOException e) {
+				throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
+			}
+			try {
+				filteredData.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return filteredDataOutput.toByteArray();
+		}
+
 		public Stream build() {
-			return new Stream(byteStream.toByteArray());
+			return new Stream(getFilteredData(this.filters));
 		}
 	}
 
-	private byte[] content;
+	private final byte[] content;
 
 	/**
 	 * Initializes a new {@code Stream}.

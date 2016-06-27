@@ -24,6 +24,8 @@ package de.erichseifert.vectorgraphics2d.pdf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 import org.junit.Test;
 
 public class StreamTest {
@@ -54,6 +56,23 @@ public class StreamTest {
 		byte[] content = stream.getContent();
 
 		assertThat(content, is(data));
+	}
+
+	@Test
+	public void testContentsAreCompressedWhenFlateFilterIsSet() throws DataFormatException {
+		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
+		Stream stream = new Stream.Builder()
+				.write(inputData)
+				.filters(Stream.Filter.FLATE)
+				.build();
+
+		byte[] compressedContent = stream.getContent();
+
+		Inflater decompressor = new Inflater();
+		decompressor.setInput(compressedContent);
+		byte[] decompressedOutput = new byte[inputData.length];
+		decompressor.inflate(decompressedOutput);
+		assertThat(decompressedOutput, is(inputData));
 	}
 }
 
