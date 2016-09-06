@@ -733,7 +733,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		BufferedImage bi =
 			new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
 	    Graphics g = bi.getGraphics();
-	    FontMetrics fontMetrics = g.getFontMetrics(getFont());
+	    FontMetrics fontMetrics = g.getFontMetrics(f);
 	    g.dispose();
 	    return fontMetrics;
 	}
