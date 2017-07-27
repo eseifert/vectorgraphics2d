@@ -24,10 +24,13 @@ package de.erichseifert.vectorgraphics2d.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -36,6 +39,14 @@ import java.util.regex.Pattern;
  * collections like maps or lists.
  */
 public abstract class DataUtils {
+	/** Standard pattern to format numbers */
+	private static final DecimalFormat DECIMAL_FORMAT =
+			new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+
+	static {
+		DECIMAL_FORMAT.setMaximumFractionDigits(340);
+	}
+
 	/**
 	 * Default constructor that prevents creation of class.
 	 */
@@ -181,9 +192,7 @@ public abstract class DataUtils {
 	public static String format(Number number) {
 		String formatted;
 		if (number instanceof Double || number instanceof Float) {
-			formatted = Double.toString(number.doubleValue())
-					.replaceAll("\\.0+$", "")
-					.replaceAll("(\\.[0-9]*[1-9])0+$", "$1");
+			formatted = DECIMAL_FORMAT.format(number.doubleValue());
 		} else {
 			formatted = number.toString();
 		}

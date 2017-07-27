@@ -48,5 +48,32 @@ public class DataUtilsTest {
 		assertEquals(expected, result);
 	}
 
+	@Test
+	public void formattingIntegersDoesntCauseTrailingZeros() {
+		String smallDecimalString = DataUtils.format(42);
+		String expected = "42";
+		assertEquals(expected, smallDecimalString);
+	}
+
+	@Test
+	public void formattingSmallDecimalsDoesntCauseScientificNotation() {
+		String result = DataUtils.format(1e-4d);
+		String expected = "0.0001";
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void formattingZeroDecimalsDoesntCauseTrailingZeros() {
+		String result = DataUtils.format(0d);
+		String expected = "0";
+		assertEquals(expected, result);
+	}
+
+	@Test
+	public void formattingBigDecimalsDoesntCauseScientificNotation() {
+		String result = DataUtils.format(1e+8d);
+		String expected = "100000000";
+		assertEquals(expected, result);
+	}
 }
 
