@@ -40,7 +40,7 @@ public class SVGProcessorTest {
 	private static final String HEADER =
 		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + EOL +
 		"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" + EOL +
-		"<svg height=\"10.583333333333332mm\" version=\"1.1\" viewBox=\"0 10 20 30\" width=\"7.0555555555555545mm\" x=\"0mm\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" y=\"3.5277777777777772mm\">" + EOL;
+		"<svg height=\"30px\" version=\"1.1\" viewBox=\"0 10 20 30\" width=\"20px\" x=\"0px\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" y=\"10px\">" + EOL;
 	private static final String FOOTER = "</svg>";
 	private static final PageSize PAGE_SIZE = new PageSize(0.0, 10.0, 20.0, 30.0);
 

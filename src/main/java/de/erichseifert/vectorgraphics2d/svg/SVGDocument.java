@@ -102,8 +102,6 @@ public class SVGDocument extends SizedDocument {
 	private static final String PREFIX_CLIP = "clip";
 
 	// TODO Resolution settings
-	private static final double DPI = 72.0;
-	private static final double PX_PER_MM = DPI/25.4;
 	private static final String CHARSET = "UTF-8";
 
 	private final Stack<GraphicsState> states;
@@ -178,10 +176,10 @@ public class SVGDocument extends SizedDocument {
 		// Add svg element
 		root.setAttribute("xmlns:" + XLINK_NAMESPACE, XLINK_NAMESPACE_URI);
 		root.setAttribute("version", "1.1");
-		root.setAttribute("x", DataUtils.format(x/PX_PER_MM) + "mm");
-		root.setAttribute("y", DataUtils.format(y/PX_PER_MM) + "mm");
-		root.setAttribute("width", DataUtils.format(width/PX_PER_MM) + "mm");
-		root.setAttribute("height", DataUtils.format(height/PX_PER_MM) + "mm");
+		root.setAttribute("x", DataUtils.format(x) + "px");
+		root.setAttribute("y", DataUtils.format(y) + "px");
+		root.setAttribute("width", DataUtils.format(width) + "px");
+		root.setAttribute("height", DataUtils.format(height) + "px");
 		root.setAttribute("viewBox", DataUtils.join(" ", new double[] {x, y, width, height}));
 	}
 
