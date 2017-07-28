@@ -458,21 +458,21 @@ public class SVGDocument extends SizedDocument {
 			int segmentType = segments.currentSegment(coords);
 			switch (segmentType) {
 			case PathIterator.SEG_MOVETO:
-				out.append("M").append(coords[0]).append(",").append(coords[1]);
+				out.append("M").append(DataUtils.format(coords[0])).append(",").append(DataUtils.format(coords[1]));
 				break;
 			case PathIterator.SEG_LINETO:
-				out.append("L").append(coords[0]).append(",").append(coords[1]);
+				out.append("L").append(coords[0]).append(",").append(DataUtils.format(coords[1]));
 				break;
 			case PathIterator.SEG_CUBICTO:
 				out.append("C")
-					.append(coords[0]).append(",").append(coords[1]).append(" ")
-					.append(coords[2]).append(",").append(coords[3]).append(" ")
-					.append(coords[4]).append(",").append(coords[5]);
+					.append(DataUtils.format(coords[0])).append(",").append(DataUtils.format(coords[1])).append(" ")
+					.append(DataUtils.format(coords[2])).append(",").append(DataUtils.format(coords[3])).append(" ")
+					.append(DataUtils.format(coords[4])).append(",").append(DataUtils.format(coords[5]));
 				break;
 			case PathIterator.SEG_QUADTO:
 				out.append("Q")
-					.append(coords[0]).append(",").append(coords[1]).append(" ")
-					.append(coords[2]).append(",").append(coords[3]);
+					.append(DataUtils.format(coords[0])).append(",").append(DataUtils.format(coords[1])).append(" ")
+					.append(DataUtils.format(coords[2])).append(",").append(DataUtils.format(coords[3]));
 				break;
 			case PathIterator.SEG_CLOSE:
 				out.append("Z");
@@ -589,4 +589,3 @@ public class SVGDocument extends SizedDocument {
 		return elem;
 	}
 }
-
