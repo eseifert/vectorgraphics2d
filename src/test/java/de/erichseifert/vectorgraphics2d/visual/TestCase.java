@@ -95,116 +95,142 @@ public abstract class TestCase {
 		return reference;
 	}
 
-	public InputStream getEPS() throws IOException {
+	public InputStream getEPS() {
 		Document document = epsProcessor.getDocument(vectorGraphics.getCommands(), getPageSize());
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		document.writeTo(byteOutput);
+		try {
+			document.writeTo(byteOutput);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
-	public InputStream getPDF() throws IOException {
+	public InputStream getPDF() {
 		Document document = pdfProcessor.getDocument(vectorGraphics.getCommands(), getPageSize());
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		document.writeTo(byteOutput);
+		try {
+			document.writeTo(byteOutput);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
-	public InputStream getSVG() throws IOException {
+	public InputStream getSVG() {
 		Document document = svgProcessor.getDocument(vectorGraphics.getCommands(), getPageSize());
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		document.writeTo(byteOutput);
+		try {
+			document.writeTo(byteOutput);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return new ByteArrayInputStream(byteOutput.toByteArray());
 	}
 
-	public BufferedImage getRasterizedEPS() throws GhostscriptException, IOException {
+	public BufferedImage getRasterizedEPS() {
 		if (rasterizedEPS != null) {
 			return rasterizedEPS;
 		}
+		try {
+			File epsInputFile = File.createTempFile(getClass().getName() + ".testEPS", ".eps");
+			epsInputFile.deleteOnExit();
+			OutputStream epsInput = new FileOutputStream(epsInputFile);
+			epsProcessor.getDocument(vectorGraphics.getCommands(), getPageSize()).writeTo(epsInput);
+			epsInput.close();
 
-		File epsInputFile = File.createTempFile(getClass().getName() + ".testEPS", ".eps");
-		epsInputFile.deleteOnExit();
-		OutputStream epsInput = new FileOutputStream(epsInputFile);
-		epsProcessor.getDocument(vectorGraphics.getCommands(), getPageSize()).writeTo(epsInput);
-		epsInput.close();
-
-		File pngOutputFile = File.createTempFile(getClass().getName() + ".testEPS", "png");
-		pngOutputFile.deleteOnExit();
-		Ghostscript gs = Ghostscript.getInstance();
-		gs.initialize(new String[] {
-				"-dBATCH",
-				"-dQUIET",
-				"-dNOPAUSE",
-				"-dSAFER",
-				String.format("-g%dx%d", Math.round(getPageSize().getWidth()), Math.round(getPageSize().getHeight())),
-				"-dGraphicsAlphaBits=4",
-				"-dAlignToPixels=0",
-				"-dEPSCrop",
-				"-dPSFitPage",
-				"-sDEVICE=pngalpha",
-				"-sOutputFile=" + pngOutputFile.toString(),
-				epsInputFile.toString()
-		});
-		gs.exit();
-		rasterizedEPS = ImageIO.read(pngOutputFile);
+			File pngOutputFile = File.createTempFile(getClass().getName() + ".testEPS", "png");
+			pngOutputFile.deleteOnExit();
+			Ghostscript gs = Ghostscript.getInstance();
+			gs.initialize(new String[] {
+					"-dBATCH",
+					"-dQUIET",
+					"-dNOPAUSE",
+					"-dSAFER",
+					String.format("-g%dx%d", Math.round(getPageSize().getWidth()), Math.round(getPageSize().getHeight())),
+					"-dGraphicsAlphaBits=4",
+					"-dAlignToPixels=0",
+					"-dEPSCrop",
+					"-dPSFitPage",
+					"-sDEVICE=pngalpha",
+					"-sOutputFile=" + pngOutputFile.toString(),
+					epsInputFile.toString()
+			});
+			gs.exit();
+			rasterizedEPS = ImageIO.read(pngOutputFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (GhostscriptException e) {
+			e.printStackTrace();
+		}
 		return rasterizedEPS;
 	}
 
-	public BufferedImage getRasterizedPDF() throws GhostscriptException, IOException {
+	public BufferedImage getRasterizedPDF() {
 		if (rasterizedPDF != null) {
 			return rasterizedPDF;
 		}
 
-		File pdfInputFile = File.createTempFile(getClass().getName() + ".testPDF", ".pdf");
-		pdfInputFile.deleteOnExit();
-		OutputStream pdfInput = new FileOutputStream(pdfInputFile);
-		pdfProcessor.getDocument(vectorGraphics.getCommands(), getPageSize()).writeTo(pdfInput);
-		pdfInput.close();
+		try {
+			File pdfInputFile = File.createTempFile(getClass().getName() + ".testPDF", ".pdf");
+			pdfInputFile.deleteOnExit();
+			OutputStream pdfInput = new FileOutputStream(pdfInputFile);
+			pdfProcessor.getDocument(vectorGraphics.getCommands(), getPageSize()).writeTo(pdfInput);
+			pdfInput.close();
 
-		File pngOutputFile = File.createTempFile(getClass().getName() + ".testPDF", "png");
-		pngOutputFile.deleteOnExit();
-		Ghostscript gs = Ghostscript.getInstance();
-		gs.initialize(new String[] {
-				"-dBATCH",
-				"-dQUIET",
-				"-dNOPAUSE",
-				"-dSAFER",
-				String.format("-g%dx%d", Math.round(getPageSize().getWidth()), Math.round(getPageSize().getHeight())),
-				"-dGraphicsAlphaBits=4",
-				// TODO: More robust settings for gs? DPI value is estimated.
-				"-r25",
-				"-dAlignToPixels=0",
-				"-dPDFFitPage",
-				"-sDEVICE=pngalpha",
-				"-sOutputFile=" + pngOutputFile.toString(),
-				pdfInputFile.toString()
-		});
-		gs.exit();
-		rasterizedPDF = ImageIO.read(pngOutputFile);
+			File pngOutputFile = File.createTempFile(getClass().getName() + ".testPDF", "png");
+			pngOutputFile.deleteOnExit();
+			Ghostscript gs = Ghostscript.getInstance();
+			gs.initialize(new String[] {
+					"-dBATCH",
+					"-dQUIET",
+					"-dNOPAUSE",
+					"-dSAFER",
+					String.format("-g%dx%d", Math.round(getPageSize().getWidth()), Math.round(getPageSize().getHeight())),
+					"-dGraphicsAlphaBits=4",
+					// TODO: More robust settings for gs? DPI value is estimated.
+					"-r25",
+					"-dAlignToPixels=0",
+					"-dPDFFitPage",
+					"-sDEVICE=pngalpha",
+					"-sOutputFile=" + pngOutputFile.toString(),
+					pdfInputFile.toString()
+			});
+			gs.exit();
+			rasterizedPDF = ImageIO.read(pngOutputFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (GhostscriptException e) {
+			e.printStackTrace();
+		}
 		return rasterizedPDF;
 	}
 
-	public BufferedImage getRasterizedSVG() throws TranscoderException, IOException {
+	public BufferedImage getRasterizedSVG() {
 		if (rasterizedSVG != null) {
 			return rasterizedSVG;
 		}
 
-		rasterizedSVG = new BufferedImage(
-				(int) Math.round(getPageSize().getWidth()), (int) Math.round(getPageSize().getHeight()),
-				BufferedImage.TYPE_INT_ARGB);
+		try {
+			rasterizedSVG = new BufferedImage(
+					(int) Math.round(getPageSize().getWidth()), (int) Math.round(getPageSize().getHeight()),
+					BufferedImage.TYPE_INT_ARGB);
 
-		ImageTranscoder transcoder = new ImageTranscoder() {
-			@Override
-			public BufferedImage createImage(int width, int height) {
-				return rasterizedSVG;
-			}
+			ImageTranscoder transcoder = new ImageTranscoder() {
+				@Override
+				public BufferedImage createImage(int width, int height) {
+					return rasterizedSVG;
+				}
 
-			@Override
-			public void writeImage(BufferedImage bufferedImage, TranscoderOutput transcoderOutput) throws TranscoderException {
-			}
-		};
+				@Override
+				public void writeImage(BufferedImage bufferedImage, TranscoderOutput transcoderOutput) throws TranscoderException {
+				}
+			};
 
-		transcoder.transcode(new TranscoderInput(getSVG()), null);
-
+			transcoder.transcode(new TranscoderInput(getSVG()), null);
+		} catch (TranscoderException e) {
+			e.printStackTrace();
+		}
 		return rasterizedSVG;
 	}
 }

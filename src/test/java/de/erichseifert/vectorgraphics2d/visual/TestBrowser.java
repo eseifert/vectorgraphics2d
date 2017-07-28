@@ -52,9 +52,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.batik.transcoder.TranscoderException;
-import org.ghost4j.GhostscriptException;
-
 public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
 	private final ImageComparisonPanel imageComparisonPanel;
@@ -236,17 +233,8 @@ public class TestBrowser extends JFrame {
 					if (index < 0) {
 						return;
 					}
-					TestCase test = testCases.get(index);
-					testCase = test;
-					try {
-						setTestCase(test);
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} catch (GhostscriptException e1) {
-						e1.printStackTrace();
-					} catch (TranscoderException e1) {
-						e1.printStackTrace();
-					}
+					testCase = testCases.get(index);
+					setTestCase(testCase);
 				}
 			}
 		});
@@ -267,15 +255,7 @@ public class TestBrowser extends JFrame {
 
 				TestCase test = getTestCase();
 				if (test != null) {
-					try {
-						setTestCase(test);
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (GhostscriptException e) {
-						e.printStackTrace();
-					} catch (TranscoderException e) {
-						e.printStackTrace();
-					}
+					setTestCase(test);
 				}
 			}
 		});
@@ -284,7 +264,7 @@ public class TestBrowser extends JFrame {
 		configurableImageComparisonPanel.add(imageComparisonPanel, BorderLayout.CENTER);
 	}
 
-	public void setTestCase(TestCase test) throws IOException, GhostscriptException, TranscoderException {
+	public void setTestCase(TestCase test) {
 		BufferedImage reference = test.getReference();
 		imageComparisonPanel.setLeftComponent(new ImageDisplayPanel(reference, null));
 		ImageDisplayPanel imageDisplayPanel;
