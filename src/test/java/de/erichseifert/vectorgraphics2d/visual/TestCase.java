@@ -61,8 +61,8 @@ public abstract class TestCase {
 	private BufferedImage rasterizedSVG;
 
 	public TestCase() throws IOException {
-		int width = 150;
-		int height = 150;
+		int width = 300;
+		int height = 300;
 		pageSize = new PageSize(0.0, 0.0, width, height);
 
 		vectorGraphics = new VectorGraphics2D();
