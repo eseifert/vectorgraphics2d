@@ -1,9 +1,24 @@
+VectorGraphics2D 0.12 (2017-07-28)
+==================================
+
+- **Major API change:** The classes ``EPSGraphics2D``, ``PDFGraphics2D`` and
+  ``SVGGraphics2D`` have been removed. ``VectorGraphics2D`` is used instead in
+  combination with a ``Processor`` instance to generate a ``Document`` object,
+  which can then be written to an ``OutputStream``.
+  See `README.rst <README.rst>`__ for code examples.
+- The PDF code has seen some major restructuring as well to make it more robust
+  and more standards compliant.
+- SVG documents use of pixels for page size instead of millimeters by default.
+- Better handling of font metrics (thanks to Anton Roslov, pull request #62)
+- A bug that caused number to be formatted in computerized scientific notation,
+  which is not supported in most formats (thanks to Jakub H., issue #63).
+
 VectorGraphics2D 0.11 (2016-06-04)
 ==================================
 
 - Allow headless build
 - Added support for CMYK color space
-- Added optional compression to PDFGraphics2D
+- Added optional compression to ``PDFGraphics2D``
 
 VectorGraphics2D 0.10 (2016-03-06)
 ==================================
