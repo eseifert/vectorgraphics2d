@@ -95,9 +95,7 @@ public class StrokeTest extends TestCase {
 
 		double x = xOrigin;
 		double y = yOrigin;
-		for (int i = 0; i < strokes.length; i++) {
-			Stroke stroke = strokes[i];
-
+		for (Stroke stroke : strokes) {
 			if (stroke != null) {
 				Path2D p = new Path2D.Double(path);
 				p.transform(AffineTransform.getTranslateInstance(x, y));
@@ -107,7 +105,7 @@ public class StrokeTest extends TestCase {
 			}
 
 			x += wTile;
-			if (x >= tileCountH * wTile) {
+			if (x >= tileCountH*wTile) {
 				x = xOrigin;
 				y += hTile;
 			}
