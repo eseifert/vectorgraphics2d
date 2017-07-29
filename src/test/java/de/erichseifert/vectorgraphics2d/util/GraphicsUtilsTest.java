@@ -94,7 +94,7 @@ public class GraphicsUtilsTest {
 	public void testPhysicalFont() {
 		Font font;
 
-		// FIXME: Use valid fonts for headless Continuos Integration environment
+		// FIXME: Use valid fonts for headless Continuous Integration environment
 		boolean isHeadless = GraphicsEnvironment.getLocalGraphicsEnvironment().isHeadlessInstance();
 		if (isHeadless) {
 			return;
