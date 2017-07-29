@@ -100,7 +100,7 @@ class PDFDocument extends SizedDocument {
 	/** Cross-reference table ("xref"). */
 	private final Map<PDFObject, Long> crossReferences;
 
-	private Stream contents;
+	private final Stream contents;
 	private Resources resources;
 	private final Map<Integer, PDFObject> images;
 
