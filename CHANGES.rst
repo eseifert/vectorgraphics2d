@@ -1,3 +1,9 @@
+VectorGraphics2D 0.13 (unreleased)
+==================================
+
+- Java 7 required to build
+- All processors now have a standard constructor
+
 VectorGraphics2D 0.12 (2017-07-28)
 ==================================
 

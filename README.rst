@@ -35,6 +35,11 @@ like text encodings, embedded fonts, or metadata support. Although its early
 stage VectorGraphics2D is already used successfully in several projects to
 export vector graphics.
 
+Requirements
+============
+
+VectorGraphics2D requires at least Java 7 and Gradle 2.2 or higher to build.
+
 Installation
 ============
 
