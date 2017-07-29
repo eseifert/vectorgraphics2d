@@ -26,6 +26,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
@@ -50,9 +51,7 @@ class Stream implements PDFObject, Closeable {
 	public Stream(Filter... filters) {
 		data = new ByteArrayOutputStream();
 		this.filters = new ArrayList<>(filters.length);
-		for (Filter filter : filters) {
-			this.filters.add(filter);
-		}
+		this.filters.addAll(Arrays.asList(filters));
 
 		filteredData = data;
 		for (Filter filter : filters) {

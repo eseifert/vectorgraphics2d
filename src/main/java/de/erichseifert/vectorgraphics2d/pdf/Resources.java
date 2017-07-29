@@ -22,6 +22,7 @@
 package de.erichseifert.vectorgraphics2d.pdf;
 
 import java.awt.Font;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -124,9 +125,7 @@ class Resources extends DefaultPDFObject {
 
 	public void setProcSet(String... procedureNames) {
 		procSet.clear();
-		for (String procedureName : procedureNames) {
-			procSet.add(procedureName);
-		}
+		procSet.addAll(Arrays.asList(procedureNames));
 	}
 
 	public List<String> getProcSet() {
