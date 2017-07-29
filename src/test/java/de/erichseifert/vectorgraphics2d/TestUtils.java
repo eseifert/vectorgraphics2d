@@ -55,10 +55,10 @@ public abstract class TestUtils {
 	}
 
 	public static class XMLFragment {
-		private static final Pattern CDATA = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)\\]\\]>");
+		private static final Pattern CDATA = Pattern.compile("\\s*<!\\[CDATA\\[(.*?)]]>");
 		private static final Pattern COMMENT = Pattern.compile("\\s*<!--(.*?)-->");
-		private static final Pattern TAG_BEGIN = Pattern.compile("\\s*<(/|\\?|!)?\\s*([^\\s>/\\?]+)");
-		private static final Pattern TAG_END = Pattern.compile("\\s*(/|\\?)?>");
+		private static final Pattern TAG_BEGIN = Pattern.compile("\\s*<[/?!]?\\s*([^\\s>/?]+)");
+		private static final Pattern TAG_END = Pattern.compile("\\s*[/?]?>");
 		private static final Pattern TAG_ATTRIBUTE = Pattern.compile("\\s*([^\\s>=]+)=(\"[^\"]*\"|'[^']*')");
 		private static final Pattern DOCTYPE_PART = Pattern.compile("\\s*(\"[^\"]*\"|'[^']*'|[^\\s>]+)");
 
