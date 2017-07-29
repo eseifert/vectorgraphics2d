@@ -98,10 +98,17 @@ For example, a compression option can be passed for PDF:
 .. code:: java
 
     PDFProcessor pdfProcessor = new PDFProcessor(true);
-    Document doc = pdfProcessor.getDocument(commands, PageSize.A4);
 
-Finally, the document can be written to a file:
+Another method to get a processor is ``Processors.getProcessor(String)``:
 
 .. code:: java
 
+    Processor pdfProcessor = Processors.getProcessor("pdf");
+
+Finally, a document can be generated from the commands and written to a
+stream with the processor:
+
+.. code:: java
+
+    Document doc = pdfProcessor.getDocument(commands, PageSize.A4);
     doc.writeTo(new FileOutputStream("rect.pdf"));
