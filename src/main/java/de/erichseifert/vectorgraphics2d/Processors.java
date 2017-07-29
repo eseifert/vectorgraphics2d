@@ -30,15 +30,15 @@ public class Processors {
 		if (format == null) {
 			throw new NullPointerException("Format cannot be null.");
 		}
-		if (format.equals("eps")) {
-			return new EPSProcessor();
-		} else if (format.equals("pdf")) {
-			return new PDFProcessor(true);
-		} else if (format.equals("svg")) {
-			return new SVGProcessor();
-		} else {
-			throw new IllegalArgumentException("Unknown format \"" + format + "\"");
+		switch (format) {
+			case "eps":
+				return new EPSProcessor();
+			case "pdf":
+				return new PDFProcessor(true);
+			case "svg":
+				return new SVGProcessor();
+			default:
+				throw new IllegalArgumentException("Unknown format \"" + format + "\"");
 		}
 	}
 }
-
