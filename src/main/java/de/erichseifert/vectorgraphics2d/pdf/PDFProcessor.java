@@ -64,7 +64,6 @@ public class PDFProcessor implements Processor {
 		AbsoluteToRelativeTransformsFilter absoluteToRelativeTransformsFilter = new AbsoluteToRelativeTransformsFilter(commands);
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(absoluteToRelativeTransformsFilter);
 		CommandSequence filtered = new StateChangeGroupingFilter(paintedShapeAsImageFilter);
-		PDFDocument doc = new PDFDocument(filtered, pageSize, isCompressed());
-		return doc;
+		return new PDFDocument(filtered, pageSize, isCompressed());
 	}
 }

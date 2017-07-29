@@ -223,8 +223,7 @@ class PDFDocument extends SizedDocument {
 				new String[] {"Type", "Parent", "MediaBox"},
 				new Object[] {"Page", pageTree, new double[] {x, y, width, height}}
 		);
-		DefaultPDFObject page = addDictionary(dict);
-		return page;
+		return addDictionary(dict);
 	}
 
 	private DefaultPDFObject addDictionary(Map<String, Object> dict) {

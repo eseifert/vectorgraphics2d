@@ -344,8 +344,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 			hitShape = getStroke().createStrokedShape(hitShape);
 		}
 		hitShape = state.transformShape(hitShape);
-		boolean hit = hitShape.intersects(rect);
-		return hit;
+		return hitShape.intersects(rect);
 	}
 
 	@Override

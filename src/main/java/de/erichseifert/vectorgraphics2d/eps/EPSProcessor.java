@@ -43,7 +43,6 @@ public class EPSProcessor implements Processor {
 		// TODO Apply image transparency => image mask filter
 		// TODO Apply optimization filter
 		FillPaintedShapeAsImageFilter paintedShapeAsImageFilter = new FillPaintedShapeAsImageFilter(commands);
-		EPSDocument doc = new EPSDocument(paintedShapeAsImageFilter, pageSize);
-		return doc;
+		return new EPSDocument(paintedShapeAsImageFilter, pageSize);
 	}
 }
