@@ -37,7 +37,7 @@ import java.util.zip.DeflaterOutputStream;
 class Stream implements PDFObject, Closeable {
 	public enum Filter {
 		FLATE
-	};
+	}
 
 	private final ByteArrayOutputStream data;
 	private final List<Filter> filters;

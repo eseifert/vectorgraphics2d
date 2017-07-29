@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class ImageDataStream extends InputStream {
-	public static enum Interleaving {
+	public enum Interleaving {
 		SAMPLE,
 		ROW,
 		WITHOUT_ALPHA,
