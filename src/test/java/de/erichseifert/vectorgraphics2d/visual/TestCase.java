@@ -158,9 +158,7 @@ public abstract class TestCase {
 			});
 			gs.exit();
 			rasterizedEPS = ImageIO.read(pngOutputFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (GhostscriptException e) {
+		} catch (IOException | GhostscriptException e) {
 			e.printStackTrace();
 		}
 		return rasterizedEPS;
@@ -198,9 +196,7 @@ public abstract class TestCase {
 			});
 			gs.exit();
 			rasterizedPDF = ImageIO.read(pngOutputFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (GhostscriptException e) {
+		} catch (IOException | GhostscriptException e) {
 			e.printStackTrace();
 		}
 		return rasterizedPDF;

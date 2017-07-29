@@ -62,16 +62,7 @@ class Payload extends OutputStream {
 		try {
 			filteredStream = filterClass.getConstructor(OutputStream.class)
 					.newInstance(filteredStream);
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
+		} catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

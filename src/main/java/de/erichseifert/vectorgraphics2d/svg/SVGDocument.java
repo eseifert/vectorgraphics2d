@@ -196,8 +196,6 @@ public class SVGDocument extends SizedDocument {
 			transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
 					doc.getDoctype().getSystemId());
 			transformer.transform(new DOMSource(doc), new StreamResult(out));
-		} catch (TransformerConfigurationException e) {
-			throw new IOException(e.getMessage());
 		} catch (TransformerException e) {
 			throw new IOException(e.getMessage());
 		}
