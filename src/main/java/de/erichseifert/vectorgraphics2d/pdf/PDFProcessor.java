@@ -37,6 +37,13 @@ public class PDFProcessor implements Processor {
 	private final boolean compressed;
 
 	/**
+	 * Initializes a {@code PDFProcessor} for compressed PDF documents.
+	 */
+	public PDFProcessor() {
+		this(true);
+	}
+
+	/**
 	 * Initializes a {@code PDFProcessor} with the specified compression settings.
 	 * @param compressed {@code true} if compression is enabled, {@code false} otherwise.
 	 */
