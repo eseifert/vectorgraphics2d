@@ -34,7 +34,7 @@ public abstract class StreamingFilter implements Iterator<Command<?>>, Filter {
 	private final Iterator<Command<?>> iterator;
 
 	public StreamingFilter(CommandSequence stream) {
-		buffer = new LinkedList<Command<?>>();
+		buffer = new LinkedList<>();
 		iterator = stream.iterator();
 	}
 

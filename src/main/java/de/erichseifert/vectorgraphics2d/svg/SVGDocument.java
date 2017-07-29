@@ -129,9 +129,9 @@ public class SVGDocument extends SizedDocument {
 	public SVGDocument(CommandSequence commands, PageSize pageSize) {
 		super(pageSize, true);
 
-		states = new Stack<GraphicsState>();
+		states = new Stack<>();
 		states.push(new GraphicsState());
-		clippingPathElements = new HashMap<Integer, Element>();
+		clippingPathElements = new HashMap<>();
 
 		// Prepare DOM
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();

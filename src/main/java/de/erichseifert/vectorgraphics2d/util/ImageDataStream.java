@@ -67,7 +67,7 @@ public class ImageDataStream extends InputStream {
 		}
 		opaque = alphaRaster == null;
 
-		byteBuffer = new LinkedList<Integer>();
+		byteBuffer = new LinkedList<>();
 		sampleValues = new int[raster.getNumBands()];
 		sampleSizes = raster.getSampleModel().getSampleSize();
 	}

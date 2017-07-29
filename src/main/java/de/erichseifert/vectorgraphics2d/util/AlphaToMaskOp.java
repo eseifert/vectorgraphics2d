@@ -94,7 +94,7 @@ public class AlphaToMaskOp implements BufferedImageOp {
 		boolean isRasterPremultiplied = destCM.isAlphaPremultiplied();
 		Hashtable<String, Object> properties = null;
 		if (src.getPropertyNames() != null) {
-			properties = new Hashtable<String, Object>();
+			properties = new Hashtable<>();
 			for (String key : src.getPropertyNames()) {
 				properties.put(key, src.getProperty(key));
 			}

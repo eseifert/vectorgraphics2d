@@ -142,7 +142,7 @@ public abstract class GraphicsUtils {
 		boolean isRasterPremultiplied = cm.isAlphaPremultiplied();
 		Hashtable<String, Object> properties = null;
 		if (image.getPropertyNames() != null) {
-			properties = new Hashtable<String, Object>();
+			properties = new Hashtable<>();
 			for (String key : image.getPropertyNames()) {
 				properties.put(key, image.getProperty(key));
 			}
@@ -260,8 +260,8 @@ public abstract class GraphicsUtils {
 			if (font1 == font2) {
 				return 0;
 			}
-			Set<String> variantNames1 = new HashSet<String>();
-			Set<String> variantNames2 = new HashSet<String>();
+			Set<String> variantNames1 = new HashSet<>();
+			Set<String> variantNames2 = new HashSet<>();
 			for (int style : STYLES) {
 				variantNames1.add(font1.deriveFont(style).getPSName());
 				variantNames2.add(font2.deriveFont(style).getPSName());
@@ -305,7 +305,7 @@ public abstract class GraphicsUtils {
 
 		// Create a list of matches sorted by font expressiveness (in descending order)
 		Queue<Font> physicalFonts =
-				new PriorityQueue<Font>(1, FONT_EXPRESSIVENESS_COMPARATOR);
+				new PriorityQueue<>(1, FONT_EXPRESSIVENESS_COMPARATOR);
 
 		Font[] allPhysicalFonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
 		for (Font physicalFont : allPhysicalFonts) {

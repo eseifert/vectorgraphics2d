@@ -110,12 +110,12 @@ class PDFDocument extends SizedDocument {
 	public PDFDocument(CommandSequence commands, PageSize pageSize, boolean compressed) {
 		super(pageSize, compressed);
 
-		states = new Stack<GraphicsState>();
+		states = new Stack<>();
 		states.push(new GraphicsState());
 
-		objects = new LinkedList<PDFObject>();
-		crossReferences = new HashMap<PDFObject, Long>();
-		images = new HashMap<Integer, PDFObject>();
+		objects = new LinkedList<>();
+		crossReferences = new HashMap<>();
+		images = new HashMap<>();
 
 		contents = initPage();
 		for (Command<?> command : commands) {
@@ -141,7 +141,7 @@ class PDFDocument extends SizedDocument {
 	private Stream initPage() {
 		DefaultPDFObject catalog = addCatalog();
 
-		List<PDFObject> pagesKids = new LinkedList<PDFObject>();
+		List<PDFObject> pagesKids = new LinkedList<>();
 		PDFObject pageTree = addPageTree(catalog, pagesKids);
 
 		// Page

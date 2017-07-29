@@ -40,7 +40,7 @@ public class AbsoluteToRelativeTransformsFilter extends StreamingFilter {
 
 	public AbsoluteToRelativeTransformsFilter(CommandSequence stream) {
 		super(stream);
-		transforms = new Stack<AffineTransform>();
+		transforms = new Stack<>();
 	}
 
 	@Override

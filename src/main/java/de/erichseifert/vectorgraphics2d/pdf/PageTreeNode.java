@@ -38,7 +38,7 @@ class PageTreeNode implements PDFObject {
 	 */
 	public PageTreeNode(PageTreeNode parent) {
 		this.parent = parent;
-		this.children = new LinkedList<Page>();
+		this.children = new LinkedList<>();
 	}
 
 	/**

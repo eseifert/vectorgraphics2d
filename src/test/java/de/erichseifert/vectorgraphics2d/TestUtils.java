@@ -78,13 +78,13 @@ public abstract class TestUtils {
 			this.name = name;
 			this.type = type;
 			this.attributes = Collections.unmodifiableMap(
-					new TreeMap<String, String>(attributes));
+					new TreeMap<>(attributes));
 			this.matchStart = matchStart;
 			this.matchEnd = matchEnd;
 		}
 
 		public static XMLFragment parse(String xmlString, int matchStart) {
-			Map<String, String> attrs = new IdentityHashMap<String, String>();
+			Map<String, String> attrs = new IdentityHashMap<>();
 
 			Matcher cdataMatch = CDATA.matcher(xmlString);
 			cdataMatch.region(matchStart, xmlString.length());
@@ -254,7 +254,7 @@ public abstract class TestUtils {
 
 	private static List<XMLFragment> parseXML(String xmlString) {
 		XMLFragment frag;
-		List<XMLFragment> fragments = new LinkedList<XMLFragment>();
+		List<XMLFragment> fragments = new LinkedList<>();
 		int startPos = 0;
 		while ((frag = XMLFragment.parse(xmlString, startPos)) != null) {
 			fragments.add(frag);

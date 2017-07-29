@@ -39,7 +39,7 @@ public class CharacterTest extends TestCase {
 
 		Charset latin1 = Charset.forName("ISO-8859-1");
 		CharsetEncoder latin1Encoder = latin1.newEncoder();
-		List<String> charactersInCharset = new ArrayList<String>();
+		List<String> charactersInCharset = new ArrayList<>();
 		for (char char_ = Character.MIN_VALUE; char_ < Character.MAX_VALUE; char_++) {
 			String javaString = String.valueOf(char_);
 			if (latin1Encoder.canEncode(char_)) {

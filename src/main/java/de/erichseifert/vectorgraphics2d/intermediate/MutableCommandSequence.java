@@ -38,7 +38,7 @@ public class MutableCommandSequence implements CommandSequence {
 	 * Initializes a new {@code CommandSequence} object.
 	 */
 	public MutableCommandSequence() {
-		this.commands = new LinkedList<Command<?>>();
+		this.commands = new LinkedList<>();
 	}
 
 	public void add(Command<?> command) {

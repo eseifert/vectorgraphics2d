@@ -30,7 +30,7 @@ class DefaultPDFObject implements PDFObject {
 	public final boolean stream;
 
 	public DefaultPDFObject(Map<String, Object> dict, Payload payload, boolean stream) {
-		this.dict = new LinkedHashMap<String, Object>();
+		this.dict = new LinkedHashMap<>();
 		this.payload = payload;
 		this.stream = stream;
 		if (dict != null) {

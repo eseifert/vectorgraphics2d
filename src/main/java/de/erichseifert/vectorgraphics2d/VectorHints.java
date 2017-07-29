@@ -54,7 +54,7 @@ public abstract class VectorHints {
 	}
 
 	public static class Value {
-		private static final Set<String> values = new HashSet<String>();
+		private static final Set<String> values = new HashSet<>();
 
 		private synchronized static void register(Value value) {
 			String id = value.getId();

@@ -198,7 +198,7 @@ public class TestBrowser extends JFrame {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setSize(1024, 768);
 
-		testCases = new ArrayList<TestCase>();
+		testCases = new ArrayList<>();
 		try {
 			testCases.add(new ColorTest());
 			testCases.add(new CmykColorTest());

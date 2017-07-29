@@ -38,7 +38,7 @@ public class OptimizeFilter extends StreamingFilter {
 
 	public OptimizeFilter(CommandSequence stream) {
 		super(stream);
-		buffer = new LinkedList<Command<?>>();
+		buffer = new LinkedList<>();
 	}
 
 	@Override

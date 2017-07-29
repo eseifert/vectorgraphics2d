@@ -56,11 +56,11 @@ class Resources extends DefaultPDFObject {
 	public Resources() {
 		super(null, null, false);
 
-		procSet = new LinkedList<String>();
-		fontsByFontId = new HashMap<String, TrueTypeFont>();
-		fontIDsByFont = new HashMap<Font, String>();
-		images = new HashMap<PDFObject, String>();
-		transparencies = new HashMap<Double, String>();
+		procSet = new LinkedList<>();
+		fontsByFontId = new HashMap<>();
+		fontIDsByFont = new HashMap<>();
+		images = new HashMap<>();
+		transparencies = new HashMap<>();
 
 		setProcSet(VALUE_PROC_SET);
 	}
@@ -93,7 +93,7 @@ class Resources extends DefaultPDFObject {
 		Map<String, PDFObject> dictEntry =
 				(Map<String, PDFObject>) dict.get(KEY_IMAGE);
 		if (dictEntry == null) {
-			dictEntry = new LinkedHashMap<String, PDFObject>();
+			dictEntry = new LinkedHashMap<>();
 			dict.put(KEY_IMAGE, dictEntry);
 		}
 
@@ -108,7 +108,7 @@ class Resources extends DefaultPDFObject {
 		Map<String, Map<String, Object>> dictEntry =
 				(Map<String, Map<String, Object>>) dict.get(KEY_TRANSPARENCY);
 		if (dictEntry == null) {
-			dictEntry = new LinkedHashMap<String, Map<String, Object>>();
+			dictEntry = new LinkedHashMap<>();
 			dict.put(KEY_TRANSPARENCY, dictEntry);
 		}
 

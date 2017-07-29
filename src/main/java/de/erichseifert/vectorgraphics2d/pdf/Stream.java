@@ -49,7 +49,7 @@ class Stream implements PDFObject, Closeable {
 	 */
 	public Stream(Filter... filters) {
 		data = new ByteArrayOutputStream();
-		this.filters = new ArrayList<Filter>(filters.length);
+		this.filters = new ArrayList<>(filters.length);
 		for (Filter filter : filters) {
 			this.filters.add(filter);
 		}

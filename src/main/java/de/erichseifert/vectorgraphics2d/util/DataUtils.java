@@ -70,7 +70,7 @@ public abstract class DataUtils {
 					"The number of keys and values differs.");
 		}
 		// Fill map with keys and values
-		Map<K, V> map = new LinkedHashMap<K, V>(keys.length);
+		Map<K, V> map = new LinkedHashMap<>(keys.length);
 		for (int i = 0; i < keys.length; i++) {
 			K key = keys[i];
 			V value = values[i];
@@ -126,7 +126,7 @@ public abstract class DataUtils {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}
-		List<Double> list = new ArrayList<Double>(elements.length);
+		List<Double> list = new ArrayList<>(elements.length);
 		for (Double element : elements) {
 			list.add(element);
 		}
@@ -144,7 +144,7 @@ public abstract class DataUtils {
 		if (elements == null || elements.length == 0) {
 			return "";
 		}
-		List<Float> list = new ArrayList<Float>(elements.length);
+		List<Float> list = new ArrayList<>(elements.length);
 		for (Float element : elements) {
 			list.add(element);
 		}
@@ -220,7 +220,7 @@ public abstract class DataUtils {
 	 */
 	public static List<Float> asList(float[] elements) {
 		int size = (elements != null) ? elements.length : 0;
-		List<Float> list = new ArrayList<Float>(size);
+		List<Float> list = new ArrayList<>(size);
 		if (elements != null) {
 			for (Float elem : elements) {
 				list.add(elem);
@@ -237,7 +237,7 @@ public abstract class DataUtils {
 	 */
 	public static List<Double> asList(double[] elements) {
 		int size = (elements != null) ? elements.length : 0;
-		List<Double> list = new ArrayList<Double>(size);
+		List<Double> list = new ArrayList<>(size);
 		if (elements != null) {
 			for (Double elem : elements) {
 				list.add(elem);
