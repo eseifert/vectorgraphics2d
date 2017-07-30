@@ -99,7 +99,7 @@ For example, a compression option can be passed for PDF:
 
     PDFProcessor pdfProcessor = new PDFProcessor(true);
 
-Another method to get a processor is ``Processors.getProcessor(String)``:
+Another method to get a processor is ``Processors.get(String)``:
 
 .. code:: java
 
