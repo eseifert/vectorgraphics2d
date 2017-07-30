@@ -56,6 +56,7 @@ public class TestBrowser extends JFrame {
 	private final List<TestCase> testCases;
 	private final ImageComparisonPanel imageComparisonPanel;
 	private final JComboBox imageFormatSelector;
+	private final JFileChooser fileChooser;
 	private TestCase testCase;
 
 	private enum ImageFormat {
@@ -144,11 +145,14 @@ public class TestBrowser extends JFrame {
 	private static class ImageDisplayPanel extends JPanel {
 		private final BufferedImage renderedImage;
 		private final InputStream imageData;
+		private final JFileChooser saveFileDialog;
 
-		public ImageDisplayPanel(BufferedImage renderedImage, InputStream imageData) {
+		public ImageDisplayPanel(BufferedImage renderedImage, InputStream imageData,
+								 JFileChooser fileChooser) {
 			super(new BorderLayout());
 			this.renderedImage = renderedImage;
 			this.imageData = imageData;
+			this.saveFileDialog = fileChooser;
 
 			JLabel imageLabel = new JLabel(new ImageIcon(renderedImage));
 			add(imageLabel, BorderLayout.CENTER);
@@ -160,7 +164,6 @@ public class TestBrowser extends JFrame {
 			saveToFileButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					JFileChooser saveFileDialog = new JFileChooser();
 					saveFileDialog.setFileSelectionMode(JFileChooser.FILES_ONLY);
 					saveFileDialog.setMultiSelectionEnabled(false);
 					int userChoice = saveFileDialog.showSaveDialog(ImageDisplayPanel.this);
@@ -197,6 +200,7 @@ public class TestBrowser extends JFrame {
 		super("Test browser");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setSize(1024, 768);
+		fileChooser = new JFileChooser();
 
 		testCases = new ArrayList<>();
 		try {
@@ -266,17 +270,17 @@ public class TestBrowser extends JFrame {
 
 	public void setTestCase(TestCase test) {
 		BufferedImage reference = test.getReference();
-		imageComparisonPanel.setLeftComponent(new ImageDisplayPanel(reference, null));
+		imageComparisonPanel.setLeftComponent(new ImageDisplayPanel(reference, null, fileChooser));
 		ImageDisplayPanel imageDisplayPanel;
 		switch (imageComparisonPanel.getImageFormat()) {
 			case EPS:
-				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS());
+				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedEPS(), test.getEPS(), fileChooser);
 				break;
 			case PDF:
-				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedPDF(), test.getPDF());
+				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedPDF(), test.getPDF(), fileChooser);
 				break;
 			case SVG:
-				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedSVG(), test.getSVG());
+				imageDisplayPanel = new ImageDisplayPanel(test.getRasterizedSVG(), test.getSVG(), fileChooser);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown image format: " + imageComparisonPanel.getImageFormat());
