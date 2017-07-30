@@ -103,7 +103,7 @@ Another method to get a processor is ``Processors.getProcessor(String)``:
 
 .. code:: java
 
-    Processor pdfProcessor = Processors.getProcessor("pdf");
+    Processor pdfProcessor = Processors.get("pdf");
 
 Finally, a document can be generated from the commands and written to a
 stream with the processor:
