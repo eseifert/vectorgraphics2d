@@ -46,30 +46,25 @@ public class FormattingWriter implements Closeable, Flushable {
 	}
 
 	public FormattingWriter write(Number number) throws IOException {
-		write(DataUtils.format(number));
-		return this;
+		return write(DataUtils.format(number));
 	}
 
 	public FormattingWriter writeln() throws IOException {
-		write(eolString);
-		return this;
+		return write(eolString);
 	}
 
 	public FormattingWriter writeln(String string) throws IOException {
 		write(string);
-		write(eolString);
-		return this;
+		return write(eolString);
 	}
 
 	public FormattingWriter writeln(Number number) throws IOException {
 		write(number);
-		write(eolString);
-		return this;
+		return write(eolString);
 	}
 
 	public FormattingWriter format(String format, Object... args) throws IOException {
-		write(String.format(null, format, args));
-		return this;
+		return write(String.format(null, format, args));
 	}
 
 	public void flush() throws IOException {
@@ -84,4 +79,3 @@ public class FormattingWriter implements Closeable, Flushable {
 		return position;
 	}
 }
-
