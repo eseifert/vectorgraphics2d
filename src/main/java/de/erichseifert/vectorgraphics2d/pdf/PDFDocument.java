@@ -425,7 +425,7 @@ class PDFDocument extends SizedDocument {
 				}
 				out.append(content);
 				if (obj.stream) {
-					out.append("endstream");
+					out.append(EOL).append("endstream");
 				}
 				out.append(EOL);
 			}
