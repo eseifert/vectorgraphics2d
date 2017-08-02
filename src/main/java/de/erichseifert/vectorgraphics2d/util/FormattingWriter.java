@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-public class FormattingWriter implements Closeable, Flushable {
+public class FormattingWriter implements Closeable, Flushable, AutoCloseable {
 	private final OutputStream out;
 	private final String encoding;
 	private final byte[] eolBytes;
