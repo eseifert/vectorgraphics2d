@@ -49,6 +49,10 @@ class Payload extends OutputStream {
 		empty = false;
 	}
 
+	public boolean isEmpty() {
+		return empty;
+	}
+
 	@Override
 	public void close() throws IOException {
 		super.close();
