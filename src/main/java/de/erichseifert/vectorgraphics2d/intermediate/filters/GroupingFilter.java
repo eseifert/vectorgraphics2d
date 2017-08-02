@@ -21,7 +21,7 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import de.erichseifert.vectorgraphics2d.intermediate.CommandSequence;
@@ -61,7 +61,7 @@ public abstract class GroupingFilter extends StreamingFilter {
 			group.add(command);
 			return null;
 		}
-		return Arrays.<Command<?>>asList(command);
+		return Collections.<Command<?>>singletonList(command);
 	}
 
 	protected abstract boolean isGrouped(Command<?> command);

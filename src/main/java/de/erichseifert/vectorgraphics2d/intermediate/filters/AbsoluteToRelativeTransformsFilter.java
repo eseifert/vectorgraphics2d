@@ -23,7 +23,7 @@ package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -73,9 +73,9 @@ public class AbsoluteToRelativeTransformsFilter extends StreamingFilter {
 			}
 			relativeTransform.concatenate(absoluteTransform);
 			TransformCommand transformCommand = new TransformCommand(relativeTransform);
-			return Arrays.<Command<?>>asList(transformCommand);
+			return Collections.<Command<?>>singletonList(transformCommand);
 		}
-		return Arrays.<Command<?>>asList(command);
+		return Collections.<Command<?>>singletonList(command);
 	}
 
 	private AffineTransform getCurrentTransform() {

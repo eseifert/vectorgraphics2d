@@ -21,7 +21,7 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.filters;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,7 +57,7 @@ public class OptimizeFilter extends StreamingFilter {
 	@Override
 	protected List<Command<?>> filter(Command<?> command) {
 		if (!isStateChange(command)) {
-			return Arrays.<Command<?>>asList(command);
+			return Collections.<Command<?>>singletonList(command);
 		}
 		Iterator<Command<?>> i = buffer.iterator();
 		Class<?> cls = command.getClass();

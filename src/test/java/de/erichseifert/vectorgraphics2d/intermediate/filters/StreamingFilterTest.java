@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class StreamingFilterTest {
 		StreamingFilter filtered = new StreamingFilter(stream) {
 			@Override
 			protected List<Command<?>> filter(Command<?> command) {
-				return Arrays.<Command<?>>asList(command);
+				return Collections.<Command<?>>singletonList(command);
 			}
 		};
 
