@@ -1,11 +1,16 @@
 VectorGraphics2D 0.13 (unreleased)
 ==================================
 
-- Java 7 required to build
+- Java 7 is now required to build
+- Restored compression support for PDF files.
 - All processors now have a standard constructor
 
 VectorGraphics2D 0.12 (2017-07-28)
 ==================================
+
+Be aware that due to restructuring this version does not support PDF Flate
+compression. Turning on compression in ``PDFProcessor`` will lead to corrupt
+output.
 
 - **Major API change:** The classes ``EPSGraphics2D``, ``PDFGraphics2D`` and
   ``SVGGraphics2D`` have been removed. ``VectorGraphics2D`` is used instead in
