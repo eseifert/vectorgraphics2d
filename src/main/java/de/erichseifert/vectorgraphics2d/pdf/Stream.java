@@ -22,7 +22,6 @@
 package de.erichseifert.vectorgraphics2d.pdf;
 
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ import java.util.zip.DeflaterOutputStream;
  * Represents a stream object in the sense of the PDF specification.
  * The {@code Stream} has a defined length.
  */
-class Stream implements PDFObject, Closeable {
+class Stream extends OutputStream implements PDFObject {
 	public enum Filter {
 		FLATE
 	}
@@ -61,6 +60,18 @@ class Stream implements PDFObject, Closeable {
 		}
 	}
 
+	@Override
+	public void write(int b) throws IOException {
+		if (isClosed()) {
+			throw new IOException("Unable to write to closed stream.");
+		}
+		try {
+			this.filteredData.write(b);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to write to the output stream", e);
+		}
+	}
+
 	/**
 	 * Appends the specified byte array to the {@code Stream}.
 	 * @param data Data to be appended.
@@ -72,10 +83,9 @@ class Stream implements PDFObject, Closeable {
 		try {
 			this.filteredData.write(data);
 		} catch (IOException e) {
-			throw new RuntimeException("Unable to write to ByteArrayOutputStream", e);
+			throw new RuntimeException("Unable to write to the output stream", e);
 		}
 	}
-
 
 	/**
 	 * Returns the size of the stream contents in bytes.
@@ -111,7 +121,7 @@ class Stream implements PDFObject, Closeable {
 		try {
 			filteredData.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 	}
 
