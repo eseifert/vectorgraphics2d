@@ -21,16 +21,18 @@
  */
 package de.erichseifert.vectorgraphics2d.util;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
+import java.io.ByteArrayOutputStream;
+import org.junit.Before;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({
-	DataUtilsTest.class,
-	ASCII85EncodeStreamTest.class,
-	Base64EncodeStreamTest.class,
-	GraphicsUtilsTest.class,
-	FormattingWriterTest.class
-})
-public class UtilTests {
+
+public class FormattingWriterTest {
+	private static final String DEFAULT_ENCODING = "ISO-8859-1";
+	private static final String DEFAULT_EOL = "\n";
+
+	private ByteArrayOutputStream stream;
+
+	@Before
+	public void setUp() {
+		stream = new ByteArrayOutputStream();
+	}
 }
