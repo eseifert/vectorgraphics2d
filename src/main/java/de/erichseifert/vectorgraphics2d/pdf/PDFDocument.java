@@ -31,6 +31,7 @@ import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -76,10 +77,10 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * TODO Paint support (as images)
  */
 class PDFDocument extends SizedDocument {
-	private static final String EOL = "\n";
 	private static final String CHARSET = "ISO-8859-1";
 	private static final String HEADER = "%PDF-1.4";
 	private static final String FOOTER = "%%EOF";
+	private static final String EOL = "\n";
 
 	/** Constant to convert values from millimeters to PostScript®/PDF units (1/72th inch). */
 	private static final double MM_IN_UNITS = 72.0/25.4;
@@ -119,9 +120,9 @@ class PDFDocument extends SizedDocument {
 
 		contents = initPage();
 		for (Command<?> command : commands) {
-			String pdfStatement = toString(command);
 			try {
-				contents.write(pdfStatement.getBytes(CHARSET));
+				byte[] pdfStatement = toBytes(command);
+				contents.write(pdfStatement);
 				contents.write(EOL.getBytes(CHARSET));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
@@ -156,11 +157,12 @@ class PDFDocument extends SizedDocument {
 
 		// Initial content
 		try {
-			contents.write(DataUtils.join("", new Object[] {
-				"q", EOL,
-				getOutput(getCurrentState().getColor()), EOL,
-				MM_IN_UNITS, " 0 0 ", -MM_IN_UNITS, " 0 ", getPageSize().getHeight()*MM_IN_UNITS, " cm", EOL
-			}).getBytes(CHARSET));
+			FormattingWriter string = new FormattingWriter(contents, CHARSET, EOL);
+			string.writeln("q");
+			string.writeln(getOutput(getCurrentState().getColor()));
+			string.write(MM_IN_UNITS).write(" 0 0 ").write(-MM_IN_UNITS)
+					.write(" 0 ").write(getPageSize().getHeight()*MM_IN_UNITS)
+					.writeln(" cm");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -179,12 +181,9 @@ class PDFDocument extends SizedDocument {
 	}
 
 	private void setFont(String fontId, float fontSize, Stream contents) {
-		StringBuilder out = new StringBuilder();
-		out.append("/").append(fontId).append(" ").append(fontSize).append(" Tf").append(EOL);
 		try {
-			contents.write(
-					out.toString().getBytes(CHARSET)
-			);
+			FormattingWriter string = new FormattingWriter(contents, CHARSET, EOL);
+			string.write("/").write(fontId).write(" ").write(fontSize).writeln(" Tf");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -198,16 +197,16 @@ class PDFDocument extends SizedDocument {
 
 	private DefaultPDFObject addCatalog() {
 		Map<String, Object> dict = DataUtils.map(
-				new String[] {"Type"},
-				new Object[] {"Catalog"}
+			new String[] {"Type"},
+			new Object[] {"Catalog"}
 		);
 		return addDictionary(dict);
 	}
 
 	private PDFObject addPageTree(DefaultPDFObject catalog, List<PDFObject> pages) {
 		Map<String, Object> dict = DataUtils.map(
-				new String[] {"Type", "Kids", "Count"},
-				new Object[] {"Pages", pages, 1}
+			new String[] {"Type", "Kids", "Count"},
+			new Object[] {"Pages", pages, 1}
 		);
 		PDFObject pageTree = addDictionary(dict);
 		catalog.dict.put("Pages", pageTree);
@@ -220,8 +219,8 @@ class PDFDocument extends SizedDocument {
 		double width = getPageSize().getWidth()*MM_IN_UNITS;
 		double height = getPageSize().getHeight()*MM_IN_UNITS;
 		Map<String, Object> dict = DataUtils.map(
-				new String[] {"Type", "Parent", "MediaBox"},
-				new Object[] {"Page", pageTree, new double[] {x, y, width, height}}
+			new String[] {"Type", "Parent", "MediaBox"},
+			new Object[] {"Page", pageTree, new double[] {x, y, width, height}}
 		);
 		return addDictionary(dict);
 	}
@@ -298,13 +297,13 @@ class PDFDocument extends SizedDocument {
 
 		for (PDFObject obj : objects) {
 			crossReferences.put(obj, o.tell());
-			String objectString;
+			byte[] objectString;
 			if (obj instanceof Resources) {
-				objectString = toString((Resources) obj);
+				objectString = toBytes((Resources) obj);
 			} else if (obj instanceof Stream) {
-				objectString = toString((Stream) obj);
+				objectString = toBytes((Stream) obj);
 			} else {
-				objectString = toString(obj);
+				objectString = toBytes(obj);
 			}
 			o.writeln(objectString);
 			o.flush();
@@ -313,9 +312,9 @@ class PDFDocument extends SizedDocument {
 		long xrefPos = o.tell();
 		o.writeln("xref");
 		o.write(0).write(" ").writeln(objects.size() + 1);
-		o.format("%010d %05d f ", 0, 65535).writeln();
+		o.writeln("%010d %05d f ", 0, 65535);
 		for (PDFObject obj : objects) {
-			o.format("%010d %05d n ", crossReferences.get(obj), 0).writeln();
+			o.writeln("%010d %05d n ", crossReferences.get(obj), 0);
 		}
 		o.flush();
 
@@ -349,138 +348,148 @@ class PDFDocument extends SizedDocument {
 		return 0;
 	}
 
-	private String toString(Resources resources) {
-		StringBuilder string = new StringBuilder();
-		string.append(getId(resources)).append(" ").append(getVersion(resources)).append(" obj").append(EOL);
-		string.append("<<").append(EOL);
-		if (!resources.getProcSet().isEmpty()) {
-			string.append("/ProcSet ").append(serialize(resources.getProcSet())).append(EOL);
+	private byte[] toBytes(Resources resources) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			string.write(getId(resources)).write(" ").write(getVersion(resources)).writeln(" obj");
+			string.writeln("<<");
+			if (!resources.getProcSet().isEmpty()) {
+				string.write("/ProcSet ").writeln(serialize(resources.getProcSet()));
+			}
+			if (!resources.getFont().isEmpty()) {
+				string.write("/Font ").writeln(serialize(resources.getFont()));
+			}
+			if (resources.dict.get("ExtGState") != null) {
+				string.write("/ExtGState ").writeln(serialize(resources.dict.get("ExtGState")));
+			}
+			if (resources.dict.get("XObject") != null) {
+				string.write("/XObject ").writeln(serialize(resources.dict.get("XObject")));
+			}
+			string.writeln(">>");
+			string.write("endobj");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
 		}
-		if (!resources.getFont().isEmpty()) {
-			string.append("/Font ").append(serialize(resources.getFont())).append(EOL);
-		}
-		if (resources.dict.get("ExtGState") != null) {
-			string.append("/ExtGState ").append(serialize(resources.dict.get("ExtGState"))).append(EOL);
-		}
-		if (resources.dict.get("XObject") != null) {
-			string.append("/XObject ").append(serialize(resources.dict.get("XObject"))).append(EOL);
-		}
-		string.append(">>").append(EOL);
-		string.append("endobj");
-		return string.toString();
 	}
 
-	private String toString(Stream stream) {
-		StringBuilder string = new StringBuilder();
-		string.append(getId(stream)).append(" ").append(getVersion(stream)).append(" obj").append(EOL);
-		string.append(serialize(stream)).append(EOL);
-		string.append("endobj");
-		return string.toString();
-	}
-
-	protected static String serialize(Stream stream) {
-		StringBuilder serializedStream = new StringBuilder();
-		serializedStream.append("<<").append(EOL);
-		serializedStream.append("/Length ").append(stream.getLength()).append(EOL);
-		if (stream.getFilters().contains(Stream.Filter.FLATE)) {
-			serializedStream.append("/Filter /FlateDecode").append(EOL);
+	private byte[] toBytes(Stream stream) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			string.write(getId(stream)).write(" ").write(getVersion(stream)).writeln(" obj");
+			string.writeln(serialize(stream));
+			string.write("endobj");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
 		}
-		serializedStream.append(">>").append(EOL);
-		serializedStream.append("stream").append(EOL);
-		serializedStream.append(new String(stream.getContent())).append(EOL);
-		serializedStream.append("endstream");
-		return serializedStream.toString();
 	}
 
-	protected static String serialize(TrueTypeFont font) {
-		StringBuilder string = new StringBuilder();
-		string.append("<<").append(EOL);
-		string.append("/Type ").append("/").append(font.getType()).append(EOL);
-		string.append("/Subtype ").append("/").append(font.getSubtype()).append(EOL);
-		string.append("/Encoding ").append("/").append(font.getEncoding()).append(EOL);
-		string.append("/BaseFont ").append("/").append(font.getBaseFont()).append(EOL);
-		string.append(">>");
-		return string.toString();
+	protected static byte[] serialize(Stream stream) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter serialized = new FormattingWriter(out, CHARSET, EOL)) {
+			serialized.writeln("<<");
+			serialized.write("/Length ").writeln(stream.getLength());
+			if (stream.getFilters().contains(Stream.Filter.FLATE)) {
+				serialized.writeln("/Filter /FlateDecode");
+			}
+			serialized.writeln(">>");
+			serialized.writeln("stream");
+			serialized.writeln(stream.getContent());
+			serialized.write("endstream");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
-	public String toString(PDFObject object) {
+	protected static byte[] serialize(TrueTypeFont font) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter serialized = new FormattingWriter(out, CHARSET, EOL)) {
+			serialized.writeln("<<");
+			serialized.write("/Type /").writeln(font.getType());
+			serialized.write("/Subtype /").writeln(font.getSubtype());
+			serialized.write("/Encoding /").writeln(font.getEncoding());
+			serialized.write("/BaseFont /").writeln(font.getBaseFont());
+			serialized.write(">>");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	public byte[] toBytes(PDFObject object) {
 		DefaultPDFObject obj = (DefaultPDFObject) object;
-		StringBuilder out = new StringBuilder();
 
-		out.append(getId(obj)).append(" ").append(getVersion(obj)).append(" obj")
-			.append(EOL);
-		if (!obj.dict.isEmpty()) {
-			out.append(serialize(obj.dict)).append(EOL);
-		}
-		if (obj.payload != null) {
-			String content;
-			try {
-				content = new String(obj.payload.getBytes(), CHARSET);
-			} catch (UnsupportedEncodingException e) {
-				content = "";
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			string.write(getId(obj)).write(" ").write(getVersion(obj)).writeln(" obj");
+			if (!obj.dict.isEmpty()) {
+				string.writeln(serialize(obj.dict));
 			}
-			if (content.length() > 0) {
+			if (obj.payload != null && !obj.payload.isEmpty()) {
 				if (obj.stream) {
-					out.append("stream").append(EOL);
+					string.writeln("stream");
 				}
-				out.append(content);
+				string.writeln(obj.payload.getBytes());
 				if (obj.stream) {
-					out.append(EOL).append("endstream");
+					string.writeln("endstream");
 				}
-				out.append(EOL);
 			}
-		}
-		out.append("endobj");
-		return out.toString();
-	}
-
-	private String serialize(Object obj) {
-		if (obj instanceof String) {
-			return "/" + obj.toString();
-		} else if (obj instanceof float[]) {
-			return serialize(DataUtils.asList((float[]) obj));
-		} else if (obj instanceof double[]) {
-			return serialize(DataUtils.asList((double[]) obj));
-		} else if (obj instanceof Object[]) {
-			return serialize(Arrays.asList((Object[]) obj));
-		} else if (obj instanceof List) {
-			List<?> list = (List<?>) obj;
-			StringBuilder out = new StringBuilder();
-			out.append("[");
-			int i = 0;
-			for (Object elem : list) {
-				if (i++ > 0) {
-					out.append(" ");
-				}
-				out.append(serialize(elem));
-			}
-			out.append("]");
-			return out.toString();
-		} else if (obj instanceof Map) {
-			Map<?, ?> dict = (Map<?, ?>) obj;
-			StringBuilder out = new StringBuilder();
-			out.append("<<").append(EOL);
-			for (Map.Entry<?, ?> entry : dict.entrySet()) {
-				String key = entry.getKey().toString();
-				out.append(serialize(key)).append(" ");
-
-				Object value = entry.getValue();
-				out.append(serialize(value)).append(EOL);
-			}
-			out.append(">>");
-			return out.toString();
-		} else if (obj instanceof TrueTypeFont) {
-			return serialize((TrueTypeFont) obj);
-		} else if (obj instanceof PDFObject) {
-			PDFObject pdfObj = (PDFObject) obj;
-			return String.valueOf(getId(pdfObj)) + " " + getVersion(pdfObj) + " R";
-		} else {
-			return DataUtils.format(obj);
+			string.write("endobj");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
 		}
 	}
 
-	private String toString(Command<?> command) {
-		String s = "";
+	private byte[] serialize(Object obj) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter serialized = new FormattingWriter(out, CHARSET, EOL)) {
+			if (obj instanceof String) {
+				serialized.write("/").write(obj.toString());
+			} else if (obj instanceof float[]) {
+				serialized.write(serialize(DataUtils.asList((float[]) obj)));
+			} else if (obj instanceof double[]) {
+				serialized.write(serialize(DataUtils.asList((double[]) obj)));
+			} else if (obj instanceof Object[]) {
+				serialized.write(serialize(Arrays.asList((Object[]) obj)));
+			} else if (obj instanceof List) {
+				List<?> list = (List<?>) obj;
+				serialized.write("[");
+				int i = 0;
+				for (Object elem : list) {
+					if (i++ > 0) {
+						serialized.write(" ");
+					}
+					serialized.write(serialize(elem));
+				}
+				serialized.write("]");
+			} else if (obj instanceof Map) {
+				Map<?, ?> dict = (Map<?, ?>) obj;
+				serialized.writeln("<<");
+				for (Map.Entry<?, ?> entry : dict.entrySet()) {
+					String key = entry.getKey().toString();
+					Object value = entry.getValue();
+					serialized.write(serialize(key)).write(" ").writeln(serialize(value));
+				}
+				serialized.write(">>");
+			} else if (obj instanceof TrueTypeFont) {
+				serialized.write(serialize((TrueTypeFont) obj));
+			} else if (obj instanceof PDFObject) {
+				PDFObject pdfObj = (PDFObject) obj;
+				serialized.write(getId(pdfObj)).write(" ").write(getVersion(pdfObj)).write(" R");
+			} else {
+				serialized.write(DataUtils.format(obj));
+			}
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	private byte[] toBytes(Command<?> command) {
+		byte[] s = {};
 		if (command instanceof Group) {
 			Group c = (Group) command;
 			applyStateCommands(c.getValue());
@@ -488,10 +497,22 @@ class PDFDocument extends SizedDocument {
 			transformed = true;
 		} else if (command instanceof DrawShapeCommand) {
 			DrawShapeCommand c = (DrawShapeCommand) command;
-			s = getOutput(c.getValue()) + " S";
+			try (ByteArrayOutputStream ba = new ByteArrayOutputStream()) {
+				ba.write(getOutput(c.getValue()));
+				ba.write(serialize(" S"));
+				s = ba.toByteArray();
+			} catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
-			s = getOutput(c.getValue()) + " f";
+			try (ByteArrayOutputStream ba = new ByteArrayOutputStream()) {
+				ba.write(getOutput(c.getValue()));
+				ba.write(serialize(" f"));
+				s = ba.toByteArray();
+			} catch (IOException e) {
+				throw new IllegalStateException(e);
+			}
 		} else if (command instanceof DrawStringCommand) {
 			DrawStringCommand c = (DrawStringCommand) command;
 			s = getOutput(c.getValue(), c.getX(), c.getY());
@@ -553,188 +574,213 @@ class PDFDocument extends SizedDocument {
 		}
 	}
 
-	private String getOutput(Color color) {
-		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
-			float[] cmyk = color.getComponents(null);
-			String c = serialize(cmyk[0]);
-			String m = serialize(cmyk[1]);
-			String y = serialize(cmyk[2]);
-			String k = serialize(cmyk[3]);
-			return c + " " + m + " " + y + " " + k + " k " +
-					c + " " + m + " " + y + " " + k + " K";
-		} else {
-			String r = serialize(color.getRed()/255.0);
-			String g = serialize(color.getGreen()/255.0);
-			String b = serialize(color.getBlue()/255.0);
-			return r + " " + g + " " + b + " rg " +
-					r + " " + g + " " + b + " RG";
+	private byte[] getOutput(Color color) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
+				float[] cmyk = color.getComponents(null);
+				byte[] c = serialize(cmyk[0]);
+				byte[] m = serialize(cmyk[1]);
+				byte[] y = serialize(cmyk[2]);
+				byte[] k = serialize(cmyk[3]);
+				string.write(c).write(" ").write(m).write(" ").write(y).write(" ").write(k).write(" k ");
+				string.write(c).write(" ").write(m).write(" ").write(y).write(" ").write(k).write(" K");
+			} else {
+				byte[] r = serialize(color.getRed()/255.0);
+				byte[] g = serialize(color.getGreen()/255.0);
+				byte[] b = serialize(color.getBlue()/255.0);
+				string.write(r).write(" ").write(g).write(" ").write(b).write(" rg ");
+				string.write(r).write(" ").write(g).write(" ").write(b).write(" RG");
+			}
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
 		}
 	}
 
-	private String getOutput(Shape s) {
-		StringBuilder out = new StringBuilder();
-		PathIterator segments = s.getPathIterator(null);
-		double[] coordsCur = new double[6];
-		double[] pointPrev = new double[2];
-		for (int i = 0; !segments.isDone(); i++, segments.next()) {
-			if (i > 0) {
-				out.append(" ");
+	private byte[] getOutput(Shape s) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			PathIterator segments = s.getPathIterator(null);
+			double[] coordsCur = new double[6];
+			double[] pointPrev = new double[2];
+			for (int i = 0; !segments.isDone(); i++, segments.next()) {
+				if (i > 0) {
+					string.write(" ");
+				}
+				int segmentType = segments.currentSegment(coordsCur);
+				switch (segmentType) {
+					case PathIterator.SEG_MOVETO:
+						string.write(serialize(coordsCur[0])).write(" ")
+								.write(serialize(coordsCur[1])).write(" m");
+						pointPrev[0] = coordsCur[0];
+						pointPrev[1] = coordsCur[1];
+						break;
+					case PathIterator.SEG_LINETO:
+						string.write(serialize(coordsCur[0])).write(" ")
+								.write(serialize(coordsCur[1])).write(" l");
+						pointPrev[0] = coordsCur[0];
+						pointPrev[1] = coordsCur[1];
+						break;
+					case PathIterator.SEG_CUBICTO:
+						string.write(serialize(coordsCur[0])).write(" ")
+								.write(serialize(coordsCur[1])).write(" ")
+								.write(serialize(coordsCur[2])).write(" ")
+								.write(serialize(coordsCur[3])).write(" ")
+								.write(serialize(coordsCur[4])).write(" ")
+								.write(serialize(coordsCur[5])).write(" c");
+						pointPrev[0] = coordsCur[4];
+						pointPrev[1] = coordsCur[5];
+						break;
+					case PathIterator.SEG_QUADTO:
+						double x1 = pointPrev[0] + 2.0/3.0*(coordsCur[0] - pointPrev[0]);
+						double y1 = pointPrev[1] + 2.0/3.0*(coordsCur[1] - pointPrev[1]);
+						double x2 = coordsCur[0] + 1.0/3.0*(coordsCur[2] - coordsCur[0]);
+						double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
+						double x3 = coordsCur[2];
+						double y3 = coordsCur[3];
+						string.write(serialize(x1)).write(" ")
+								.write(serialize(y1)).write(" ")
+								.write(serialize(x2)).write(" ")
+								.write(serialize(y2)).write(" ")
+								.write(serialize(x3)).write(" ")
+								.write(serialize(y3)).write(" c");
+						pointPrev[0] = x3;
+						pointPrev[1] = y3;
+						break;
+					case PathIterator.SEG_CLOSE:
+						string.write("h");
+						break;
+					default:
+						throw new IllegalStateException("Unknown path operation.");
+				}
 			}
-			int segmentType = segments.currentSegment(coordsCur);
-			switch (segmentType) {
-			case PathIterator.SEG_MOVETO:
-				out.append(serialize(coordsCur[0])).append(" ")
-					.append(serialize(coordsCur[1])).append(" m");
-				pointPrev[0] = coordsCur[0];
-				pointPrev[1] = coordsCur[1];
-				break;
-			case PathIterator.SEG_LINETO:
-				out.append(serialize(coordsCur[0])).append(" ")
-					.append(serialize(coordsCur[1])).append(" l");
-				pointPrev[0] = coordsCur[0];
-				pointPrev[1] = coordsCur[1];
-				break;
-			case PathIterator.SEG_CUBICTO:
-				out.append(serialize(coordsCur[0])).append(" ")
-					.append(serialize(coordsCur[1])).append(" ")
-					.append(serialize(coordsCur[2])).append(" ")
-					.append(serialize(coordsCur[3])).append(" ")
-					.append(serialize(coordsCur[4])).append(" ")
-					.append(serialize(coordsCur[5])).append(" c");
-				pointPrev[0] = coordsCur[4];
-				pointPrev[1] = coordsCur[5];
-				break;
-			case PathIterator.SEG_QUADTO:
-				double x1 = pointPrev[0] + 2.0/3.0*(coordsCur[0] - pointPrev[0]);
-				double y1 = pointPrev[1] + 2.0/3.0*(coordsCur[1] - pointPrev[1]);
-				double x2 = coordsCur[0] + 1.0/3.0*(coordsCur[2] - coordsCur[0]);
-				double y2 = coordsCur[1] + 1.0/3.0*(coordsCur[3] - coordsCur[1]);
-				double x3 = coordsCur[2];
-				double y3 = coordsCur[3];
-				out.append(serialize(x1)).append(" ")
-					.append(serialize(y1)).append(" ")
-					.append(serialize(x2)).append(" ")
-					.append(serialize(y2)).append(" ")
-					.append(serialize(x3)).append(" ")
-					.append(serialize(y3)).append(" c");
-				pointPrev[0] = x3;
-				pointPrev[1] = y3;
-				break;
-			case PathIterator.SEG_CLOSE:
-				out.append("h");
-				break;
-			default:
-				throw new IllegalStateException("Unknown path operation.");
-			}
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
 		}
-
-		return out.toString();
 	}
 
-	private String getOutput(GraphicsState state, Resources resources, boolean first) {
-		StringBuilder out = new StringBuilder();
-
-		if (!first) {
-			out.append("Q").append(EOL);
-		}
-		out.append("q").append(EOL);
-
-		if (!state.getColor().equals(GraphicsState.DEFAULT_COLOR)) {
-			if (state.getColor().getAlpha() != GraphicsState.DEFAULT_COLOR.getAlpha()) {
-				double a = state.getColor().getAlpha()/255.0;
-				String resourceId = resources.getId(a);
-				out.append("/").append(resourceId).append(" gs").append(EOL);
+	private byte[] getOutput(GraphicsState state, Resources resources, boolean first) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			if (!first) {
+				string.writeln("Q");
 			}
-			out.append(getOutput(state.getColor())).append(EOL);
-		}
-		if (!state.getTransform().equals(GraphicsState.DEFAULT_TRANSFORM)) {
-			out.append(getOutput(state.getTransform())).append(" cm").append(EOL);
-		}
-		if (!state.getStroke().equals(GraphicsState.DEFAULT_STROKE)) {
-			out.append(getOutput(state.getStroke())).append(EOL);
-		}
-		if (state.getClip() != GraphicsState.DEFAULT_CLIP) {
-			out.append(getOutput(state.getClip())).append(" W n").append(EOL);
-		}
-		if (!state.getFont().equals(GraphicsState.DEFAULT_FONT)) {
-			Font font = state.getFont();
-			String fontResourceId = resources.getId(font);
-			float fontSize = font.getSize2D();
-			out.append("/").append(fontResourceId).append(" ").append(fontSize)
-				.append(" Tf").append(EOL);
-		}
+			string.writeln("q");
 
-		return DataUtils.stripTrailing(out.toString(), EOL);
+			if (!state.getColor().equals(GraphicsState.DEFAULT_COLOR)) {
+				if (state.getColor().getAlpha() != GraphicsState.DEFAULT_COLOR.getAlpha()) {
+					double a = state.getColor().getAlpha()/255.0;
+					String resourceId = resources.getId(a);
+					string.write("/").write(resourceId).writeln(" gs");
+				}
+				string.writeln(getOutput(state.getColor()));
+			}
+			if (!state.getTransform().equals(GraphicsState.DEFAULT_TRANSFORM)) {
+				string.write(getOutput(state.getTransform())).writeln(" cm");
+			}
+			if (!state.getStroke().equals(GraphicsState.DEFAULT_STROKE)) {
+				string.writeln(getOutput(state.getStroke()));
+			}
+			if (state.getClip() != GraphicsState.DEFAULT_CLIP) {
+				string.write(getOutput(state.getClip())).writeln(" W n");
+			}
+			if (!state.getFont().equals(GraphicsState.DEFAULT_FONT)) {
+				Font font = state.getFont();
+				String fontResourceId = resources.getId(font);
+				float fontSize = font.getSize2D();
+				string.write("/").write(fontResourceId).write(" ")
+						.write(fontSize).writeln(" Tf");
+			}
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
-	private String getOutput(Stroke s) {
-		StringBuilder out = new StringBuilder();
-		if (s instanceof BasicStroke) {
+	private byte[] getOutput(Stroke s) {
+		if (!(s instanceof BasicStroke)) {
+			throw new UnsupportedOperationException("Only BasicStroke objects are supported.");
+		}
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
 			BasicStroke strokeDefault = (BasicStroke) GraphicsState.DEFAULT_STROKE;
 			BasicStroke strokeNew = (BasicStroke) s;
 			if (strokeNew.getLineWidth() != strokeDefault.getLineWidth()) {
-				out.append(serialize(strokeNew.getLineWidth()))
-					.append(" w").append(EOL);
+				string.write(strokeNew.getLineWidth()).writeln(" w");
 			}
 			if (strokeNew.getLineJoin() == BasicStroke.JOIN_MITER && strokeNew.getMiterLimit() != strokeDefault.getMiterLimit()) {
-				out.append(serialize(strokeNew.getMiterLimit()))
-					.append(" M").append(EOL);
+				string.write(strokeNew.getMiterLimit()).writeln(" M");
 			}
 			if (strokeNew.getLineJoin() != strokeDefault.getLineJoin()) {
-				out.append(serialize(STROKE_LINEJOIN.get(strokeNew.getLineJoin())))
-					.append(" j").append(EOL);
+				string.write(STROKE_LINEJOIN.get(strokeNew.getLineJoin())).writeln(" j");
 			}
 			if (strokeNew.getEndCap() != strokeDefault.getEndCap()) {
-				out.append(serialize(STROKE_ENDCAPS.get(strokeNew.getEndCap())))
-					.append(" J").append(EOL);
+				string.write(STROKE_ENDCAPS.get(strokeNew.getEndCap())).writeln(" J");
 			}
 			if (strokeNew.getDashArray() != strokeDefault.getDashArray()) {
 				if (strokeNew.getDashArray() != null) {
-					out.append(serialize(strokeNew.getDashArray())).append(" ")
-						.append(serialize(strokeNew.getDashPhase()))
-						.append(" d").append(EOL);
+					string.write(serialize(strokeNew.getDashArray())).write(" ")
+							.write(strokeNew.getDashPhase()).writeln(" d");
 				} else {
-					out.append(EOL).append("[] 0 d").append(EOL);
+					string.writeln();
+					string.writeln("[] 0 d");
 				}
 			}
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
 		}
-		return out.toString();
 	}
 
-	private static String getOutput(AffineTransform transform) {
+	private static byte[] getOutput(AffineTransform transform) {
 		double[] matrix = new double[6];
 		transform.getMatrix(matrix);
-		return DataUtils.join(" ", matrix);
+		try {
+			return DataUtils.join(" ", matrix).getBytes(CHARSET);
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
 	}
 
-	private static String getOutput(String str, double x, double y) {
-
+	private static byte[] getOutput(String str, double x, double y) {
 		// Save current graphics state
 		// Undo swapping of y axis
 		// Render text
 		// Restore previous graphics state
 
-		return "q " + "1 0 0 -1 " + x + " " + y + " cm " + "BT " + getOutput(str) + " Tj ET " + "Q";
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			string.write("q 1 0 0 -1 ").write(x).write(" ").write(y)
+					.write(" cm BT ").write(getOutput(str)).write(" Tj ET Q");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
-	private static StringBuilder getOutput(String str) {
-		StringBuilder out = new StringBuilder();
-
+	private static byte[] getOutput(String str) {
 		// Escape string
 		str = str.replaceAll("\\\\", "\\\\\\\\")
-			.replaceAll("\t", "\\\\t")
-			.replaceAll("\b", "\\\\b")
-			.replaceAll("\f", "\\\\f")
-			.replaceAll("\\(", "\\\\(")
-			.replaceAll("\\)", "\\\\)")
-			.replaceAll("[\r\n]", "");
+				.replaceAll("\t", "\\\\t")
+				.replaceAll("\b", "\\\\b")
+				.replaceAll("\f", "\\\\f")
+				.replaceAll("\\(", "\\\\(")
+				.replaceAll("\\)", "\\\\)")
+				.replaceAll("[\r\n]", "");
 
-		out.append("(").append(str).append(")");
-
-		return out;
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			string.write("(").write(str).write(")");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
-	private static String getOutput(PDFObject image, double x, double y,
+	private static byte[] getOutput(PDFObject image, double x, double y,
 			double width, double height, Resources resources) {
 		// Query image resource id
 		String resourceId = resources.getId(image);
@@ -745,7 +791,16 @@ class PDFDocument extends SizedDocument {
 		// Draw image
 		// Restore old graphics state
 
-		return "q " + width + " 0 0 " + height + " " + x + " " + y + " cm " + "1 0 0 -1 0 1 cm " + "/" + resourceId + " Do " + "Q";
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try (FormattingWriter string = new FormattingWriter(out, CHARSET, EOL)) {
+			string.write("q ").write(width).write(" 0 0 ").write(height)
+					.write(" ").write(x).write(" ").write(y)
+					.write(" cm 1 0 0 -1 0 1 cm /").write(resourceId)
+					.write(" Do Q");
+			return out.toByteArray();
+		} catch (IOException e) {
+			return null;
+		}
 	}
 
 	public void close() {
