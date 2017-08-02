@@ -34,6 +34,12 @@ public class FormattingWriter implements Closeable, Flushable, AutoCloseable {
 	private long position;
 
 	public FormattingWriter(OutputStream out, String encoding, String eol) throws UnsupportedEncodingException {
+		if (out == null) {
+			throw new IllegalArgumentException("Output stream cannot be null.");
+		}
+		if (eol == null || eol.isEmpty()) {
+			throw new IllegalArgumentException("End-of-line string cannot be empty.");
+		}
 		this.out = out;
 		this.encoding = encoding;
 		this.eolBytes = eol.getBytes(encoding);

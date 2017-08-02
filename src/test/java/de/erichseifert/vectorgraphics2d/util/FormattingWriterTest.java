@@ -22,7 +22,9 @@
 package de.erichseifert.vectorgraphics2d.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
 import org.junit.Before;
+import org.junit.Test;
 
 
 public class FormattingWriterTest {
@@ -34,5 +36,20 @@ public class FormattingWriterTest {
 	@Before
 	public void setUp() {
 		stream = new ByteArrayOutputStream();
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void constructorFailsWithoutStream() throws UnsupportedEncodingException {
+		new FormattingWriter(null, DEFAULT_ENCODING, DEFAULT_EOL);
+	}
+
+	@Test(expected = UnsupportedEncodingException.class)
+	public void constructorFailsWithUnknownEncoding() throws UnsupportedEncodingException {
+		new FormattingWriter(stream, "<unknown>", DEFAULT_EOL);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void constructorFailsWithEmptyEOL() throws UnsupportedEncodingException {
+		new FormattingWriter(stream, DEFAULT_ENCODING, "");
 	}
 }
