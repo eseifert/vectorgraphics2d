@@ -21,7 +21,10 @@
  */
 package de.erichseifert.vectorgraphics2d.util;
 
+import static org.junit.Assert.assertArrayEquals;
+
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,5 +54,36 @@ public class FormattingWriterTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorFailsWithEmptyEOL() throws UnsupportedEncodingException {
 		new FormattingWriter(stream, DEFAULT_ENCODING, "");
+	}
+
+	@Test
+	public void writtenBytesGetEmittedToStream() throws IOException {
+		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
+		byte[] bytes = { 86, 71, 50, 68 };
+
+		writer.write(bytes);
+
+		assertArrayEquals(bytes, stream.toByteArray());
+	}
+
+	@Test
+	public void writtenStringHaveCorrectEncoding() throws IOException {
+		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
+		String string = "f\\u00F6\\u00F6bar";
+
+		writer.write(string);
+
+		byte[] expected = string.getBytes(DEFAULT_ENCODING);
+		assertArrayEquals(expected, stream.toByteArray());
+	}
+
+	@Test
+	public void writtenEOLsAreCorrect() throws IOException {
+		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, "\r\n");
+
+		writer.writeln("foo").writeln("bar");
+
+		byte[] expected = "foo\r\nbar\r\n".getBytes(DEFAULT_ENCODING);
+		assertArrayEquals(expected, stream.toByteArray());
 	}
 }
