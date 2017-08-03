@@ -1,10 +1,17 @@
-sudo: false
+sudo: required
 
 language: java
 
 jdk:
 - oraclejdk8
 - oraclejdk7
+
+before_install:
+- sudo add-apt-repository ppa:cwchien/gradle -y
+- sudo apt-get update -q
+- sudo apt-get install gradle -y
+- export PATH=/usr/bin:$PATH  # Use gradle from /usr/bin
+- gradle --version
 
 notifications:
   irc:
