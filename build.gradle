@@ -38,6 +38,7 @@ dependencies {
     testCompile 'org.ghost4j:ghost4j:1.0.1'
     testCompile 'org.apache.xmlgraphics:batik-transcoder:1.9'
     testRuntime 'org.apache.xmlgraphics:batik-codec:1.9'  // Required for images with data: URLs
+    testRuntime 'org.slf4j:slf4j-log4j12:1.7.25'  // Required for Cobertura
 }
 
 buildscript {
