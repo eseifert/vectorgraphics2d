@@ -27,27 +27,37 @@ ext {
 }
 
 repositories {
-    mavenCentral()
+    maven {
+        url 'https://plugins.gradle.org/m2/'
+    }
 }
 
 dependencies {
-    testCompile(group: 'junit', name: 'junit', version: '4.12')
-    testCompile(group: 'org.hamcrest', name: 'hamcrest-library', version: '1.3')
-    testCompile(group: 'org.ghost4j', name: 'ghost4j', version: '1.0.1')
-    testCompile(group: 'org.apache.xmlgraphics', name: 'batik-transcoder', version: '1.9')
-    testCompile(group: 'org.apache.xmlgraphics', name: 'batik-codec', version: '1.9')  // Required for images with data: URLs
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testCompile 'org.ghost4j:ghost4j:1.0.1'
+    testCompile 'org.apache.xmlgraphics:batik-transcoder:1.9'
+    testRuntime 'org.apache.xmlgraphics:batik-codec:1.9'  // Required for images with data: URLs
 }
 
 buildscript {
     repositories {
-        mavenCentral()
-        jcenter()
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
     }
     dependencies {
         classpath 'net.sf.proguard:proguard-gradle:5.2.+'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.+'
+        classpath 'net.saliman:gradle-cobertura-plugin:2.5.0'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
     }
 }
+
+apply plugin: 'net.saliman.cobertura'
+cobertura.coverageFormats = ['html', 'xml']
+
+apply plugin: 'com.github.kt3k.coveralls'
 
 apply plugin: 'license'
 license {
