@@ -250,4 +250,57 @@ public class GraphicsUtilsTest {
 			assertShapeClassIsCloneable(shapeClass);
 		}
 	}
+
+	@Test
+	public void equalsReturnsTrueForEmptyPathsWithSameWindingRules() {
+		Path2D path1 = new Path2D.Double(PathIterator.WIND_EVEN_ODD);
+		Path2D path2 = new Path2D.Double(PathIterator.WIND_EVEN_ODD);
+
+		assertTrue(GraphicsUtils.equals(path1, path2));
+	}
+
+	@Test
+	public void equalsReturnsFalseForEmptyPathsWithDifferentWindingRules() {
+		Path2D windNonZero = new Path2D.Double(PathIterator.WIND_NON_ZERO);
+		Path2D windEvenOdd = new Path2D.Double(PathIterator.WIND_EVEN_ODD);
+
+		assertFalse(GraphicsUtils.equals(windNonZero, windEvenOdd));
+	}
+
+	@Test
+	public void equalsReturnsFalseForPathsWithSamePointCoordinatesButDifferentSegmentTypes() {
+		Path2D path1 = new Path2D.Double();
+		path1.moveTo(12d, 34d);
+		path1.lineTo(56d, 78d);
+		Path2D path2 = new Path2D.Double();
+		path2.moveTo(12d, 34d);
+		path2.curveTo(56d, 78d, 90d, 12d, 34d, 56d);
+
+		assertFalse(GraphicsUtils.equals(path1, path2));
+	}
+
+	@Test
+	public void equalsReturnsFalseForPathsWithDifferentPointCoordinates() {
+		Path2D path1 = new Path2D.Double();
+		path1.moveTo(12d, 34d);
+		path1.lineTo(56d, 78d);
+		Path2D path2 = new Path2D.Double();
+		path2.moveTo(12d, 34d);
+		path2.lineTo(56d, 90d);
+
+		assertFalse(GraphicsUtils.equals(path1, path2));
+	}
+
+	@Test
+	public void equalsReturnsFalseForPathsWithNumberOfPoints() {
+		Path2D path1 = new Path2D.Double();
+		path1.moveTo(12d, 34d);
+		path1.lineTo(56d, 78d);
+		Path2D path2 = new Path2D.Double();
+		path2.moveTo(12d, 34d);
+		path2.lineTo(56d, 78d);
+		path2.lineTo(90d, 12d);
+
+		assertFalse(GraphicsUtils.equals(path1, path2));
+	}
 }
