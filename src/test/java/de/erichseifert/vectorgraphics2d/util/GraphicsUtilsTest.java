@@ -28,6 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeFalse;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -54,56 +55,79 @@ import org.junit.Test;
 public class GraphicsUtilsTest {
 	private static final double DELTA = 1e-15;
 
-	@Test
-	public void testToBufferedImage() {
-		Image[] images = {
-			new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB),
-			new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB),
-			Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(
-				new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB).getSource(),
-				new RGBImageFilter() {
-					@Override
-					public int filterRGB(int x, int y, int rgb) {
-						return rgb & 0xff;
-					}
-				}
-			))
-		};
-
-		for (Image image : images) {
-			BufferedImage bimage = GraphicsUtils.toBufferedImage(image);
-			assertNotNull(bimage);
-			assertEquals(BufferedImage.class, bimage.getClass());
-			assertEquals(image.getWidth(null), bimage.getWidth());
-			assertEquals(image.getHeight(null), bimage.getHeight());
-		}
+	private void assertImageEquals(Image expected, BufferedImage actual) {
+		assertNotNull(actual);
+		assertEquals(BufferedImage.class, actual.getClass());
+		assertEquals(expected.getWidth(null), actual.getWidth());
+		assertEquals(expected.getHeight(null), actual.getHeight());
 	}
 
 	@Test
-	public void testHasAlpha() {
-		Image image;
+	public void toBufferedImageCanConvertImageWithAlphaChannel() {
+		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB);
 
-		image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage result = GraphicsUtils.toBufferedImage(image);
+
+		assertImageEquals(image, result);
+	}
+
+	@Test
+	public void toBufferedImageCanConvertImageWithoutAlphaChannel() {
+		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+
+		BufferedImage result = GraphicsUtils.toBufferedImage(image);
+
+		assertImageEquals(image, result);
+	}
+
+	@Test
+	public void toBufferedImageCanConvertFilteredImage() {
+		Image image = Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(
+			new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB).getSource(),
+			new RGBImageFilter() {
+				@Override
+				public int filterRGB(int x, int y, int rgb) {
+					return rgb & 0xff;
+				}
+			}
+		));
+
+		BufferedImage result = GraphicsUtils.toBufferedImage(image);
+
+		assertImageEquals(image, result);
+	}
+
+	@Test
+	public void hasAlphaIsTrueForImageWithAlphaChannel() {
+		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB);
+
 		assertTrue(GraphicsUtils.hasAlpha(image));
+	}
 
-		image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+	@Test
+	public void hasAlphaIsFalseForImageWithoutAlphaChannel() {
+		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+
 		assertFalse(GraphicsUtils.hasAlpha(image));
 	}
 
 	@Test
-	public void testPhysicalFont() {
-		Font font;
-
+	public void getPhysicalFontReturnsPhysicalFontForFontFamily() {
 		// FIXME: Use valid fonts for headless Continuous Integration environment
-		boolean isHeadless = GraphicsEnvironment.getLocalGraphicsEnvironment().isHeadlessInstance();
-		if (isHeadless) {
-			return;
-		}
+		assumeFalse(GraphicsEnvironment.isHeadless());
 
-		font = new Font("Monospaced", Font.PLAIN, 12);
+		Font font = new Font("Monospaced", Font.PLAIN, 12);
+
 		assertNotSame(font, GraphicsUtils.getPhysicalFont(font));
+	}
 
-		font = new Font("Arial", Font.PLAIN, 12);
+	@Test
+	public void getPhysicalFontReturnsSameObjectForPhysicalFont() {
+		// FIXME: Use valid fonts for headless Continuous Integration environment
+		assumeFalse(GraphicsEnvironment.isHeadless());
+
+		Font font = new Font("Arial", Font.PLAIN, 12);
+
 		assertSame(font, GraphicsUtils.getPhysicalFont(font));
 	}
 
@@ -143,34 +167,87 @@ public class GraphicsUtilsTest {
 		}
 	}
 
-	@Test
-	public void testCloneShape() throws InstantiationException, IllegalAccessException {
-		Class<?>[] shapeClasses = {
-			Line2D.Float.class,
-			Line2D.Double.class,
-			Rectangle.class,
-			Rectangle2D.Float.class,
-			Rectangle2D.Double.class,
-			RoundRectangle2D.Float.class,
-			RoundRectangle2D.Double.class,
-			Ellipse2D.Float.class,
-			Ellipse2D.Double.class,
-			Arc2D.Float.class,
-			Arc2D.Double.class,
-			Polygon.class,
-			CubicCurve2D.Float.class,
-			CubicCurve2D.Double.class,
-			QuadCurve2D.Float.class,
-			QuadCurve2D.Double.class,
-			Path2D.Float.class,
-			Path2D.Double.class
-		};
+	private void assertShapeClassIsCloneable(Class shapeClass) throws IllegalAccessException, InstantiationException {
+		Shape shape = (Shape) shapeClass.newInstance();
+		Shape clone = GraphicsUtils.clone(shape);
+		assertNotNull(clone);
+		assertShapeEquals(shape, clone);
+	}
 
-		for (Class<?> shapeClass : shapeClasses) {
-			Shape shape = (Shape) shapeClass.newInstance();
-			Shape clone = GraphicsUtils.clone(shape);
-			assertNotNull(clone);
-			assertShapeEquals(shape, clone);
+	@Test
+	public void linesCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+			Line2D.Float.class, Line2D.Double.class
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
+		}
+	}
+
+	@Test
+	public void rectanglesCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+			Rectangle.class, Rectangle2D.Float.class, Rectangle2D.Double.class,
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
+		}
+	}
+
+	@Test
+	public void roundedRectanglesCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+				RoundRectangle2D.Float.class, RoundRectangle2D.Double.class
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
+		}
+	}
+
+	@Test
+	public void ellipsesCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+			Ellipse2D.Float.class, Ellipse2D.Double.class
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
+		}
+	}
+
+	@Test
+	public void arcsCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+			Arc2D.Float.class, Arc2D.Double.class
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
+		}
+	}
+
+	@Test
+	public void polygonsCanBeCloned() throws InstantiationException, IllegalAccessException {
+		assertShapeClassIsCloneable(Polygon.class);
+	}
+
+	@Test
+	public void cubicCurvesCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+			CubicCurve2D.Float.class, CubicCurve2D.Double.class
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
+		}
+	}
+
+	@Test
+	public void quadCurvesCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+			QuadCurve2D.Float.class, QuadCurve2D.Double.class
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
+		}
+	}
+
+	@Test
+	public void pathsCanBeCloned() throws InstantiationException, IllegalAccessException {
+		for (Class shapeClass : new Class[] {
+			Path2D.Float.class, Path2D.Double.class
+		}) {
+			assertShapeClassIsCloneable(shapeClass);
 		}
 	}
 }
