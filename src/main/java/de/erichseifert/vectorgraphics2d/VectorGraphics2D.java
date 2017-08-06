@@ -127,13 +127,9 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
-		try {
-			VectorGraphics2D clone = (VectorGraphics2D) super.clone();
-			clone.state = (GraphicsState) state.clone();
-			return clone;
-		} catch (CloneNotSupportedException e) {
-			return null;
-		}
+		VectorGraphics2D clone = (VectorGraphics2D) super.clone();
+		clone.state = (GraphicsState) state.clone();
+		return clone;
 	}
 
 	@Override
