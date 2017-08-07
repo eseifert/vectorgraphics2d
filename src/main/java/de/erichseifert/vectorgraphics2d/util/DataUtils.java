@@ -40,11 +40,14 @@ import java.util.regex.Pattern;
  */
 public abstract class DataUtils {
 	/** Standard pattern to format numbers */
-	private static final DecimalFormat DECIMAL_FORMAT =
+	private static final DecimalFormat DOUBLE_FORMAT =
+			new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+	private static final DecimalFormat FLOAT_FORMAT =
 			new DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
 	static {
-		DECIMAL_FORMAT.setMaximumFractionDigits(340);
+		DOUBLE_FORMAT.setMaximumFractionDigits(15);
+		FLOAT_FORMAT.setMaximumFractionDigits(6);
 	}
 
 	/**
@@ -191,8 +194,10 @@ public abstract class DataUtils {
 	 */
 	public static String format(Number number) {
 		String formatted;
-		if (number instanceof Double || number instanceof Float) {
-			formatted = DECIMAL_FORMAT.format(number.doubleValue());
+		if (number instanceof Double) {
+			formatted = DOUBLE_FORMAT.format(number.doubleValue());
+		} else if (number instanceof Float) {
+			formatted = FLOAT_FORMAT.format(number.floatValue());
 		} else {
 			formatted = number.toString();
 		}
