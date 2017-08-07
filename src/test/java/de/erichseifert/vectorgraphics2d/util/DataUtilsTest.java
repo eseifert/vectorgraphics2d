@@ -30,6 +30,7 @@ public class DataUtilsTest {
 	@Test
 	public void stripTrailingSpaces() {
 		String result = DataUtils.stripTrailing(" foo bar!   ", " ");
+
 		String expected = " foo bar!";
 		assertEquals(expected, result);
 	}
@@ -37,6 +38,7 @@ public class DataUtilsTest {
 	@Test
 	public void stripTrailingSpacesInMultilineString() {
 		String result = DataUtils.stripTrailing(" foo bar! \n   ", " ");
+
 		String expected = " foo bar! \n";
 		assertEquals(expected, result);
 	}
@@ -44,6 +46,7 @@ public class DataUtilsTest {
 	@Test
 	public void stripComplexSubstring() {
 		String result = DataUtils.stripTrailing("+bar foo+bar+bar+bar", "+bar");
+
 		String expected = "+bar foo";
 		assertEquals(expected, result);
 	}
@@ -51,6 +54,7 @@ public class DataUtilsTest {
 	@Test
 	public void formattingIntegersDoesntCauseTrailingZeros() {
 		String smallDecimalString = DataUtils.format(42);
+
 		String expected = "42";
 		assertEquals(expected, smallDecimalString);
 	}
@@ -58,6 +62,7 @@ public class DataUtilsTest {
 	@Test
 	public void formattingSmallDecimalsDoesntCauseScientificNotation() {
 		String result = DataUtils.format(1e-4d);
+
 		String expected = "0.0001";
 		assertEquals(expected, result);
 	}
@@ -65,6 +70,7 @@ public class DataUtilsTest {
 	@Test
 	public void formattingZeroDecimalsDoesntCauseTrailingZeros() {
 		String result = DataUtils.format(0d);
+
 		String expected = "0";
 		assertEquals(expected, result);
 	}
@@ -72,8 +78,8 @@ public class DataUtilsTest {
 	@Test
 	public void formattingBigDecimalsDoesntCauseScientificNotation() {
 		String result = DataUtils.format(1e+8d);
+
 		String expected = "100000000";
 		assertEquals(expected, result);
 	}
 }
-
