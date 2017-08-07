@@ -120,6 +120,20 @@ public class DataUtilsTest {
 	}
 
 	@Test
+	public void joinReturnsEmptyStringForFloatArray() {
+		String result = DataUtils.join("@@", new float[] {});
+
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void joinReturnsEmptyStringForDoubleArray() {
+		String result = DataUtils.join("@@", new double[] {});
+
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
 	public void joinReturnsEmptyStringForNullParameter() {
 		String result = DataUtils.join("@@", (String[]) null);
 
