@@ -22,9 +22,11 @@
 package de.erichseifert.vectorgraphics2d.util;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import org.junit.Before;
 import org.junit.Test;
@@ -140,5 +142,23 @@ public class FormattingWriterTest {
 
 		byte[] expected = ("4.20 => foo" + DEFAULT_EOL).getBytes(DEFAULT_ENCODING);
 		assertArrayEquals(expected, stream.toByteArray());
+	}
+
+	private final static class MockOutputStream extends OutputStream {
+		private boolean flushed;
+		private boolean closed;
+		@Override public void write(int b) throws IOException {}
+		@Override public void flush() throws IOException { flushed = true; }
+		@Override public void close() throws IOException { closed = true; }
+	}
+
+	@Test
+	public void closeClosesOutputStream() throws IOException {
+		MockOutputStream mockStream = new MockOutputStream();
+		FormattingWriter writer = new FormattingWriter(mockStream, DEFAULT_ENCODING, DEFAULT_EOL);
+
+		writer.close();
+
+		assertTrue(mockStream.closed);
 	}
 }
