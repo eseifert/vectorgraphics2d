@@ -118,4 +118,19 @@ public class DataUtilsTest {
 
 		assertTrue(result.isEmpty());
 	}
+
+
+	@Test
+	public void joinReturnsOnlyElementForSingletonArray() {
+		String result = DataUtils.join("@@", new String[] {"foo"});
+
+		assertEquals("foo", result);
+	}
+
+	@Test
+	public void joinReturnsOnlyElementForSingletonList() {
+		String result = DataUtils.join("@@", Collections.singletonList("foo"));
+
+		assertEquals("foo", result);
+	}
 }
