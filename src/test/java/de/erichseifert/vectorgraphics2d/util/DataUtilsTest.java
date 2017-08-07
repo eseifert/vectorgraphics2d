@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
@@ -192,5 +193,15 @@ public class DataUtilsTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void maxFailsWithoutParameters() {
 		DataUtils.max();
+	}
+
+	@Test
+	public void asListReturnsListContainingCorrectFloatValues() {
+		float[] floatValues = {1f, 2f, 3f};
+
+		List<Float> result = DataUtils.asList(floatValues);
+
+		List<Float> expected = Arrays.asList(1f, 2f, 3f);
+		assertEquals(expected, result);
 	}
 }
