@@ -30,7 +30,8 @@ import org.junit.runners.Suite;
 	ASCII85EncodeStreamTest.class,
 	Base64EncodeStreamTest.class,
 	GraphicsUtilsTest.class,
-	FormattingWriterTest.class
+	FormattingWriterTest.class,
+	PageSizeTest.class
 })
 public class UtilTests {
 }
