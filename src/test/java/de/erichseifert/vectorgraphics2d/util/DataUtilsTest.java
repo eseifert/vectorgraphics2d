@@ -133,4 +133,18 @@ public class DataUtilsTest {
 
 		assertEquals("foo", result);
 	}
+
+	@Test
+	public void joinReturnsStringWithElementsAndSeparatorForArray() {
+		String result = DataUtils.join("@@", new String[] {"foo", "bar"});
+
+		assertEquals("foo@@bar", result);
+	}
+
+	@Test
+	public void joinReturnsStringWithElementsAndSeparatorForList() {
+		String result = DataUtils.join("@@", Arrays.asList("foo", "bar"));
+
+		assertEquals("foo@@bar", result);
+	}
 }
