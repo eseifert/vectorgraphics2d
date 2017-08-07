@@ -86,4 +86,14 @@ public class FormattingWriterTest {
 		byte[] expected = "foo\r\nbar\r\n".getBytes(DEFAULT_ENCODING);
 		assertArrayEquals(expected, stream.toByteArray());
 	}
+
+	@Test
+	public void writeFormatsStringWithParameters() throws IOException {
+		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
+
+		writer.write("%.02f => %s", 4.2, "foo");
+
+		byte[] expected = "4.20 => foo".getBytes(DEFAULT_ENCODING);
+		assertArrayEquals(expected, stream.toByteArray());
+	}
 }
