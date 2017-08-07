@@ -148,6 +148,20 @@ public class DataUtilsTest {
 	}
 
 	@Test
+	public void joinReturnsStringWithElementsAndSeparatorForFloatArray() {
+		String result = DataUtils.join("@@", new float[] {1.2f, 3.4f});
+
+		assertEquals("1.2@@3.4", result);
+	}
+
+	@Test
+	public void joinReturnsStringWithElementsAndSeparatorForDoubleArray() {
+		String result = DataUtils.join("@@", new double[] {1.2d, 3.4d});
+
+		assertEquals("1.2@@3.4", result);
+	}
+
+	@Test
 	public void joinReturnsStringWithElementsAndSeparatorForList() {
 		String result = DataUtils.join("@@", Arrays.asList("foo", "bar"));
 
