@@ -181,4 +181,11 @@ public class DataUtilsTest {
 
 		assertEquals("foo@@bar", result);
 	}
+
+	@Test
+	public void maxReturnsMaximumOfIntegers() {
+		int result = DataUtils.max(23, 42, -128, 4, 0);
+
+		assertEquals(42, result);
+	}
 }
