@@ -119,6 +119,12 @@ public class DataUtilsTest {
 		assertTrue(result.isEmpty());
 	}
 
+	@Test
+	public void joinReturnsEmptyStringForNullParameter() {
+		String result = DataUtils.join("@@", (String[]) null);
+
+		assertTrue(result.isEmpty());
+	}
 
 	@Test
 	public void joinReturnsOnlyElementForSingletonArray() {
