@@ -22,7 +22,9 @@
 package de.erichseifert.vectorgraphics2d.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Map;
 import org.junit.Test;
 
 
@@ -81,5 +83,15 @@ public class DataUtilsTest {
 
 		String expected = "100000000";
 		assertEquals(expected, result);
+	}
+
+	@Test
+	public void mapCreatesCorrectMappingWithValidParameters() {
+		Map<String, Integer> result = DataUtils.map(
+				new String[] {"foo"},
+				new Integer[] {42});
+
+		assertTrue(result.containsKey("foo"));
+		assertEquals(new Integer(42), result.get("foo"));
 	}
 }
