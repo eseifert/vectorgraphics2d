@@ -63,7 +63,22 @@ public class FormattingWriterTest {
 
 		writer.write(bytes);
 
-		assertArrayEquals(bytes, stream.toByteArray());
+		byte[] expected = bytes;
+		assertArrayEquals(expected, stream.toByteArray());
+	}
+
+	@Test
+	public void writelnBytesEmitsBytesAndEOLToStream() throws IOException {
+		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
+		byte[] eolBytes = DEFAULT_EOL.getBytes(DEFAULT_ENCODING);
+		byte[] bytes = { 86, 71, 50, 68 };
+
+		writer.writeln(bytes);
+
+		byte[] expected = new byte[bytes.length + eolBytes.length];
+		System.arraycopy(bytes, 0, expected, 0, bytes.length);
+		System.arraycopy(eolBytes, 0, expected, bytes.length, eolBytes.length);
+		assertArrayEquals(expected, stream.toByteArray());
 	}
 
 	@Test
