@@ -57,7 +57,7 @@ public class FormattingWriterTest {
 	}
 
 	@Test
-	public void writtenBytesGetEmittedToStream() throws IOException {
+	public void writeBytesEmitsBytesToStream() throws IOException {
 		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
 		byte[] bytes = { 86, 71, 50, 68 };
 
@@ -67,7 +67,7 @@ public class FormattingWriterTest {
 	}
 
 	@Test
-	public void writtenStringHaveCorrectEncoding() throws IOException {
+	public void writeStringHasCorrectEncoding() throws IOException {
 		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
 		String string = "f\\u00F6\\u00F6bar";
 
@@ -78,7 +78,7 @@ public class FormattingWriterTest {
 	}
 
 	@Test
-	public void writtenEOLsAreCorrect() throws IOException {
+	public void writeStringEmitsCorrectEOLs() throws IOException {
 		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, "\r\n");
 
 		writer.writeln("foo").writeln("bar");
