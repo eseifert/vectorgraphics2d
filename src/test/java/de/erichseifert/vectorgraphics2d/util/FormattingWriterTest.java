@@ -22,6 +22,7 @@
 package de.erichseifert.vectorgraphics2d.util;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -170,5 +171,15 @@ public class FormattingWriterTest {
 		writer.flush();
 
 		assertTrue(mockStream.flushed);
+	}
+
+	@Test
+	public void tellReturnsCorrectPosition() throws IOException {
+		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
+		byte[] bytes = { 86, 71, 50, 68 };
+
+		writer.write(bytes);
+
+		assertEquals(bytes.length, writer.tell());
 	}
 }
