@@ -98,6 +98,16 @@ public class FormattingWriterTest {
 	}
 
 	@Test
+	public void writeDoubleOutputsAFormattedNumberAndAppendsAnEOL() throws IOException {
+		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
+
+		writer.writeln(4.2);
+
+		byte[] expected = ("4.2" + DEFAULT_EOL).getBytes(DEFAULT_ENCODING);
+		assertArrayEquals(expected, stream.toByteArray());
+	}
+
+	@Test
 	public void writeFormatsStringWithParameters() throws IOException {
 		FormattingWriter writer = new FormattingWriter(stream, DEFAULT_ENCODING, DEFAULT_EOL);
 
