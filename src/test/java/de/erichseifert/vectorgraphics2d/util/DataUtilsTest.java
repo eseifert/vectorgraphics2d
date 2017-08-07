@@ -206,6 +206,13 @@ public class DataUtilsTest {
 	}
 
 	@Test
+	public void asListReturnsEmptyListForNullFloatArray() {
+		List<Float> result = DataUtils.asList((float[]) null);
+
+		assertEquals(Collections.<Float>emptyList(), result);
+	}
+
+	@Test
 	public void asListReturnsListContainingCorrectDoubleValues() {
 		double[] doubleValues = {1d, 2d, 3d};
 
