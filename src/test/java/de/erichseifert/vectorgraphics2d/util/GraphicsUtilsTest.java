@@ -47,19 +47,32 @@ import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
+import java.awt.image.WritableRaster;
+import java.util.Vector;
 import org.junit.Test;
 
 
 public class GraphicsUtilsTest {
 	private static final double DELTA = 1e-15;
 
-	private void assertImageEquals(Image expected, BufferedImage actual) {
+	private void assertBufferedImageEquals(Image expected, BufferedImage actual) {
 		assertNotNull(actual);
 		assertEquals(BufferedImage.class, actual.getClass());
 		assertEquals(expected.getWidth(null), actual.getWidth());
 		assertEquals(expected.getHeight(null), actual.getHeight());
+	}
+
+	private void assertBufferedImageEquals(RenderedImage expected, BufferedImage actual) {
+		assertNotNull(actual);
+		assertEquals(BufferedImage.class, actual.getClass());
+		assertEquals(expected.getWidth(), actual.getWidth());
+		assertEquals(expected.getHeight(), actual.getHeight());
 	}
 
 	@Test
@@ -68,7 +81,7 @@ public class GraphicsUtilsTest {
 
 		BufferedImage result = GraphicsUtils.toBufferedImage(image);
 
-		assertImageEquals(image, result);
+		assertBufferedImageEquals(image, result);
 	}
 
 	@Test
@@ -77,7 +90,7 @@ public class GraphicsUtilsTest {
 
 		BufferedImage result = GraphicsUtils.toBufferedImage(image);
 
-		assertImageEquals(image, result);
+		assertBufferedImageEquals(image, result);
 	}
 
 	@Test
@@ -94,7 +107,39 @@ public class GraphicsUtilsTest {
 
 		BufferedImage result = GraphicsUtils.toBufferedImage(image);
 
-		assertImageEquals(image, result);
+		assertBufferedImageEquals(image, result);
+	}
+
+	@Test
+	public void toBufferedImageCanConvertRenderedImage() {
+		final BufferedImage bimage = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+		RenderedImage image = new RenderedImage() {
+			@Override public Vector<RenderedImage> getSources() { return bimage.getSources(); }
+			@Override public Object getProperty(String name) { if ("foo".equals(name)) return 42; else return bimage.getProperty(name); }
+			@Override public String[] getPropertyNames() { return new String[] {"foo"}; }
+			@Override public ColorModel getColorModel() { return bimage.getColorModel(); }
+			@Override public SampleModel getSampleModel() { return bimage.getSampleModel(); }
+			@Override public int getWidth() { return bimage.getWidth(); }
+			@Override public int getHeight() { return bimage.getHeight(); }
+			@Override public int getMinX() { return bimage.getMinX(); }
+			@Override public int getMinY() { return bimage.getMinY(); }
+			@Override public int getNumXTiles() { return bimage.getNumXTiles(); }
+			@Override public int getNumYTiles() { return bimage.getNumYTiles(); }
+			@Override public int getMinTileX() { return bimage.getMinTileX(); }
+			@Override public int getMinTileY() { return bimage.getMinTileY(); }
+			@Override public int getTileWidth() { return bimage.getTileWidth(); }
+			@Override public int getTileHeight() { return bimage.getTileHeight(); }
+			@Override public int getTileGridXOffset() { return bimage.getTileGridXOffset(); }
+			@Override public int getTileGridYOffset() { return bimage.getTileGridYOffset(); }
+			@Override public Raster getTile(int tileX, int tileY) { return bimage.getTile(tileX, tileY); }
+			@Override public Raster getData() { return bimage.getData(); }
+			@Override public Raster getData(Rectangle rect) { return bimage.getData(rect); }
+			@Override public WritableRaster copyData(WritableRaster raster) { return bimage.copyData(raster); }
+		};
+
+		BufferedImage result = GraphicsUtils.toBufferedImage(image);
+
+		assertBufferedImageEquals(image, result);
 	}
 
 	@Test
