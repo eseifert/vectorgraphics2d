@@ -68,4 +68,12 @@ public class PageSizeTest {
 		assertEquals(portrait.getWidth(), landscape.getPortrait().getWidth(), DELTA);
 		assertEquals(portrait.getHeight(), landscape.getPortrait().getHeight(), DELTA);
 	}
+
+	@Test
+	public void getPortraitDoesNotChangeAPortraitFormat() {
+		PageSize portrait = new PageSize(3.0, 4.0);
+
+		assertEquals(portrait.getWidth(), portrait.getPortrait().getWidth(), DELTA);
+		assertEquals(portrait.getHeight(), portrait.getPortrait().getHeight(), DELTA);
+	}
 }
