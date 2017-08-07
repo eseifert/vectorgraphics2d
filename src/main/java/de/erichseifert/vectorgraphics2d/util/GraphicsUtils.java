@@ -126,8 +126,8 @@ public abstract class GraphicsUtils {
 	}
 
 	/**
-	 * Converts an arbitrary image to a {@code BufferedImage}.
-	 * @param image Image that should be converted.
+	 * Converts a rendered image instance to a {@code BufferedImage}.
+	 * @param image Rendered image that should be converted.
 	 * @return a buffered image containing the image pixels, or the original
 	 *         instance if the image already was of type {@code BufferedImage}.
 	 */
@@ -411,7 +411,8 @@ public abstract class GraphicsUtils {
 			pathAIterator.next();
 			pathBIterator.next();
 		}
-		// When the iterator of shapeA is done and shapeA equals shapeB, the iterator of shapeB must also be done
+		// When the iterator of shapeA is done and shapeA equals shapeB,
+		// the iterator of shapeB must also be done
 		if (!pathBIterator.isDone()) {
 			return false;
 		}
