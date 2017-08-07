@@ -221,4 +221,11 @@ public class DataUtilsTest {
 		List<Double> expected = Arrays.asList(1d, 2d, 3d);
 		assertEquals(expected, result);
 	}
+
+	@Test
+	public void asListReturnsEmptyListForNullDoubleArray() {
+		List<Double> result = DataUtils.asList((double[]) null);
+
+		assertEquals(Collections.<Double>emptyList(), result);
+	}
 }
