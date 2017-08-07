@@ -204,4 +204,14 @@ public class DataUtilsTest {
 		List<Float> expected = Arrays.asList(1f, 2f, 3f);
 		assertEquals(expected, result);
 	}
+
+	@Test
+	public void asListReturnsListContainingCorrectDoubleValues() {
+		double[] doubleValues = {1d, 2d, 3d};
+
+		List<Double> result = DataUtils.asList(doubleValues);
+
+		List<Double> expected = Arrays.asList(1d, 2d, 3d);
+		assertEquals(expected, result);
+	}
 }
