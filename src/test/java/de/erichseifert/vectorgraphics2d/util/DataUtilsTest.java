@@ -21,9 +21,13 @@
  */
 package de.erichseifert.vectorgraphics2d.util;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -227,5 +231,16 @@ public class DataUtilsTest {
 		List<Double> result = DataUtils.asList((double[]) null);
 
 		assertEquals(Collections.<Double>emptyList(), result);
+	}
+
+	@Test
+	public void transferWritesAllBytesOfInputStreamToOutputStream() throws IOException {
+		byte[] bytes = { 86, 71, 50, 68 };
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream(4);
+
+		DataUtils.transfer(inputStream, outputStream, 1);
+
+		assertArrayEquals(bytes, outputStream.toByteArray());
 	}
 }
