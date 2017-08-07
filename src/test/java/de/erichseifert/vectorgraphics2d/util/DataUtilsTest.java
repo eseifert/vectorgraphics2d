@@ -94,4 +94,12 @@ public class DataUtilsTest {
 		assertTrue(result.containsKey("foo"));
 		assertEquals(new Integer(42), result.get("foo"));
 	}
+
+
+	@Test(expected = IllegalArgumentException.class)
+	public void mapFailsWithInvalidParameterCount() {
+		Map<String, Integer> result = DataUtils.map(
+				new String[] {"foo", "bar"},
+				new Integer[] {42});
+	}
 }
