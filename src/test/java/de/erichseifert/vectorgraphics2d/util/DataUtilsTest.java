@@ -24,6 +24,8 @@ package de.erichseifert.vectorgraphics2d.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import org.junit.Test;
 
@@ -101,5 +103,19 @@ public class DataUtilsTest {
 		Map<String, Integer> result = DataUtils.map(
 				new String[] {"foo", "bar"},
 				new Integer[] {42});
+	}
+
+	@Test
+	public void joinReturnsEmptyStringForEmptyList() {
+		String result = DataUtils.join("@@", Collections.emptyList());
+
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void joinReturnsEmptyStringForEmptyArray() {
+		String result = DataUtils.join("@@", new String[] {});
+
+		assertTrue(result.isEmpty());
 	}
 }
