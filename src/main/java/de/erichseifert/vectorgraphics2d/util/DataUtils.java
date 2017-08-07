@@ -160,6 +160,9 @@ public abstract class DataUtils {
 	 * @return largest value.
 	 */
 	public static int max(int... values) {
+		if (values.length == 0) {
+			throw new IllegalArgumentException("No values provided: Cannot determine maximum value.");
+		}
 		int max = values[0];
 		for (int i = 1; i < values.length; i++) {
 			if (values[i] > max) {

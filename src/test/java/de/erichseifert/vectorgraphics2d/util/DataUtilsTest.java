@@ -188,4 +188,9 @@ public class DataUtilsTest {
 
 		assertEquals(42, result);
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void maxFailsWithoutParameters() {
+		DataUtils.max();
+	}
 }
