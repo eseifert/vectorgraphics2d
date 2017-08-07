@@ -161,4 +161,14 @@ public class FormattingWriterTest {
 
 		assertTrue(mockStream.closed);
 	}
+
+	@Test
+	public void flushFlushesOutputStream() throws IOException {
+		MockOutputStream mockStream = new MockOutputStream();
+		FormattingWriter writer = new FormattingWriter(mockStream, DEFAULT_ENCODING, DEFAULT_EOL);
+
+		writer.flush();
+
+		assertTrue(mockStream.flushed);
+	}
 }
