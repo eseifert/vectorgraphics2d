@@ -53,7 +53,7 @@ public abstract class DataUtils {
 	/**
 	 * Default constructor that prevents creation of class.
 	 */
-	protected DataUtils() {
+	DataUtils() {
 		throw new UnsupportedOperationException();
 	}
 

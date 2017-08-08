@@ -26,10 +26,21 @@ import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
 import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 
 /**
- * Utility class that provides simplified access to processors for different
- * file formats.
+ * <p>Utility class that provides simplified access to processors for different
+ * file formats. At the moment three implementations of processors are available:
+ * {@code "eps"}, {@code "pdf"}, and {@code "svg"}</p>
+ * <p>A new processor can be retrieved by calling the {@link #get(String)}
+ * method with the format name:</p>
+ * <pre>Processor pdfProcessor = Processors.get("pdf");</pre>
  */
-public class Processors {
+public abstract class Processors {
+	/**
+	 * Default constructor that prevents creation of class.
+	 */
+	Processors() {
+		throw new UnsupportedOperationException();
+	}
+
 	public static Processor get(String format) {
 		if (format == null) {
 			throw new NullPointerException("Format cannot be null.");

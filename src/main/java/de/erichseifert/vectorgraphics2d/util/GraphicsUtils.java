@@ -66,7 +66,7 @@ public abstract class GraphicsUtils {
 	/**
 	 * Default constructor that prevents creation of class.
 	 */
-	protected GraphicsUtils() {
+	GraphicsUtils() {
 		throw new UnsupportedOperationException();
 	}
 
