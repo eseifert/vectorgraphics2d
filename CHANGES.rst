@@ -1,4 +1,4 @@
-VectorGraphics2D 0.13 (unreleased)
+VectorGraphics2D 0.13 (2017-08-08)
 ==================================
 
 - Java 7 and Gradle 4 are now required to build VectorGraphics2D
