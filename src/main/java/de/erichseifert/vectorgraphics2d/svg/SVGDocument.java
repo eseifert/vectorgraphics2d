@@ -91,7 +91,7 @@ import org.w3c.dom.Element;
  */
 // TODO Implement composite support for SVG (filters?)
 // TODO Implement paint support for SVG
-public class SVGDocument extends SizedDocument {
+class SVGDocument extends SizedDocument {
 	private static final String SVG_DOCTYPE_QNAME = "svg";
 	private static final String SVG_DOCTYPE_PUBLIC_ID = "-//W3C//DTD SVG 1.1//EN";
 	private static final String SVG_DOCTYPE_SYSTEM_ID = "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd";

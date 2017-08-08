@@ -83,7 +83,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
  * Represents a {@code Document} in the <i>Encapsulated PostScript&reg;</i>
  * (EPS) format.
  */
-public class EPSDocument extends SizedDocument {
+class EPSDocument extends SizedDocument {
 	/** Constant to convert values from millimeters to PostScript® units
 	(1/72th inch). */
 	private static final double UNITS_PER_MM = 72.0 / 25.4;
