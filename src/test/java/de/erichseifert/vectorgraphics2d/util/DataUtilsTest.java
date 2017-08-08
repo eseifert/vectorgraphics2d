@@ -105,7 +105,7 @@ public class DataUtilsTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void mapFailsWithInvalidParameterCount() {
-		Map<String, Integer> result = DataUtils.map(
+		DataUtils.map(
 				new String[] {"foo", "bar"},
 				new Integer[] {42});
 	}
