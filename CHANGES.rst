@@ -4,6 +4,7 @@ VectorGraphics2D 0.13 (unreleased)
 - Java 7 and Gradle 4 are now required to build VectorGraphics2D
 - Restored compression support for PDF files
 - All processors now have a standard constructor
+- Added more JavaDoc documentation
 
 VectorGraphics2D 0.12 (2017-07-28)
 ==================================
