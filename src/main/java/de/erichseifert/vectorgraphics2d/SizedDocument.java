@@ -23,6 +23,9 @@ package de.erichseifert.vectorgraphics2d;
 
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
+/**
+ * Abstract base for documents that are restricted to a specified page size.
+ */
 public abstract class SizedDocument implements Document {
 	private final PageSize pageSize;
 	private final boolean compressed;

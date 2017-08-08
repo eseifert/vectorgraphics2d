@@ -25,6 +25,10 @@ import de.erichseifert.vectorgraphics2d.eps.EPSProcessor;
 import de.erichseifert.vectorgraphics2d.pdf.PDFProcessor;
 import de.erichseifert.vectorgraphics2d.svg.SVGProcessor;
 
+/**
+ * Utility class that provides simplified access to processors for different
+ * file formats.
+ */
 public class Processors {
 	public static Processor get(String format) {
 		if (format == null) {

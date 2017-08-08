@@ -36,6 +36,9 @@ import java.awt.geom.Rectangle2D;
 
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
+/**
+ * Representation of the Graphics2D status at a certain point in time.
+ */
 public class GraphicsState implements Cloneable {
 	/** Default background color. */
 	public static final Color DEFAULT_BACKGROUND = Color.BLACK;

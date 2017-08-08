@@ -37,4 +37,3 @@ public interface Processor {
 	 */
 	Document getDocument(CommandSequence commands, PageSize pageSize);
 }
-

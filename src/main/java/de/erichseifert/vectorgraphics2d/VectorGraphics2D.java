@@ -88,7 +88,8 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 /**
- * Base for classes that want to implement vector export.
+ * Implementation of the Graphics2D interface to Java to generate a sequence of
+ * commands.
  * @author Erich Seifert
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */

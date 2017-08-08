@@ -24,6 +24,10 @@ package de.erichseifert.vectorgraphics2d;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * Interface for documents that are able to output binary files in the
+ * implemented file format.
+ */
 public interface Document {
 	void writeTo(OutputStream out) throws IOException;
 
@@ -33,4 +37,3 @@ public interface Document {
 	 */
 	boolean isCompressed();
 }
-

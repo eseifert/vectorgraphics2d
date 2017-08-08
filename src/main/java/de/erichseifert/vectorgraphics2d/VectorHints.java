@@ -25,11 +25,18 @@ import java.awt.RenderingHints;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Hints to control quality settings and choices for vector graphics output.
+ */
 public abstract class VectorHints {
 	protected VectorHints() {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * Base type of all keys used along with the {@link VectorHints} class to
+	 * control algorithm and output choices in the vector graphics output.
+	 */
 	public static class Key extends RenderingHints.Key {
 		private final String description;
 
@@ -53,6 +60,10 @@ public abstract class VectorHints {
 		}
 	}
 
+	/**
+	 * Base type of all values used along with the {@link VectorHints} class to
+	 * control algorithm and output choices in the vector graphics output.
+	 */
 	public static class Value {
 		private static final Set<String> values = new HashSet<>();
 
