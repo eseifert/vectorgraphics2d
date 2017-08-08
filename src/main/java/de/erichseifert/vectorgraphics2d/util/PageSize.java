@@ -23,6 +23,18 @@ package de.erichseifert.vectorgraphics2d.util;
 
 import java.awt.geom.Rectangle2D;
 
+/**
+ * <p>Class that represents a page with a specified origin and size.
+ * The class is immutable and can be initialized with coordinates and
+ * dimensions or only dimensions:</p>
+ * <pre>PageSize a3 = new PageSize(0.0, 0.0, 297.0, 420.0);
+ *PageSize a4 = new PageSize(210.0, 297.0);</pre>
+ *
+ * <p>For convenience the class contains static constants for common page
+ * sizes:</p>
+ * <pre>PageSize a4 = PageSize.A4;
+ *PageSize letter = PageSize.LETTER;</pre>
+ */
 public class PageSize {
 	private static final double MM_PER_INCH = 2.54;
 

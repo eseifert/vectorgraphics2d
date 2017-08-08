@@ -88,9 +88,11 @@ import de.erichseifert.vectorgraphics2d.intermediate.commands.TranslateCommand;
 import de.erichseifert.vectorgraphics2d.util.GraphicsUtils;
 
 /**
- * Implementation of the Graphics2D interface to Java to generate a sequence of
- * commands.
- * @author Erich Seifert
+ * <p>Implementation of the Graphics2D interface to Java to generate a sequence of
+ * commands. An instance of {@code VectorGraphics2D} can be used to replace any
+ * {@code Graphics2D} object. It can be created with its standard constructor:</p>
+ * <pre>Graphics2D g = new VectorGraphics2D();</pre>
+ *
  * @see <a href="http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm">http://www.java2s.com/Code/Java/2D-Graphics-GUI/YourownGraphics2D.htm</a>
  */
 public class VectorGraphics2D extends Graphics2D implements Cloneable {
