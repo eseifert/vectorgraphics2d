@@ -29,7 +29,7 @@ import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
  * {@code Processor} implementation that translates {@link CommandSequence}s to string
- * in the <i>Encapsulated PostScript®</i> (EPS) format.
+ * in the <i>Encapsulated PostScript&reg;</i> (EPS) format.
  */
 public class EPSProcessor implements Processor {
 	/**
