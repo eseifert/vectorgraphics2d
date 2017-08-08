@@ -29,8 +29,8 @@ import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGrouping
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
- * {@code Processor} implementation that translates {@link CommandSequence}s to the
- * <i>Scaled Vector Graphics</i> (SVG) format.
+ * {@code Processor} implementation that translates {@link CommandSequence}s to
+ * a {@code Document} in the <i>Scaled Vector Graphics</i> (SVG) format.
  */
 public class SVGProcessor implements Processor {
 	/**

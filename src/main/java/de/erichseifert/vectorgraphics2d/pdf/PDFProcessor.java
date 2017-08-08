@@ -30,8 +30,8 @@ import de.erichseifert.vectorgraphics2d.intermediate.filters.StateChangeGrouping
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
- * {@code Processor} implementation that translates {@link CommandSequence}s to a string
- * in the <i>Portable Document Format</i> (PDF).
+ * {@code Processor} implementation that translates {@link CommandSequence}s to
+ * a {@code Document} in the <i>Portable Document Format</i> (PDF).
  */
 public class PDFProcessor implements Processor {
 	private final boolean compressed;

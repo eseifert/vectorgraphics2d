@@ -28,8 +28,8 @@ import de.erichseifert.vectorgraphics2d.intermediate.filters.FillPaintedShapeAsI
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
- * {@code Processor} implementation that translates {@link CommandSequence}s to string
- * in the <i>Encapsulated PostScript&reg;</i> (EPS) format.
+ * {@code Processor} implementation that translates {@link CommandSequence}s to
+ * a {@code Document} in the <i>Encapsulated PostScript&reg;</i> (EPS) format.
  */
 public class EPSProcessor implements Processor {
 	/**
