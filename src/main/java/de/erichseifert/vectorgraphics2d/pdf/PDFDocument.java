@@ -72,10 +72,9 @@ import de.erichseifert.vectorgraphics2d.util.ImageDataStream.Interleaving;
 import de.erichseifert.vectorgraphics2d.util.PageSize;
 
 /**
- * @author Erich Seifert
- * TODO Support for different image formats (binary, grayscale, etc.)
- * TODO Paint support (as images)
+ * Represents a {@code Document} in the <i>Portable Document Format</i> (PDF).
  */
+// TODO Support for different image formats (binary, grayscale, etc.)
 class PDFDocument extends SizedDocument {
 	private static final String CHARSET = "ISO-8859-1";
 	private static final String HEADER = "%PDF-1.4";

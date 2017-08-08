@@ -86,10 +86,11 @@ import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 
 /**
- * TODO Implement composite support for SVG (filters?)
- * TODO Implement paint support for SVG
- * @author Erich Seifert
+ * Represents a {@code Document} in the <i>Scaled Vector Graphics</i> (SVG)
+ * format.
  */
+// TODO Implement composite support for SVG (filters?)
+// TODO Implement paint support for SVG
 public class SVGDocument extends SizedDocument {
 	private static final String SVG_DOCTYPE_QNAME = "svg";
 	private static final String SVG_DOCTYPE_PUBLIC_ID = "-//W3C//DTD SVG 1.1//EN";
