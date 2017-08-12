@@ -21,5 +21,8 @@
  */
 package de.erichseifert.vectorgraphics2d.pdf;
 
-public interface PDFObject {
+/**
+ * Base interface for all structures stored in a PDF document.
+ */
+interface PDFObject {
 }
