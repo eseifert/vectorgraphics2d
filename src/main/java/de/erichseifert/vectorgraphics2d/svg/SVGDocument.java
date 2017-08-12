@@ -147,12 +147,7 @@ class SVGDocument extends SizedDocument {
 		DOMImplementation domImpl = docBuilder.getDOMImplementation();
 		DocumentType docType = domImpl.createDocumentType(SVG_DOCTYPE_QNAME, SVG_DOCTYPE_PUBLIC_ID, SVG_DOCTYPE_SYSTEM_ID);
 		doc = domImpl.createDocument(SVG_NAMESPACE_URI, "svg", docType);
-		// FIXME: Some XML parsers don't support setting standalone to "false"
-		try {
-			doc.setXmlStandalone(false);
-		} catch (AbstractMethodError e) {
-			System.err.println("Your XML parser does not support standalone XML documents.");
-		}
+		doc.setXmlStandalone(false);
 
 		root = doc.getDocumentElement();
 		initRoot();
