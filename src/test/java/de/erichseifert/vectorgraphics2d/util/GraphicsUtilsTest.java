@@ -31,7 +31,9 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeFalse;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Polygon;
@@ -366,7 +368,7 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void usesAlphaReturnsFalseForImageWithoutAlphaChannel() {
-		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+		Image image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_RGB);
 
 		boolean result = GraphicsUtils.usesAlpha(image);
 
@@ -375,10 +377,22 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void usesAlphaReturnsTrueForImageWithTransparentPixels() {
-		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB);
+		Image image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
 
 		boolean result = GraphicsUtils.usesAlpha(image);
 
 		assertTrue(result);
+	}
+
+	@Test
+	public void usesAlphaReturnsFalseForImageWithoutTransparentPixels() {
+		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = image.getGraphics();
+		g.setColor(Color.BLACK);
+		g.fillRect(image.getMinX(), image.getMinY(), image.getWidth(), image.getHeight());
+
+		boolean result = GraphicsUtils.usesAlpha(image);
+
+		assertFalse(result);
 	}
 }

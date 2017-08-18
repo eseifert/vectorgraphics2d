@@ -116,8 +116,11 @@ public abstract class GraphicsUtils {
 			return false;
 		}
 		DataBuffer dataBuffer = alphaRaster.getDataBuffer();
+		final int elemBits = DataBuffer.getDataTypeSize(dataBuffer.getDataType());
+		final int alphaBits = elemBits/bimage.getRaster().getNumBands();
+		final int alphaShift = (elemBits - alphaBits);
 		for (int i = 0; i < dataBuffer.getSize(); i++) {
-			int alpha = dataBuffer.getElem(i);
+			int alpha = dataBuffer.getElem(i) >>> alphaShift;
 			if (alpha < 255) {
 				return true;
 			}
