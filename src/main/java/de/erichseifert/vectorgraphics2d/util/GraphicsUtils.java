@@ -356,20 +356,11 @@ public abstract class GraphicsUtils {
 		ColorModel cm;
 		WritableRaster raster;
 		// TODO Handle bitmap masks (work on ImageDataStream is necessary)
-		/*
-		if (image.getTransparency() == BufferedImage.BITMASK) {
-            byte[] arr = {(byte) 0, (byte) 255};
-
-            cm = new IndexColorModel(1, 2, arr, arr, arr);
-            raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE,
-            		width, height, 1, 1, null);
-		} else {*/
-            ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_GRAY);
-            int[] bits = {8};
-            cm = new ComponentColorModel(colorSpace, bits, false, true,
-            		Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
-            raster = cm.createCompatibleWritableRaster(width, height);
-		//}
+		ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_GRAY);
+		int[] bits = {8};
+		cm = new ComponentColorModel(colorSpace, bits, false, true,
+				Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
+		raster = cm.createCompatibleWritableRaster(width, height);
 
 		BufferedImage alphaImage = new BufferedImage(cm, raster, false, null);
 
