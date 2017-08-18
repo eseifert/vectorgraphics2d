@@ -372,4 +372,13 @@ public class GraphicsUtilsTest {
 
 		assertFalse(result);
 	}
+
+	@Test
+	public void usesAlphaReturnsTrueForImageWithTransparentPixels() {
+		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB);
+
+		boolean result = GraphicsUtils.usesAlpha(image);
+
+		assertTrue(result);
+	}
 }
