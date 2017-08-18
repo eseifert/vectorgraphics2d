@@ -356,4 +356,11 @@ public class GraphicsUtilsTest {
 
 		assertFalse(GraphicsUtils.equals(path1, path2));
 	}
+
+	@Test
+	public void usesAlphaReturnsFalseForNullImage() {
+		boolean result = GraphicsUtils.usesAlpha(null);
+
+		assertFalse(result);
+	}
 }
