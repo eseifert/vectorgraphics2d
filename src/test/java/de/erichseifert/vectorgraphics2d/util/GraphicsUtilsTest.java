@@ -363,4 +363,13 @@ public class GraphicsUtilsTest {
 
 		assertFalse(result);
 	}
+
+	@Test
+	public void usesAlphaReturnsFalseForImageWithoutAlphaChannel() {
+		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+
+		boolean result = GraphicsUtils.usesAlpha(image);
+
+		assertFalse(result);
+	}
 }
