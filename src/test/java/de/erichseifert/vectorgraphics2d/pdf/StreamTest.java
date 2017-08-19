@@ -22,6 +22,7 @@
 package de.erichseifert.vectorgraphics2d.pdf;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -44,8 +45,36 @@ public class StreamTest {
 		stream.getContent();
 	}
 
+	@Test
+	public void testWriteIntWritesDataToStream() throws IOException {
+		Stream stream = new Stream();
+
+		stream.write(42);
+		stream.close();
+
+		assertArrayEquals(new byte[] {42}, stream.getContent());
+	}
+
 	@Test(expected = IOException.class)
-	public void testWriteThrowsExceptionWhenStreamIsClosed() throws IOException {
+	public void testWriteIntThrowsExceptionWhenStreamIsClosed() throws IOException {
+		Stream stream = new Stream();
+		stream.close();
+
+		stream.write(42);
+	}
+
+	@Test
+	public void testWriteBytesWritesDataToStream() throws IOException {
+		Stream stream = new Stream();
+
+		stream.write(new byte[] {42});
+		stream.close();
+
+		assertArrayEquals(new byte[] {42}, stream.getContent());
+	}
+
+	@Test(expected = IOException.class)
+	public void testWriteBytesThrowsExceptionWhenStreamIsClosed() throws IOException {
 		Stream stream = new Stream();
 		stream.close();
 
