@@ -34,12 +34,15 @@ import static org.junit.Assume.assumeFalse;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
+import java.awt.Transparency;
 import java.awt.geom.Arc2D;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
@@ -426,6 +429,22 @@ public class GraphicsUtilsTest {
 	@Test
 	public void getAlphaImageReturnsBlackImageForTransparentInput() {
 		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+
+		BufferedImage result = GraphicsUtils.getAlphaImage(image);
+
+		BufferedImage expected = new BufferedImage(3, 3, BufferedImage.TYPE_BYTE_GRAY);
+		Graphics g = expected.getGraphics();
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, expected.getWidth(), expected.getHeight());
+		assertBufferedImageContentEquals(expected, result);
+	}
+
+	@Test
+	public void getAlphaImageReturnsBlackImageForTransparentInputWithBitmaskAlpha() {
+		GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice device = environment.getDefaultScreenDevice();
+		GraphicsConfiguration config = device.getDefaultConfiguration();
+		BufferedImage image = config.createCompatibleImage(3, 3, Transparency.BITMASK);
 
 		BufferedImage result = GraphicsUtils.getAlphaImage(image);
 
