@@ -26,6 +26,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import org.junit.Test;
@@ -129,5 +130,13 @@ public class StreamTest {
 		byte[] decompressedOutput = new byte[inputData.length];
 		decompressor.inflate(decompressedOutput);
 		assertThat(decompressedOutput, is(inputData));
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void getFiltersResultIsUnmodifiable() {
+		Stream stream = new Stream();
+
+		List<Stream.Filter> filters = stream.getFilters();
+		filters.add(Stream.Filter.FLATE);
 	}
 }
