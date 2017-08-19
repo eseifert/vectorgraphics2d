@@ -422,4 +422,17 @@ public class GraphicsUtilsTest {
 		g.fillRect(0, 0, expected.getWidth(), expected.getHeight());
 		assertBufferedImageContentEquals(expected, result);
 	}
+
+	@Test
+	public void getAlphaImageReturnsBlackImageForTransparentInput() {
+		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+
+		BufferedImage result = GraphicsUtils.getAlphaImage(image);
+
+		BufferedImage expected = new BufferedImage(3, 3, BufferedImage.TYPE_BYTE_GRAY);
+		Graphics g = expected.getGraphics();
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, expected.getWidth(), expected.getHeight());
+		assertBufferedImageContentEquals(expected, result);
+	}
 }
