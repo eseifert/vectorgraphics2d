@@ -107,7 +107,7 @@ class PDFDocument extends SizedDocument {
 	private final Stack<GraphicsState> states;
 	private boolean transformed;
 
-	public PDFDocument(CommandSequence commands, PageSize pageSize, boolean compressed) {
+	PDFDocument(CommandSequence commands, PageSize pageSize, boolean compressed) {
 		super(pageSize, compressed);
 
 		states = new Stack<>();
@@ -417,7 +417,7 @@ class PDFDocument extends SizedDocument {
 		}
 	}
 
-	public byte[] toBytes(PDFObject object) {
+	private byte[] toBytes(PDFObject object) {
 		DefaultPDFObject obj = (DefaultPDFObject) object;
 
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
