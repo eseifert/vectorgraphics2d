@@ -471,10 +471,27 @@ public class GraphicsUtilsTest {
 		GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice device = environment.getDefaultScreenDevice();
 		GraphicsConfiguration config = device.getDefaultConfiguration();
-		BufferedImage image = config.createCompatibleImage(TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, Transparency.BITMASK);
+		BufferedImage image = config.createCompatibleImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, Transparency.BITMASK);
 
 		BufferedImage result = GraphicsUtils.getAlphaImage(image);
 
 		assertBufferedImageContentEquals(blackGrayscaleImage, result);
+	}
+
+	@Test
+	public void getAlphaImageReturnsWhiteImageForOpaqueInputWithBitmaskAlpha() {
+		GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice device = environment.getDefaultScreenDevice();
+		GraphicsConfiguration config = device.getDefaultConfiguration();
+		BufferedImage image = config.createCompatibleImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, Transparency.BITMASK);
+		Graphics g = image.getGraphics();
+		g.setColor(Color.RED);
+		g.fillRect(0, 0, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT);
+
+		BufferedImage result = GraphicsUtils.getAlphaImage(image);
+
+		assertBufferedImageContentEquals(whiteGrayscaleImage, result);
 	}
 }
