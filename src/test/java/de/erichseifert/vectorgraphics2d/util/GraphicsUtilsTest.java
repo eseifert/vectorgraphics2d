@@ -62,11 +62,17 @@ import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.util.Vector;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
 public class GraphicsUtilsTest {
 	private static final double DELTA = 1e-15;
+
+	private static final int TEST_IMAGE_WIDTH = 3;
+	private static final int TEST_IMAGE_HEIGHT = 3;
+	private static BufferedImage blackGrayscaleImage;
+	private static BufferedImage whiteGrayscaleImage;
 
 	private void assertBufferedImageEquals(Image expected, BufferedImage actual) {
 		assertNotNull(actual);
@@ -95,9 +101,28 @@ public class GraphicsUtilsTest {
 		}
 	}
 
+	@BeforeClass
+	public static void setUpClass() {
+		{
+			blackGrayscaleImage = new BufferedImage(
+					TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+			Graphics g = blackGrayscaleImage.getGraphics();
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT);
+		}
+		{
+			whiteGrayscaleImage = new BufferedImage(
+					TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_BYTE_GRAY);
+			Graphics g = whiteGrayscaleImage.getGraphics();
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT);
+		}
+	}
+
 	@Test
 	public void toBufferedImageCanConvertImageWithAlphaChannel() {
-		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB);
+		Image image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
 		BufferedImage result = GraphicsUtils.toBufferedImage(image);
 
@@ -106,7 +131,8 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void toBufferedImageCanConvertImageWithoutAlphaChannel() {
-		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+		Image image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
 
 		BufferedImage result = GraphicsUtils.toBufferedImage(image);
 
@@ -116,7 +142,8 @@ public class GraphicsUtilsTest {
 	@Test
 	public void toBufferedImageCanConvertFilteredImage() {
 		Image image = Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(
-			new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB).getSource(),
+			new BufferedImage(
+					TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB).getSource(),
 			new RGBImageFilter() {
 				@Override
 				public int filterRGB(int x, int y, int rgb) {
@@ -132,7 +159,8 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void toBufferedImageCanConvertRenderedImage() {
-		final BufferedImage bimage = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+		final BufferedImage bimage = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
 		RenderedImage image = new RenderedImage() {
 			@Override public Vector<RenderedImage> getSources() { return bimage.getSources(); }
 			@Override public Object getProperty(String name) { if ("foo".equals(name)) return 42; else return bimage.getProperty(name); }
@@ -164,14 +192,16 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void hasAlphaIsTrueForImageWithAlphaChannel() {
-		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_ARGB);
+		Image image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
 		assertTrue(GraphicsUtils.hasAlpha(image));
 	}
 
 	@Test
 	public void hasAlphaIsFalseForImageWithoutAlphaChannel() {
-		Image image = new BufferedImage(320, 240, BufferedImage.TYPE_INT_RGB);
+		Image image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
 
 		assertFalse(GraphicsUtils.hasAlpha(image));
 	}
@@ -385,7 +415,8 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void usesAlphaReturnsFalseForImageWithoutAlphaChannel() {
-		Image image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_RGB);
+		Image image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
 
 		boolean result = GraphicsUtils.usesAlpha(image);
 
@@ -394,7 +425,8 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void usesAlphaReturnsTrueForImageWithTransparentPixels() {
-		Image image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+		Image image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
 		boolean result = GraphicsUtils.usesAlpha(image);
 
@@ -403,10 +435,11 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void usesAlphaReturnsFalseForImageWithoutTransparentPixels() {
-		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		Graphics g = image.getGraphics();
 		g.setColor(Color.BLACK);
-		g.fillRect(image.getMinX(), image.getMinY(), image.getWidth(), image.getHeight());
+		g.fillRect(0, 0, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT);
 
 		boolean result = GraphicsUtils.usesAlpha(image);
 
@@ -415,28 +448,22 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void getAlphaImageReturnsWhiteImageForInputWithoutAlphaChannel() {
-		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_RGB);
 
 		BufferedImage result = GraphicsUtils.getAlphaImage(image);
 
-		BufferedImage expected = new BufferedImage(3, 3, BufferedImage.TYPE_BYTE_GRAY);
-		Graphics g = expected.getGraphics();
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, expected.getWidth(), expected.getHeight());
-		assertBufferedImageContentEquals(expected, result);
+		assertBufferedImageContentEquals(whiteGrayscaleImage, result);
 	}
 
 	@Test
 	public void getAlphaImageReturnsBlackImageForTransparentInput() {
-		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage image = new BufferedImage(
+				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
 		BufferedImage result = GraphicsUtils.getAlphaImage(image);
 
-		BufferedImage expected = new BufferedImage(3, 3, BufferedImage.TYPE_BYTE_GRAY);
-		Graphics g = expected.getGraphics();
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, expected.getWidth(), expected.getHeight());
-		assertBufferedImageContentEquals(expected, result);
+		assertBufferedImageContentEquals(blackGrayscaleImage, result);
 	}
 
 	@Test
@@ -444,14 +471,10 @@ public class GraphicsUtilsTest {
 		GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice device = environment.getDefaultScreenDevice();
 		GraphicsConfiguration config = device.getDefaultConfiguration();
-		BufferedImage image = config.createCompatibleImage(3, 3, Transparency.BITMASK);
+		BufferedImage image = config.createCompatibleImage(TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, Transparency.BITMASK);
 
 		BufferedImage result = GraphicsUtils.getAlphaImage(image);
 
-		BufferedImage expected = new BufferedImage(3, 3, BufferedImage.TYPE_BYTE_GRAY);
-		Graphics g = expected.getGraphics();
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, expected.getWidth(), expected.getHeight());
-		assertBufferedImageContentEquals(expected, result);
+		assertBufferedImageContentEquals(blackGrayscaleImage, result);
 	}
 }
