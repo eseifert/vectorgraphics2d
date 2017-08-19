@@ -23,6 +23,7 @@ package de.erichseifert.vectorgraphics2d.pdf;
 
 import static de.erichseifert.vectorgraphics2d.TestUtils.Template;
 import static de.erichseifert.vectorgraphics2d.TestUtils.assertTemplateEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,6 +52,12 @@ public class PDFProcessorTest {
 		Document processed = pdfProcessor.getDocument(sequence, PAGE_SIZE);
 		processed.writeTo(bytes);
 		return bytes.toString("ISO-8859-1");
+	}
+
+	@Test public void pdfProcessorCreatesCompressedDocumentByDefault() {
+		PDFProcessor pdfProcessor = new PDFProcessor();
+
+		assertTrue(pdfProcessor.isCompressed());
 	}
 
 	@Test public void envelopeForEmptyDocument() throws IOException {
