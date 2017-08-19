@@ -23,9 +23,11 @@ package de.erichseifert.vectorgraphics2d.pdf;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -130,6 +132,16 @@ public class StreamTest {
 		byte[] decompressedOutput = new byte[inputData.length];
 		decompressor.inflate(decompressedOutput);
 		assertThat(decompressedOutput, is(inputData));
+	}
+
+	@Test
+	public void getFiltersReturnsListOfFilters() {
+		Stream stream = new Stream(Stream.Filter.FLATE);
+
+		List<Stream.Filter> filters = stream.getFilters();
+
+		List<Stream.Filter> expected = Collections.singletonList(Stream.Filter.FLATE);
+		assertEquals(expected, filters);
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
