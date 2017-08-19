@@ -30,11 +30,11 @@ import org.junit.Test;
 import de.erichseifert.vectorgraphics2d.util.FormattingWriter;
 
 public class PDFDocumentTest {
-	public static final String PDF_CHARSET = "ISO-8859-1";
-	public static final String PDF_EOL = "\n";
+	private static final String PDF_CHARSET = "ISO-8859-1";
+	private static final String PDF_EOL = "\n";
 
 	@Test
-	public void testSerializeTrueTypeFont() throws IOException {
+	public void serializeTrueTypeFont() throws IOException {
 		String encoding = "CustomEncoding";
 		String baseFont = "MyBaseFont";
 		TrueTypeFont font = new TrueTypeFont(encoding, baseFont);
@@ -53,7 +53,7 @@ public class PDFDocumentTest {
 	}
 
 	@Test
-	public void testSerializeStreamWhenStreamIsFiltered() throws IOException {
+	public void serializeStreamWhenStreamIsFiltered() throws IOException {
 		Stream stream = new Stream(Stream.Filter.FLATE);
 		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
 		stream.write(inputData);
@@ -74,7 +74,7 @@ public class PDFDocumentTest {
 	}
 
 	@Test
-	public void testSerializeStreamWhenStreamIsNotFiltered() throws IOException {
+	public void serializeStreamWhenStreamIsNotFiltered() throws IOException {
 		Stream stream = new Stream();
 		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
 		stream.write(inputData);
@@ -93,4 +93,3 @@ public class PDFDocumentTest {
 		assertArrayEquals(expected.toByteArray(), serialized);
 	}
 }
-
