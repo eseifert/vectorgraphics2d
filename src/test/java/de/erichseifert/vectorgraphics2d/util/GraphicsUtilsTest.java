@@ -34,8 +34,6 @@ import static org.junit.Assume.assumeFalse;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Polygon;
@@ -43,6 +41,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.Transparency;
+import java.awt.color.ColorSpace;
 import java.awt.geom.Arc2D;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.Ellipse2D;
@@ -54,6 +53,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
@@ -468,11 +468,13 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void getAlphaImageReturnsBlackImageForTransparentInputWithBitmaskAlpha() {
-		GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice device = environment.getDefaultScreenDevice();
-		GraphicsConfiguration config = device.getDefaultConfiguration();
-		BufferedImage image = config.createCompatibleImage(
-				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, Transparency.BITMASK);
+		ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		ColorModel colorModel = new ComponentColorModel(
+				colorSpace, true, false, Transparency.BITMASK, DataBuffer.TYPE_BYTE);
+		WritableRaster raster = Raster.createInterleavedRaster(
+				DataBuffer.TYPE_BYTE, TEST_IMAGE_WIDTH, TEST_IMAGE_WIDTH, 4, null);
+		BufferedImage image = new BufferedImage(
+				colorModel, raster, colorModel.isAlphaPremultiplied(), null);
 
 		BufferedImage result = GraphicsUtils.getAlphaImage(image);
 
@@ -481,11 +483,13 @@ public class GraphicsUtilsTest {
 
 	@Test
 	public void getAlphaImageReturnsWhiteImageForOpaqueInputWithBitmaskAlpha() {
-		GraphicsEnvironment environment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice device = environment.getDefaultScreenDevice();
-		GraphicsConfiguration config = device.getDefaultConfiguration();
-		BufferedImage image = config.createCompatibleImage(
-				TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT, Transparency.BITMASK);
+		ColorSpace colorSpace = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+		ColorModel colorModel = new ComponentColorModel(
+				colorSpace, true, false, Transparency.BITMASK, DataBuffer.TYPE_BYTE);
+		WritableRaster raster = Raster.createInterleavedRaster(
+				DataBuffer.TYPE_BYTE, TEST_IMAGE_WIDTH, TEST_IMAGE_WIDTH, 4, null);
+		BufferedImage image = new BufferedImage(
+				colorModel, raster, colorModel.isAlphaPremultiplied(), null);
 		Graphics g = image.getGraphics();
 		g.setColor(Color.RED);
 		g.fillRect(0, 0, TEST_IMAGE_WIDTH, TEST_IMAGE_HEIGHT);
