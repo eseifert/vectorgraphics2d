@@ -32,21 +32,21 @@ import org.junit.Test;
 
 public class StreamTest {
 	@Test(expected = IllegalStateException.class)
-	public void testGetLengthThrowsExceptionWhenStreamIsOpen() {
+	public void getLengthThrowsExceptionWhenStreamIsOpen() {
 		Stream stream = new Stream();
 
 		stream.getLength();
 	}
 
 	@Test(expected = IllegalStateException.class)
-	public void testGetContentThrowsExceptionWhenStreamIsOpen() {
+	public void getContentThrowsExceptionWhenStreamIsOpen() {
 		Stream stream = new Stream();
 
 		stream.getContent();
 	}
 
 	@Test
-	public void testWriteIntWritesDataToStream() throws IOException {
+	public void writeIntWritesDataToStream() throws IOException {
 		Stream stream = new Stream();
 
 		stream.write(42);
@@ -56,7 +56,7 @@ public class StreamTest {
 	}
 
 	@Test(expected = IOException.class)
-	public void testWriteIntThrowsExceptionWhenStreamIsClosed() throws IOException {
+	public void writeIntThrowsExceptionWhenStreamIsClosed() throws IOException {
 		Stream stream = new Stream();
 		stream.close();
 
@@ -64,7 +64,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testWriteBytesWritesDataToStream() throws IOException {
+	public void writeBytesWritesDataToStream() throws IOException {
 		Stream stream = new Stream();
 
 		stream.write(new byte[] {42});
@@ -74,7 +74,7 @@ public class StreamTest {
 	}
 
 	@Test(expected = IOException.class)
-	public void testWriteBytesThrowsExceptionWhenStreamIsClosed() throws IOException {
+	public void writeBytesThrowsExceptionWhenStreamIsClosed() throws IOException {
 		Stream stream = new Stream();
 		stream.close();
 
@@ -82,7 +82,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testLengthIsZeroOnInitialization() {
+	public void lengthIsZeroOnInitialization() {
 		Stream stream = new Stream();
 		stream.close();
 
@@ -92,7 +92,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testLengthEqualsByteCountInWrittenDataWhenNoFiltersAreSet() throws IOException {
+	public void lengthEqualsByteCountInWrittenDataWhenNoFiltersAreSet() throws IOException {
 		byte[] garbage = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream();
 		stream.write(garbage);
@@ -104,7 +104,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testWrittenDataIsIdenticalToStreamContentWhenNoFiltersAreUsed() throws IOException {
+	public void writtenDataIsIdenticalToStreamContentWhenNoFiltersAreUsed() throws IOException {
 		byte[] data = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream();
 		stream.write(data);
@@ -116,7 +116,7 @@ public class StreamTest {
 	}
 
 	@Test
-	public void testContentsAreCompressedWhenFlateFilterIsSet() throws DataFormatException, IOException {
+	public void contentsAreCompressedWhenFlateFilterIsSet() throws DataFormatException, IOException {
 		byte[] inputData = new byte[] {4, 2, 42, -1, 0};
 		Stream stream = new Stream(Stream.Filter.FLATE);
 		stream.write(inputData);
@@ -131,4 +131,3 @@ public class StreamTest {
 		assertThat(decompressedOutput, is(inputData));
 	}
 }
-
