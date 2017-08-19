@@ -51,6 +51,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.RGBImageFilter;
 import java.awt.image.Raster;
@@ -66,16 +67,29 @@ public class GraphicsUtilsTest {
 
 	private void assertBufferedImageEquals(Image expected, BufferedImage actual) {
 		assertNotNull(actual);
-		assertEquals(BufferedImage.class, actual.getClass());
 		assertEquals(expected.getWidth(null), actual.getWidth());
 		assertEquals(expected.getHeight(null), actual.getHeight());
 	}
 
 	private void assertBufferedImageEquals(RenderedImage expected, BufferedImage actual) {
 		assertNotNull(actual);
-		assertEquals(BufferedImage.class, actual.getClass());
 		assertEquals(expected.getWidth(), actual.getWidth());
 		assertEquals(expected.getHeight(), actual.getHeight());
+	}
+
+	private void assertBufferedImageContentEquals(BufferedImage expected, BufferedImage actual) {
+		DataBuffer expectedData = expected.getData().getDataBuffer();
+		DataBuffer actualData = actual.getData().getDataBuffer();
+
+		int expectedDataSize = expectedData.getSize();
+		int actualDataSize = actualData.getSize();
+
+		assertEquals(expectedDataSize, actualDataSize);
+
+		for (int i = 0; i < actualDataSize; i++) {
+			assertEquals(String.format("Mismatch at pixel %d", i),
+					actualData.getElem(i), expectedData.getElem(i));
+		}
 	}
 
 	@Test
@@ -394,5 +408,18 @@ public class GraphicsUtilsTest {
 		boolean result = GraphicsUtils.usesAlpha(image);
 
 		assertFalse(result);
+	}
+
+	@Test
+	public void getAlphaImageReturnsWhiteImageForInputWithoutAlphaChannel() {
+		BufferedImage image = new BufferedImage(3, 3, BufferedImage.TYPE_INT_RGB);
+
+		BufferedImage result = GraphicsUtils.getAlphaImage(image);
+
+		BufferedImage expected = new BufferedImage(3, 3, BufferedImage.TYPE_BYTE_GRAY);
+		Graphics g = expected.getGraphics();
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, expected.getWidth(), expected.getHeight());
+		assertBufferedImageContentEquals(expected, result);
 	}
 }

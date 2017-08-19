@@ -21,6 +21,7 @@
  */
 package de.erichseifert.vectorgraphics2d.util;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
@@ -35,7 +36,15 @@ import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.awt.geom.*;
+import java.awt.geom.Arc2D;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
+import java.awt.geom.QuadCurve2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -50,7 +59,6 @@ import java.util.Hashtable;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-
 import javax.swing.ImageIcon;
 
 /**
@@ -352,6 +360,14 @@ public abstract class GraphicsUtils {
 		WritableRaster alphaRaster = image.getAlphaRaster();
 		int width = image.getWidth();
 		int height = image.getHeight();
+
+		if (alphaRaster == null) {
+			BufferedImage opaqueAlphaImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+			Graphics g = opaqueAlphaImage.getGraphics();
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, width, height);
+			return opaqueAlphaImage;
+		}
 
 		ColorModel cm;
 		WritableRaster raster;
