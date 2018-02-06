@@ -87,7 +87,7 @@ later be retrieved as a ``CommandSequence``:
 
     Graphics2D vg2d = new VectorGraphics2D();
     vg2d.draw(new Rectangle2D.Double(0.0, 0.0, 20.0, 20.0));
-    CommandSequence commands = vg2d.getCommands();
+    CommandSequence commands = ((VectorGraphics2D) vg2d).getCommands();
 
 This command sequence can then be exported to a EPS, PDF or SVG document using
 a processor for the desired file type, i.e. ``EPSProcessor`` for EPS,
