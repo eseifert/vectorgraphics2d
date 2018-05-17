@@ -91,24 +91,6 @@ public class SVGProcessorTest {
 
 	@Test
 	public void fillShapeBlackEvenOdd() throws Exception {
-	    // Example based on java.awt.LineBorder
-        Rectangle2D rectOuter = new Rectangle2D.Double(0, 0, 10, 10);
-	    Rectangle2D rectInner = new Rectangle2D.Double(1, 1, 8, 8);
-	    Path2D path = new Path2D.Double(Path2D.WIND_EVEN_ODD);
-	    path.append(rectOuter, false);
-	    path.append(rectInner, false);
-		String result = process(
-			new FillShapeCommand(path)
-		);
-		String expected =
-			HEADER + EOL +
-			"  <path d=\"M0,0 L10.0,0 L10.0,10 L0.0,10 L0.0,0 Z M1,1 L9.0,1 L9.0,9 L1.0,9 L1.0,1 Z\" style=\"fill:rgb(255,255,255);fill-rule:evenodd;stroke:none;\"/>" + EOL +
-			FOOTER;
-		assertXMLEquals(expected, result);
-	}
-
-	@Test
-	public void fillShapeBlackEvenOdd() throws Exception {
 		// Example based on java.awt.LineBorder
 		Rectangle2D rectOuter = new Rectangle2D.Double(0, 0, 10, 10);
 		Rectangle2D rectInner = new Rectangle2D.Double(1, 1, 8, 8);
