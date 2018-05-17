@@ -285,13 +285,13 @@ class SVGDocument extends SizedDocument {
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
 			Shape shape = c.getValue();
-            Element e = getElement(shape);
-            if (shape instanceof Path2D) {
-                Path2D path = (Path2D) shape;
-                e.setAttribute("style", getStyle(true, path.getWindingRule() == Path2D.WIND_NON_ZERO));
-            } else {
-			    e.setAttribute("style", getStyle(true));
-            }
+			Element e = getElement(shape);
+			if (shape instanceof Path2D) {
+				Path2D path = (Path2D) shape;
+				e.setAttribute("style", getStyle(true, path.getWindingRule() == Path2D.WIND_NON_ZERO));
+			} else {
+				e.setAttribute("style", getStyle(true));
+			}
 			addToGroup(e);
 		}
 	}
@@ -355,11 +355,11 @@ class SVGDocument extends SizedDocument {
 		return false;
 	}
 
-    private String getStyle(boolean filled) {
-        return getStyle(filled, true);
-    }
-    
-    private String getStyle(boolean filled, boolean fillRullNonZero) {
+	private String getStyle(boolean filled) {
+		return getStyle(filled, true);
+	}
+	
+	private String getStyle(boolean filled, boolean fillRullNonZero) {
 		StringBuilder style = new StringBuilder();
 
 		Color color = getCurrentState().getColor();
@@ -372,8 +372,8 @@ class SVGDocument extends SizedDocument {
 				appendStyle(style, "fill-opacity", opacity);
 			}
 			if (!fillRullNonZero) {
-			    // nonzero is the default; only need to set the style rule for non-default evenodd winding rule.
-			    appendStyle(style, "fill-rule", "evenodd");
+				// nonzero is the default; only need to set the style rule for non-default evenodd winding rule.
+				appendStyle(style, "fill-rule", "evenodd");
 			}
 		} else {
 			appendStyle(style, "fill", "none");
