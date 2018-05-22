@@ -31,6 +31,7 @@ import java.awt.color.ColorSpace;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -259,7 +260,12 @@ class EPSDocument extends SizedDocument {
 			elements.add(getOutput(c.getValue(), c.getX(), c.getY()));
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
-			elements.add(getOutput(c.getValue()) + " fill");
+			String fillMethod = " fill";
+			Shape shape = c.getValue();
+			if (shape instanceof Path2D && ((Path2D) shape).getWindingRule() == Path2D.WIND_EVEN_ODD) {
+				fillMethod = " eofill";
+			}
+			elements.add(getOutput(c.getValue()) + fillMethod);
 		} else if (command instanceof CreateCommand) {
 			elements.add("gsave");
 		} else if (command instanceof DisposeCommand) {
