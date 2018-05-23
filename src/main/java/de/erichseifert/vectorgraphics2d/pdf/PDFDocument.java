@@ -29,6 +29,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -505,9 +506,14 @@ class PDFDocument extends SizedDocument {
 			}
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
+			String fillMethod = " f";
+			Shape shape = c.getValue();
+			if (shape instanceof Path2D && ((Path2D) shape).getWindingRule() == Path2D.WIND_EVEN_ODD) {
+				fillMethod = " f*";
+			}
 			try (ByteArrayOutputStream ba = new ByteArrayOutputStream()) {
 				ba.write(getOutput(c.getValue()));
-				ba.write(serialize(" f"));
+				ba.write(serialize(fillMethod));
 				s = ba.toByteArray();
 			} catch (IOException e) {
 				throw new IllegalStateException(e);

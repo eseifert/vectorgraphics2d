@@ -31,6 +31,7 @@ import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -283,8 +284,14 @@ class SVGDocument extends SizedDocument {
 			addToGroup(e);
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
-			Element e = getElement(c.getValue());
-			e.setAttribute("style", getStyle(true));
+			Shape shape = c.getValue();
+			Element e = getElement(shape);
+			if (shape instanceof Path2D) {
+				Path2D path = (Path2D) shape;
+				e.setAttribute("style", getStyle(true, path.getWindingRule() == Path2D.WIND_NON_ZERO));
+			} else {
+				e.setAttribute("style", getStyle(true));
+			}
 			addToGroup(e);
 		}
 	}
@@ -349,6 +356,10 @@ class SVGDocument extends SizedDocument {
 	}
 
 	private String getStyle(boolean filled) {
+		return getStyle(filled, true);
+	}
+	
+	private String getStyle(boolean filled, boolean fillRullNonZero) {
 		StringBuilder style = new StringBuilder();
 
 		Color color = getCurrentState().getColor();
@@ -359,6 +370,10 @@ class SVGDocument extends SizedDocument {
 			appendStyle(style, "fill", colorOutput);
 			if (color.getAlpha() < 255) {
 				appendStyle(style, "fill-opacity", opacity);
+			}
+			if (!fillRullNonZero) {
+				// nonzero is the default; only need to set the style rule for non-default evenodd winding rule.
+				appendStyle(style, "fill-rule", "evenodd");
 			}
 		} else {
 			appendStyle(style, "fill", "none");
