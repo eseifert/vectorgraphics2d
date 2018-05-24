@@ -333,6 +333,10 @@ class SVGDocument extends SizedDocument {
 			} else if (command instanceof CreateCommand) {
 				CreateCommand c = (CreateCommand) command;
 				try {
+					// Inject an cloned instance of GraphicsState into the CreateCommand for
+					// use by all Commands that were created by its Graphics object.
+					// For the top-most instance (self reference to parent) use a clone of
+					// the defaultState, otherwise use a clone of the parent's state.
 					CreateCommand parent = c.getParent();
 					if (c != parent && state != null) {
 						c.setProcessingState((GraphicsState) state.clone());

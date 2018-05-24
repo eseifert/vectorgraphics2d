@@ -113,6 +113,8 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	public VectorGraphics2D() {
 		this.commands = new MutableCommandSequence();
+		// Note that this instance will have itself as a parent (via the emit() call).  That self
+		// relationship will be used to mark the top-most instance.
 		parentCommand = new CreateCommand(this);
 		emit(parentCommand);
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
