@@ -75,7 +75,7 @@ public class FillPaintedShapeAsImageFilter extends StreamingFilter {
 		imageGraphics.dispose();
 
 		DrawImageCommand drawImageCommand = new DrawImageCommand(image, imageWidth, imageHeight, x, y, width, height);
-		drawImageCommand.setParentCreateCommand(paintCommand.getParentCreateCommand());
+		drawImageCommand.setParent(paintCommand.getParent());
 		return drawImageCommand;
 	}
 

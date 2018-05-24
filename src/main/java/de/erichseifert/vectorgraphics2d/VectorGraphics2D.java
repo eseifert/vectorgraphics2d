@@ -106,12 +106,15 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 
 	private GraphicsState state;
 	
-	private CreateCommand parentCreateCommand;
+	/** Parent Command linked to all other Commands created by this graphics object.  This will
+	 *  be used to track the appropriate GraphicsState for each Command during Document processing. 
+	 */
+	private CreateCommand parentCommand;
 
 	public VectorGraphics2D() {
 		this.commands = new MutableCommandSequence();
-		parentCreateCommand = new CreateCommand(this);
-		emit(parentCreateCommand);
+		parentCommand = new CreateCommand(this);
+		emit(parentCommand);
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = null;
 		if (!graphicsEnvironment.isHeadlessInstance()) {
@@ -135,8 +138,10 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		VectorGraphics2D clone = (VectorGraphics2D) super.clone();
 		clone.state = (GraphicsState) state.clone();
-		clone.parentCreateCommand = new CreateCommand(clone);
-//		clone.parentCreateCommand.setParentCreateCommand(parentCreateCommand);
+		// Create a clone.parentCommand linked to the clone Graphics object,
+		// but with the current instance's command as its parent.
+		clone.parentCommand = new CreateCommand(clone);
+		clone.parentCommand.setParent(parentCommand);
 		return clone;
 	}
 
@@ -532,7 +537,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		VectorGraphics2D clone = null;
 		try {
 			clone = (VectorGraphics2D) this.clone();
-			emit(clone.parentCreateCommand);
+			emit(clone.parentCommand);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
@@ -793,7 +798,9 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	private void emit(Command<?> command) {
-		command.setParentCreateCommand(parentCreateCommand);
+		// Patch in the instance's parentCommand
+		// TODO: consider whether this should be done via the Command's constructor instead.
+		command.setParent(parentCommand);
 		commands.add(command);
 	}
 

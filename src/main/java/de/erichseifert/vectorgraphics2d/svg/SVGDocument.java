@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Stack;
 import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -105,7 +104,7 @@ class SVGDocument extends SizedDocument {
 	// TODO Resolution settings
 	private static final String CHARSET = "UTF-8";
 
-	private final Stack<GraphicsState> states;
+	private final GraphicsState defaultState;
 
 	private final Document doc;
 	private final Element root;
@@ -130,8 +129,7 @@ class SVGDocument extends SizedDocument {
 	public SVGDocument(CommandSequence commands, PageSize pageSize) {
 		super(pageSize, true);
 
-		states = new Stack<>();
-		states.push(new GraphicsState());
+		defaultState = new GraphicsState();
 		clippingPathElements = new HashMap<>();
 
 		// Prepare DOM
@@ -157,10 +155,6 @@ class SVGDocument extends SizedDocument {
 		for (Command<?> command : commands) {
 			handle(command);
 		}
-	}
-
-	private GraphicsState getCurrentState() {
-		return states.peek();
 	}
 
 	private void initRoot() {
@@ -261,13 +255,13 @@ class SVGDocument extends SizedDocument {
 	}
 
 	public void handle(Command<?> command) {
-		GraphicsState state = command.getParentCreateCommand().getProcessingState();
+		GraphicsState state = command.getParent().getProcessingState();
 		if (command instanceof Group) {
 			Group c = (Group) command;
 			applyStateCommands(c.getValue());
 
 			// We need to refresh the state after applying the state commands.
-			state = command.getParentCreateCommand().getProcessingState();
+			state = command.getParent().getProcessingState();
 			if (containsGroupCommand(c.getValue())) {
 				newGroup(state);
 			}
@@ -302,7 +296,7 @@ class SVGDocument extends SizedDocument {
 
 	private void applyStateCommands(List<Command<?>> commands) {
 		for (Command<?> command : commands) {
-			GraphicsState state = command.getParentCreateCommand().getProcessingState();
+			GraphicsState state = command.getParent().getProcessingState();
 			if (command instanceof SetBackgroundCommand) {
 				SetBackgroundCommand c = (SetBackgroundCommand) command;
 				state.setBackground(c.getValue());
@@ -339,19 +333,17 @@ class SVGDocument extends SizedDocument {
 			} else if (command instanceof CreateCommand) {
 				CreateCommand c = (CreateCommand) command;
 				try {
-					CreateCommand parent = c.getParentCreateCommand();
+					CreateCommand parent = c.getParent();
 					if (c != parent && state != null) {
 						c.setProcessingState((GraphicsState) state.clone());
 					} else {
-						c.setProcessingState((GraphicsState) getCurrentState().clone());
+						c.setProcessingState((GraphicsState) defaultState.clone());
 					}
-					
-//					states.push((GraphicsState) getCurrentState().clone());
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 				}
 			} else if (command instanceof DisposeCommand) {
-//				states.pop();
+				// No-op
 			}
 		}
 	}
