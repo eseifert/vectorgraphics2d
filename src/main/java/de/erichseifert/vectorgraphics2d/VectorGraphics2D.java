@@ -105,10 +105,13 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	private boolean disposed;
 
 	private GraphicsState state;
+	
+	private CreateCommand parentCreateCommand;
 
 	public VectorGraphics2D() {
 		this.commands = new MutableCommandSequence();
-		emit(new CreateCommand(this));
+		parentCreateCommand = new CreateCommand(this);
+		emit(parentCreateCommand);
 		GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice graphicsDevice = null;
 		if (!graphicsEnvironment.isHeadlessInstance()) {
@@ -132,6 +135,8 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		VectorGraphics2D clone = (VectorGraphics2D) super.clone();
 		clone.state = (GraphicsState) state.clone();
+		clone.parentCreateCommand = new CreateCommand(clone);
+//		clone.parentCreateCommand.setParentCreateCommand(parentCreateCommand);
 		return clone;
 	}
 
@@ -527,7 +532,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 		VectorGraphics2D clone = null;
 		try {
 			clone = (VectorGraphics2D) this.clone();
-			emit(new CreateCommand(clone));
+			emit(clone.parentCreateCommand);
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
@@ -788,6 +793,7 @@ public class VectorGraphics2D extends Graphics2D implements Cloneable {
 	}
 
 	private void emit(Command<?> command) {
+		command.setParentCreateCommand(parentCreateCommand);
 		commands.add(command);
 	}
 

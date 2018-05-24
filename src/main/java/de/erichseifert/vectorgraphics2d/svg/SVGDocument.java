@@ -208,18 +208,18 @@ class SVGDocument extends SizedDocument {
 		}
 	}
 
-	private void newGroup() {
+	private void newGroup(GraphicsState state) {
 		group = doc.createElement("g");
 		groupAdded = false;
 
-		Shape clip = getCurrentState().getClip();
+		Shape clip = state.getClip();
 		if (clip != GraphicsState.DEFAULT_CLIP) {
 			Element clipElem = getClipElement(clip);
 			String ref = "url(#" + clipElem.getAttribute("id") + ")";
 			group.setAttribute("clip-path", ref);
 		}
 
-		AffineTransform tx = getCurrentState().getTransform();
+		AffineTransform tx = state.getTransform();
 		if (!GraphicsState.DEFAULT_TRANSFORM.equals(tx)) {
 			group.setAttribute("transform", getOutput(tx));
 		}
@@ -261,26 +261,30 @@ class SVGDocument extends SizedDocument {
 	}
 
 	public void handle(Command<?> command) {
+		GraphicsState state = command.getParentCreateCommand().getProcessingState();
 		if (command instanceof Group) {
 			Group c = (Group) command;
 			applyStateCommands(c.getValue());
+
+			// We need to refresh the state after applying the state commands.
+			state = command.getParentCreateCommand().getProcessingState();
 			if (containsGroupCommand(c.getValue())) {
-				newGroup();
+				newGroup(state);
 			}
 		} else if (command instanceof DrawImageCommand) {
 			DrawImageCommand c = (DrawImageCommand) command;
-			Element e = getElement(c.getValue(),
+			Element e = getElement(state, c.getValue(),
 					c.getX(), c.getY(), c.getWidth(), c.getHeight());
 			addToGroup(e);
 		} else if (command instanceof DrawShapeCommand) {
 			DrawShapeCommand c = (DrawShapeCommand) command;
 			Element e = getElement(c.getValue());
-			e.setAttribute("style", getStyle(false));
+			e.setAttribute("style", getStyle(state, false));
 			addToGroup(e);
 		} else if (command instanceof DrawStringCommand) {
 			DrawStringCommand c = (DrawStringCommand) command;
 			Element e = getElement(c.getValue(), c.getX(), c.getY());
-			e.setAttribute("style", getStyle(getCurrentState().getFont()));
+			e.setAttribute("style", getStyle(state, state.getFont()));
 			addToGroup(e);
 		} else if (command instanceof FillShapeCommand) {
 			FillShapeCommand c = (FillShapeCommand) command;
@@ -288,9 +292,9 @@ class SVGDocument extends SizedDocument {
 			Element e = getElement(shape);
 			if (shape instanceof Path2D) {
 				Path2D path = (Path2D) shape;
-				e.setAttribute("style", getStyle(true, path.getWindingRule() == Path2D.WIND_NON_ZERO));
+				e.setAttribute("style", getStyle(state, true, path.getWindingRule() == Path2D.WIND_NON_ZERO));
 			} else {
-				e.setAttribute("style", getStyle(true));
+				e.setAttribute("style", getStyle(state, true));
 			}
 			addToGroup(e);
 		}
@@ -298,7 +302,7 @@ class SVGDocument extends SizedDocument {
 
 	private void applyStateCommands(List<Command<?>> commands) {
 		for (Command<?> command : commands) {
-			GraphicsState state = getCurrentState();
+			GraphicsState state = command.getParentCreateCommand().getProcessingState();
 			if (command instanceof SetBackgroundCommand) {
 				SetBackgroundCommand c = (SetBackgroundCommand) command;
 				state.setBackground(c.getValue());
@@ -333,13 +337,21 @@ class SVGDocument extends SizedDocument {
 				SetHintCommand c = (SetHintCommand) command;
 				state.getHints().put(c.getKey(), c.getValue());
 			} else if (command instanceof CreateCommand) {
+				CreateCommand c = (CreateCommand) command;
 				try {
-					states.push((GraphicsState) getCurrentState().clone());
+					CreateCommand parent = c.getParentCreateCommand();
+					if (c != parent && state != null) {
+						c.setProcessingState((GraphicsState) state.clone());
+					} else {
+						c.setProcessingState((GraphicsState) getCurrentState().clone());
+					}
+					
+//					states.push((GraphicsState) getCurrentState().clone());
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 				}
 			} else if (command instanceof DisposeCommand) {
-				states.pop();
+//				states.pop();
 			}
 		}
 	}
@@ -355,14 +367,14 @@ class SVGDocument extends SizedDocument {
 		return false;
 	}
 
-	private String getStyle(boolean filled) {
-		return getStyle(filled, true);
+	private String getStyle(GraphicsState state, boolean filled) {
+		return getStyle(state, filled, true);
 	}
 	
-	private String getStyle(boolean filled, boolean fillRullNonZero) {
+	private String getStyle(GraphicsState state, boolean filled, boolean fillRullNonZero) {
 		StringBuilder style = new StringBuilder();
 
-		Color color = getCurrentState().getColor();
+		Color color = state.getColor();
 		String colorOutput = getOutput(color);
 		double opacity = color.getAlpha()/255.0;
 
@@ -384,7 +396,7 @@ class SVGDocument extends SizedDocument {
 			if (color.getAlpha() < 255) {
 				appendStyle(style, "stroke-opacity", opacity);
 			}
-			Stroke stroke = getCurrentState().getStroke();
+			Stroke stroke = state.getStroke();
 			if (stroke instanceof BasicStroke) {
 				BasicStroke bs = (BasicStroke) stroke;
 				if (bs.getLineWidth() != 1f) {
@@ -413,8 +425,8 @@ class SVGDocument extends SizedDocument {
 		return style.toString();
 	}
 
-	private String getStyle(Font font) {
-		String style = getStyle(true);
+	private String getStyle(GraphicsState state, Font font) {
+		String style = getStyle(state, true);
 		if (!GraphicsState.DEFAULT_FONT.equals(font)) {
 			style += getOutput(font);
 		}
@@ -584,14 +596,14 @@ class SVGDocument extends SizedDocument {
 		return elem;
 	}
 
-	private Element getElement(Image image, double x, double y, double width, double height) {
+	private Element getElement(GraphicsState state, Image image, double x, double y, double width, double height) {
 		Element elem = doc.createElement("image");
 		elem.setAttribute("x", DataUtils.format(x));
 		elem.setAttribute("y", DataUtils.format(y));
 		elem.setAttribute("width", DataUtils.format(width));
 		elem.setAttribute("height", DataUtils.format(height));
 		elem.setAttribute("preserveAspectRatio", "none");
-		boolean lossyAllowed = getCurrentState().getHints().get(VectorHints.KEY_EXPORT) ==
+		boolean lossyAllowed = state.getHints().get(VectorHints.KEY_EXPORT) ==
 				VectorHints.VALUE_EXPORT_SIZE;
 		elem.setAttribute("xlink:href", getOutput(image, lossyAllowed));
 		return elem;

@@ -59,6 +59,7 @@ public abstract class GroupingFilter extends StreamingFilter {
 				group = new Group();
 			}
 			group.add(command);
+			group.setParentCreateCommand(command.getParentCreateCommand());
 			return null;
 		}
 		return Collections.<Command<?>>singletonList(command);

@@ -21,11 +21,22 @@
  */
 package de.erichseifert.vectorgraphics2d.intermediate.commands;
 
+import de.erichseifert.vectorgraphics2d.GraphicsState;
 import de.erichseifert.vectorgraphics2d.VectorGraphics2D;
 
 public class CreateCommand extends StateCommand<VectorGraphics2D> {
+	private GraphicsState processingState;
+	
 	public CreateCommand(VectorGraphics2D graphics) {
 		super(graphics);
+	}
+
+	public GraphicsState getProcessingState() {
+		return processingState;
+	}
+
+	public void setProcessingState(GraphicsState processingState) {
+		this.processingState = processingState;
 	}
 }
 
