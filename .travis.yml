@@ -3,8 +3,8 @@ sudo: required
 language: java
 
 jdk:
-- oraclejdk8
-- openjdk7
+  - openjdk7
+  - openjdk8
 
 before_install:
 - sudo wget "https://bouncycastle.org/download/bcprov-ext-jdk15on-158.jar" -O "${JAVA_HOME}/jre/lib/ext/bcprov-ext-jdk15on-158.jar"
