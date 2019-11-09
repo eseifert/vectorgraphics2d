@@ -25,6 +25,7 @@ import java.util.Locale;
 
 public abstract class Command<T> {
 	private final T value;
+	private CreateCommand parent;
 
 	public Command(T value) {
 		this.value = value;
@@ -32,6 +33,14 @@ public abstract class Command<T> {
 
 	public T getValue() {
 		return value;
+	}
+
+	public CreateCommand getParent() {
+		return parent;
+	}
+
+	public void setParent(CreateCommand parent) {
+		this.parent = parent;
 	}
 
 	@Override

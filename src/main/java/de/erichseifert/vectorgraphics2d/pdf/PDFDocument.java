@@ -105,14 +105,13 @@ class PDFDocument extends SizedDocument {
 	private Resources resources;
 	private final Map<Integer, PDFObject> images;
 
-	private final Stack<GraphicsState> states;
+	private final GraphicsState defaultState;
 	private boolean transformed;
 
 	PDFDocument(CommandSequence commands, PageSize pageSize, boolean compressed) {
 		super(pageSize, compressed);
 
-		states = new Stack<>();
-		states.push(new GraphicsState());
+		defaultState = new GraphicsState();
 
 		objects = new LinkedList<>();
 		crossReferences = new HashMap<>();
@@ -129,10 +128,6 @@ class PDFDocument extends SizedDocument {
 			}
 		}
 		close();
-	}
-
-	private GraphicsState getCurrentState() {
-		return states.peek();
 	}
 
 	/**
@@ -159,7 +154,7 @@ class PDFDocument extends SizedDocument {
 		try {
 			FormattingWriter string = new FormattingWriter(contents, CHARSET, EOL);
 			string.writeln("q");
-			string.writeln(getOutput(getCurrentState().getColor()));
+			string.writeln(getOutput(defaultState.getColor()));
 			string.write(MM_IN_UNITS).write(" 0 0 ").write(-MM_IN_UNITS)
 					.write(" 0 ").write(getPageSize().getHeight()*MM_IN_UNITS)
 					.writeln(" cm");
@@ -173,7 +168,7 @@ class PDFDocument extends SizedDocument {
 		page.dict.put("Resources", resources);
 
 		// Create initial font
-		Font font = getCurrentState().getFont();
+		Font font = defaultState.getFont();
 		String fontResourceId = resources.getId(font);
 		float fontSize = font.getSize2D();
 		setFont(fontResourceId, fontSize, contents);
@@ -493,7 +488,8 @@ class PDFDocument extends SizedDocument {
 		if (command instanceof Group) {
 			Group c = (Group) command;
 			applyStateCommands(c.getValue());
-			s = getOutput(getCurrentState(), resources, !transformed);
+			GraphicsState state = command.getParent().getProcessingState();
+			s = getOutput(state, resources, !transformed);
 			transformed = true;
 		} else if (command instanceof DrawShapeCommand) {
 			DrawShapeCommand c = (DrawShapeCommand) command;
@@ -538,43 +534,54 @@ class PDFDocument extends SizedDocument {
 
 	private void applyStateCommands(List<Command<?>> commands) {
 		for (Command<?> command : commands) {
+			GraphicsState state = command.getParent().getProcessingState();
 			if (command instanceof SetHintCommand) {
 				SetHintCommand c = (SetHintCommand) command;
-				getCurrentState().getHints().put(c.getKey(), c.getValue());
+				state.getHints().put(c.getKey(), c.getValue());
 			} else if (command instanceof SetBackgroundCommand) {
 				SetBackgroundCommand c = (SetBackgroundCommand) command;
-				getCurrentState().setBackground(c.getValue());
+				state.setBackground(c.getValue());
 			} else if (command instanceof SetColorCommand) {
 				SetColorCommand c = (SetColorCommand) command;
-				getCurrentState().setColor(c.getValue());
+				state.setColor(c.getValue());
 			} else if (command instanceof SetPaintCommand) {
 				SetPaintCommand c = (SetPaintCommand) command;
-				getCurrentState().setPaint(c.getValue());
+				state.setPaint(c.getValue());
 			} else if (command instanceof SetStrokeCommand) {
 				SetStrokeCommand c = (SetStrokeCommand) command;
-				getCurrentState().setStroke(c.getValue());
+				state.setStroke(c.getValue());
 			} else if (command instanceof SetFontCommand) {
 				SetFontCommand c = (SetFontCommand) command;
-				getCurrentState().setFont(c.getValue());
+				state.setFont(c.getValue());
 			} else if (command instanceof SetTransformCommand) {
 				throw new UnsupportedOperationException("The PDF format has no means of setting the transformation matrix.");
 			} else if (command instanceof AffineTransformCommand) {
 				AffineTransformCommand c = (AffineTransformCommand) command;
-				AffineTransform stateTransform = getCurrentState().getTransform();
+				AffineTransform stateTransform = state.getTransform();
 				AffineTransform transformToBeApplied = c.getValue();
 				stateTransform.concatenate(transformToBeApplied);
-				getCurrentState().setTransform(stateTransform);
+				state.setTransform(stateTransform);
 			} else if (command instanceof SetClipCommand) {
 				SetClipCommand c = (SetClipCommand) command;
-				getCurrentState().setClip(c.getValue());
+				state.setClip(c.getValue());
 			} else if (command instanceof CreateCommand) {
+				CreateCommand c = (CreateCommand) command;
 				try {
-					states.push((GraphicsState) getCurrentState().clone());
+					// Inject an cloned instance of GraphicsState into the CreateCommand for
+					// use by all Commands that were created by its Graphics object.
+					// For the top-most instance (self reference to parent) use a clone of
+					// the defaultState, otherwise use a clone of the parent's state.
+					CreateCommand parent = c.getParent();
+					if (c != parent && state != null) {
+						c.setProcessingState((GraphicsState) state.clone());
+					} else {
+						c.setProcessingState((GraphicsState) defaultState.clone());
+					}
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 				}
 			} else if (command instanceof DisposeCommand) {
-				states.pop();
+				// No-op
 			}
 		}
 	}
