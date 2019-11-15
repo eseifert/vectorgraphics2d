@@ -157,12 +157,22 @@ class PDFDocument extends SizedDocument {
 
 		// Initial content
 		try {
+			double scaleH = MM_IN_UNITS;
+			double scaleV = -MM_IN_UNITS;
+
+			PageSize pageSize = getPageSize();
+			double translateX = -pageSize.getX()*MM_IN_UNITS;
+			double translateY = (pageSize.getY() + pageSize.getHeight())*MM_IN_UNITS;
+
 			FormattingWriter string = new FormattingWriter(contents, CHARSET, EOL);
 			string.writeln("q");
 			string.writeln(getOutput(getCurrentState().getColor()));
-			string.write(MM_IN_UNITS).write(" 0 0 ").write(-MM_IN_UNITS)
-					.write(" 0 ").write(getPageSize().getHeight()*MM_IN_UNITS)
-					.writeln(" cm");
+			string.write(scaleH).write(" ")
+					.write(0.0).write(" ")
+					.write(0.0).write(" ")
+					.write(scaleV).write(" ")
+					.write(translateX).write(" ")
+					.write(translateY).writeln(" cm");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -214,8 +224,8 @@ class PDFDocument extends SizedDocument {
 	}
 
 	private DefaultPDFObject addPage(PDFObject pageTree) {
-		double x = getPageSize().getX()*MM_IN_UNITS;
-		double y = getPageSize().getY()*MM_IN_UNITS;
+		double x = 0.0;
+		double y = 0.0;
 		double width = getPageSize().getWidth()*MM_IN_UNITS;
 		double height = getPageSize().getHeight()*MM_IN_UNITS;
 		Map<String, Object> dict = DataUtils.map(
