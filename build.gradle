@@ -38,7 +38,6 @@ dependencies {
     testCompile 'org.ghost4j:ghost4j:1.0.1'
     testCompile 'org.apache.xmlgraphics:batik-transcoder:1.9.1'
     testRuntime 'org.apache.xmlgraphics:batik-codec:1.9.1'  // Required for images with data: URLs
-    testRuntime 'org.slf4j:slf4j-log4j12:1.7.25'  // Required for Cobertura
 }
 
 buildscript {
@@ -50,7 +49,7 @@ buildscript {
     dependencies {
         classpath 'net.sf.proguard:proguard-gradle:5.2.+'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.+'
-        classpath 'net.saliman:gradle-cobertura-plugin:2.5.0'
+        classpath 'net.saliman:gradle-cobertura-plugin:3.0.0'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
     }
 }
