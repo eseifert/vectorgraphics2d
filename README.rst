@@ -38,7 +38,7 @@ export vector graphics.
 Requirements
 ============
 
-VectorGraphics2D requires at least Java 7 and Gradle 4 or higher to build.
+VectorGraphics2D requires at least Java 8 and Gradle 5 or higher to build.
 
 Installation
 ============
