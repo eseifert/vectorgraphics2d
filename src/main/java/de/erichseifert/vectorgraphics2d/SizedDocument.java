@@ -44,4 +44,3 @@ public abstract class SizedDocument implements Document {
 		return this.compressed;
 	}
 }
-

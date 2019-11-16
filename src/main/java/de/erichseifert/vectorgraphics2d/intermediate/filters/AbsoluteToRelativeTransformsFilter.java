@@ -73,9 +73,9 @@ public class AbsoluteToRelativeTransformsFilter extends StreamingFilter {
 			}
 			relativeTransform.concatenate(absoluteTransform);
 			TransformCommand transformCommand = new TransformCommand(relativeTransform);
-			return Collections.<Command<?>>singletonList(transformCommand);
+			return Collections.singletonList(transformCommand);
 		}
-		return Collections.<Command<?>>singletonList(command);
+		return Collections.singletonList(command);
 	}
 
 	private AffineTransform getCurrentTransform() {

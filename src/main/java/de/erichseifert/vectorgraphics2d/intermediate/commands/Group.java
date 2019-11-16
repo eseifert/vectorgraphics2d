@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Group extends Command<List<Command<?>>> {
 	public Group() {
-		super(new LinkedList<Command<?>>());
+		super(new LinkedList<>());
 	}
 
 	public void add(Command<?> command) {

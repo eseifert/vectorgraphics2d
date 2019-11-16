@@ -61,7 +61,7 @@ public abstract class GroupingFilter extends StreamingFilter {
 			group.add(command);
 			return null;
 		}
-		return Collections.<Command<?>>singletonList(command);
+		return Collections.singletonList(command);
 	}
 
 	protected abstract boolean isGrouped(Command<?> command);

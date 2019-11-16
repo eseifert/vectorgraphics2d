@@ -57,7 +57,7 @@ public class OptimizeFilter extends StreamingFilter {
 	@Override
 	protected List<Command<?>> filter(Command<?> command) {
 		if (!isStateChange(command)) {
-			return Collections.<Command<?>>singletonList(command);
+			return Collections.singletonList(command);
 		}
 		Iterator<Command<?>> i = buffer.iterator();
 		Class<?> cls = command.getClass();

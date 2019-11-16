@@ -82,7 +82,7 @@ public class ImageDataStream extends InputStream {
 	}
 
 	@Override
-	public int read() throws IOException {
+	public int read() {
 		if (!byteBuffer.isEmpty()) {
 			return byteBuffer.poll();
 		} else {

@@ -116,7 +116,7 @@ public class GraphicsState implements Cloneable {
 		boolean isRectlinearTx = (tx.getType() & nonRectlinearTxMask) == 0;
 		if (isRectangle && isRectlinearTx) {
 			Rectangle2D rect = (Rectangle2D) s;
-			double corners[] = new double[] {
+			double[] corners = new double[] {
 				rect.getMinX(), rect.getMinY(),
 				rect.getMaxX(), rect.getMaxY()
 			};

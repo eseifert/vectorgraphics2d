@@ -82,10 +82,10 @@ public class FillPaintedShapeAsImageFilter extends StreamingFilter {
 		if (lastSetPaintCommand != null && command instanceof FillShapeCommand) {
 			FillShapeCommand fillShapeCommand = (FillShapeCommand) command;
 			DrawImageCommand drawImageCommand = getDrawImageCommand(fillShapeCommand, lastSetPaintCommand);
-			return Collections.<Command<?>>singletonList(drawImageCommand);
+			return Collections.singletonList(drawImageCommand);
 		}
 
-		return Collections.<Command<?>>singletonList(command);
+		return Collections.singletonList(command);
 	}
 }
 

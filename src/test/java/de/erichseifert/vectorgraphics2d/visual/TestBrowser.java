@@ -172,23 +172,13 @@ public class TestBrowser extends JFrame {
 					}
 
 					File dest = saveFileDialog.getSelectedFile();
-					FileOutputStream destStream = null;
-					try {
-						destStream = new FileOutputStream(dest);
+					try (FileOutputStream destStream = new FileOutputStream(dest)) {
 						int imageDataChunk;
 						while ((imageDataChunk = ImageDisplayPanel.this.imageData.read()) != -1){
 							destStream.write(imageDataChunk);
 						}
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					} finally {
-						if (destStream != null) {
-							try {
-								destStream.close();
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
-						}
+					} catch (IOException exc) {
+						exc.printStackTrace();
 					}
 				}
 			});
