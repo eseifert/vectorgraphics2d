@@ -75,6 +75,12 @@ license {
     ext.email2 = owner2_email
 }
 
+jar {
+    manifest {
+      attributes('Automatic-Module-Name': 'de.erichseifert.vectorgraphics2d')
+    }
+}
+
 task shrinkJar(type: proguard.gradle.ProGuardTask, dependsOn: jar) {
     description = 'Uses ProGuard to reduce the code size of this project.'
     group = 'Build'
