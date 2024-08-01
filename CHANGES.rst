@@ -1,3 +1,7 @@
+VectorGraphics2D 0.14 (UNRELEASED)
+==================================
+- Remove CMYK support from EPS generation `#79 <https://github.com/eseifert/vectorgraphics2d/pull/79>`_
+
 VectorGraphics2D 0.13 (2017-08-08)
 ==================================
 
