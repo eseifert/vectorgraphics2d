@@ -27,7 +27,6 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.color.ColorSpace;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -138,7 +137,6 @@ class EPSDocument extends SizedDocument {
 			"/Z /closepath load def",
 			"/RL /rlineto load def",
 			"/rgb /setrgbcolor load def",
-			"/cmyk /setcmykcolor load def",
 			"/rect { /height exch def /width exch def /y exch def /x exch def x y M width 0 RL 0 height RL width neg 0 RL } bind def",
 			"/ellipse { /endangle exch def /startangle exch def /ry exch def /rx exch def /y exch def /x exch def /savematrix matrix currentmatrix def x y translate rx ry scale 0 0 1 startangle endangle arcn savematrix setmatrix } bind def",
 			"/imgdict { /datastream exch def /hasdata exch def /decodeScale exch def /bits exch def /bands exch def /imgheight exch def /imgwidth exch def << /ImageType 1 /Width imgwidth /Height imgheight /BitsPerComponent bits /Decode [bands {0 decodeScale} repeat] /ImageMatrix [imgwidth 0 0 imgheight 0 0] hasdata { /DataSource datastream } if >> } bind def",
@@ -275,14 +273,8 @@ class EPSDocument extends SizedDocument {
 
 	private static String getOutput(Color color) {
 		// TODO Handle transparency
-		if (color.getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
-			float[] cmyk = color.getComponents(null);
-			return String.format((Locale) null, "%f %f %f %f cmyk",
-					cmyk[0], cmyk[1], cmyk[2], cmyk[3]);
-		} else {
-			return String.format((Locale) null, "%f %f %f rgb",
-					color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
-		}
+		return String.format((Locale) null, "%f %f %f rgb",
+				color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f);
 	}
 
 	private static String getOutput(Shape s) {
