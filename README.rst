@@ -3,6 +3,11 @@
 .. image:: https://travis-ci.org/eseifert/vectorgraphics2d.svg?branch=master
     :target: https://travis-ci.org/eseifert/vectorgraphics2d
 
+This project is archived.
+VectorGraphics2D has been relicensed under EPL-2.0 and subsequently integrated
+into `Eclipse SWTChart <https://projects.eclipse.org/projects/science.swtchart>`_
+(`GitHub <https://github.com/eclipse/swtchart>`_)
+
 VectorGraphics2D
 ================
 
